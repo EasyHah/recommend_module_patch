@@ -1,0 +1,171 @@
+/* =======================
+   顶部模式切换条（与 Dashboard 风格一致）
+   ======================= */
+.gu-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  box-shadow: var(--panel-shadow, 0 6px 24px rgba(0,0,0,.12));
+  background: var(--panel-bg-strong, rgba(255,255,255,.72));
+  backdrop-filter: saturate(1.2) blur(12px);
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.mode-tabs .tab {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  background: var(--panel-bg, rgba(255,255,255,.6));
+  cursor: pointer;
+}
+.mode-tabs .tab.active {
+  background: var(--brand-weak, rgba(0,120,255,.1));
+  border-color: var(--brand, #2f7cf6);
+  color: var(--brand, #2f7cf6);
+}
+
+/* =======================
+   Drawer（与 Dashboard 同风格）
+   ======================= */
+.drawer {
+  position: absolute;
+  top: 64px;
+  bottom: 16px;
+  width: 320px;
+  max-width: 90vw;
+  pointer-events: none; /* 外层不接收点击 */
+  transition: transform .2s ease, opacity .2s ease;
+}
+.drawer.left  { left: 16px;  transform: translateX(-12px); }
+.drawer.right { right: 16px; transform: translateX( 12px); }
+.drawer.open  { transform: translateX(0); }
+.drawer .drawer-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto; /* 内层可交互 */
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  border-radius: 16px;
+  box-shadow: var(--panel-shadow, 0 8px 28px rgba(0,0,0,.16));
+  background: var(--panel-bg-strong, rgba(255,255,255,.72));
+  backdrop-filter: saturate(1.1) blur(10px);
+}
+.drawer .drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px dashed rgba(0,0,0,.08);
+  font-weight: 600;
+}
+.drawer .drawer-header .actions .pin {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  background: var(--panel-bg, rgba(255,255,255,.6));
+  cursor: pointer;
+}
+.drawer .drawer-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 把手 */
+.drawer .handle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 12px;
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  box-shadow: var(--panel-shadow, 0 6px 24px rgba(0,0,0,.12));
+  background: var(--panel-bg, rgba(255,255,255,.85));
+  padding: 6px 8px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.drawer.left .handle  { right: -12px; }
+.drawer.right .handle { left:  -12px; }
+
+/* 选项卡 */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px dashed rgba(0,0,0,.08);
+}
+.tabs .tab {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border, rgba(0,0,0,.08));
+  background: var(--panel-bg, rgba(255,255,255,.6));
+  cursor: pointer;
+}
+.tabs .tab.active {
+  background: var(--brand-weak, rgba(0,120,255,.1));
+  border-color: var(--brand, #2f7cf6);
+  color: var(--brand, #2f7cf6);
+}
+
+/* 列表/图例等 */
+.layer-item + .layer-item { margin-top: 8px; }
+.layer-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 14px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 8px;
+}
+.layer-row:hover {
+  background: rgba(0,0,0,.04);
+}
+.layer-row .name { font-size: 13px; }
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(0,0,0,.7);
+}
+.gu-color {
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+/* 表单 & 按钮 */
+.form-row { display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: center; margin-bottom: 10px; }
+.form-row label { font-size: 12px; color: rgba(0,0,0,.7); }
+.form-row select { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--panel-border, rgba(0,0,0,.12)); background: white; }
+.actions-row { display: flex; gap: 8px; margin-top: 4px; }
+.btn { padding: 6px 12px; border-radius: 10px; border: 1px solid var(--panel-border, rgba(0,0,0,.12)); background: var(--panel-bg, rgba(255,255,255,.8)); cursor: pointer; }
+.btn.primary { background: var(--brand, #2f7cf6); border-color: var(--brand, #2f7cf6); color: white; }
+
+/* 保留属性卡风格 */
+.gu-card { border: 1px solid var(--panel-border, rgba(0,0,0,.08)); border-radius: 12px; padding: 8px; background: var(--panel-bg, rgba(255,255,255,.85)); box-shadow: var(--panel-shadow, 0 6px 24px rgba(0,0,0,.12)); }
+.attr-header { font-weight: 600; margin-bottom: 8px; }
+.kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px; padding: 4px 0; }
+.k  { color: rgba(0,0,0,.65); font-size: 12px; }
+.v  { color: rgba(0,0,0,.9);  font-size: 12px; }
+.text-muted { color: rgba(0,0,0,.6); font-size: 12px; padding: 8px; }

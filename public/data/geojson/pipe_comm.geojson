@@ -1,0 +1,58 @@
+{
+  "type": "FeatureCollection",
+  "name": "pipe_comm",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "c1",
+      "properties": {
+        "pid": "c1",
+        "carrier": "Telecom",
+        "fiberCount": 96,
+        "install": "2014-05-01",
+        "state": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.387,
+            39.8994,
+            -2
+          ],
+          [
+            116.393,
+            39.9006,
+            -2
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "c2",
+      "properties": {
+        "pid": "c2",
+        "carrier": "Mobile",
+        "fiberCount": 48,
+        "install": "2022-01-18",
+        "state": "planned"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.3882,
+            39.9021,
+            -2
+          ],
+          [
+            116.3906,
+            39.9003,
+            -2
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,703 @@
+[
+  {
+    "id": "v001",
+    "name": "华南冷链-1号",
+    "location": {
+      "lat": 23.0485,
+      "lng": 112.9992
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 5000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.916,
+      "priceIndex": 0.81,
+      "capacityUtilization": 0.31
+    },
+    "tags": [
+      "重载专线"
+    ]
+  },
+  {
+    "id": "v002",
+    "name": "华东物流-2号",
+    "location": {
+      "lat": 1.3984,
+      "lng": 103.7578
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 3000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.877,
+      "priceIndex": 0.96,
+      "capacityUtilization": 0.59
+    },
+    "tags": [
+      "干线网络",
+      "夜间配送"
+    ]
+  },
+  {
+    "id": "v003",
+    "name": "华南冷链-3号",
+    "location": {
+      "lat": 39.9328,
+      "lng": 116.1451
+    },
+    "serviceRadiusKm": 80,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 15000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 3.9,
+      "onTimeRate": 0.948,
+      "priceIndex": 0.96,
+      "capacityUtilization": 0.45
+    },
+    "tags": [
+      "夜间配送",
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v004",
+    "name": "华南冷链-4号",
+    "location": {
+      "lat": 23.1738,
+      "lng": 113.2795
+    },
+    "serviceRadiusKm": 120,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 20000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.939,
+      "priceIndex": 0.81,
+      "capacityUtilization": 0.57
+    },
+    "tags": []
+  },
+  {
+    "id": "v005",
+    "name": "华南冷链-5号",
+    "location": {
+      "lat": 23.2878,
+      "lng": 113.3082
+    },
+    "serviceRadiusKm": 120,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 8000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.937,
+      "priceIndex": 1.02,
+      "capacityUtilization": 0.54
+    },
+    "tags": []
+  },
+  {
+    "id": "v006",
+    "name": "沿海速运-6号",
+    "location": {
+      "lat": 23.2174,
+      "lng": 113.5603
+    },
+    "serviceRadiusKm": 150,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 8000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.975,
+      "priceIndex": 0.93,
+      "capacityUtilization": 0.84
+    },
+    "tags": [
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v007",
+    "name": "华北专线-7号",
+    "location": {
+      "lat": 1.4951,
+      "lng": 103.7585
+    },
+    "serviceRadiusKm": 150,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 3000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.912,
+      "priceIndex": 0.9,
+      "capacityUtilization": 0.34
+    },
+    "tags": [
+      "干线网络"
+    ]
+  },
+  {
+    "id": "v008",
+    "name": "西南运配-8号",
+    "location": {
+      "lat": 22.3337,
+      "lng": 113.8636
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 20000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.9,
+      "onTimeRate": 0.923,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.42
+    },
+    "tags": []
+  },
+  {
+    "id": "v009",
+    "name": "华北专线-9号",
+    "location": {
+      "lat": 40.0185,
+      "lng": 116.4167
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 20000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.867,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "夜间配送",
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v010",
+    "name": "西南运配-10号",
+    "location": {
+      "lat": 22.2835,
+      "lng": 113.8832
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 3000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.0,
+      "onTimeRate": 0.867,
+      "priceIndex": 0.78,
+      "capacityUtilization": 0.35
+    },
+    "tags": []
+  },
+  {
+    "id": "v011",
+    "name": "港区链达-11号",
+    "location": {
+      "lat": 22.9182,
+      "lng": 113.1158
+    },
+    "serviceRadiusKm": 120,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat",
+        "fragile"
+      ],
+      "maxWeightKg": 15000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.876,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "夜间配送"
+    ]
+  },
+  {
+    "id": "v012",
+    "name": "沿海速运-12号",
+    "location": {
+      "lat": 22.5303,
+      "lng": 114.1731
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 3000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 3.9,
+      "onTimeRate": 0.984,
+      "priceIndex": 0.93,
+      "capacityUtilization": 0.68
+    },
+    "tags": []
+  },
+  {
+    "id": "v013",
+    "name": "沿海速运-13号",
+    "location": {
+      "lat": 1.3631,
+      "lng": 104.0648
+    },
+    "serviceRadiusKm": 120,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 5000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.961,
+      "priceIndex": 0.92,
+      "capacityUtilization": 0.39
+    },
+    "tags": []
+  },
+  {
+    "id": "v014",
+    "name": "沿江货运-14号",
+    "location": {
+      "lat": 39.8175,
+      "lng": 116.1248
+    },
+    "serviceRadiusKm": 80,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 8000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.885,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.47
+    },
+    "tags": [
+      "干线网络",
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v015",
+    "name": "西南运配-15号",
+    "location": {
+      "lat": 31.22,
+      "lng": 121.7648
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat",
+        "fragile"
+      ],
+      "maxWeightKg": 3000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.945,
+      "priceIndex": 1.12,
+      "capacityUtilization": 0.3
+    },
+    "tags": [
+      "重载专线",
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v016",
+    "name": "城配智能运-16号",
+    "location": {
+      "lat": 39.6562,
+      "lng": 116.6751
+    },
+    "serviceRadiusKm": 150,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 10000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.983,
+      "priceIndex": 1.08,
+      "capacityUtilization": 0.36
+    },
+    "tags": []
+  },
+  {
+    "id": "v017",
+    "name": "华北专线-17号",
+    "location": {
+      "lat": 31.2973,
+      "lng": 121.5312
+    },
+    "serviceRadiusKm": 150,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 20000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.88,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.26
+    },
+    "tags": [
+      "重载专线",
+      "干线网络"
+    ]
+  },
+  {
+    "id": "v018",
+    "name": "西南运配-18号",
+    "location": {
+      "lat": 39.621,
+      "lng": 116.2351
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 5000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.902,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.78
+    },
+    "tags": []
+  },
+  {
+    "id": "v019",
+    "name": "港区链达-19号",
+    "location": {
+      "lat": 23.3254,
+      "lng": 113.4913
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.926,
+      "priceIndex": 1.15,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "重载专线",
+      "夜间配送"
+    ]
+  },
+  {
+    "id": "v020",
+    "name": "华东物流-20号",
+    "location": {
+      "lat": 39.7998,
+      "lng": 116.4184
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 10000,
+      "cold": {
+        "min": -25,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001",
+        "GSP"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.874,
+      "priceIndex": 1.02,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "重载专线"
+    ]
+  },
+  {
+    "id": "v021",
+    "name": "华南冷链-21号",
+    "location": {
+      "lat": 31.1963,
+      "lng": 121.5412
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.95,
+      "priceIndex": 0.97,
+      "capacityUtilization": 0.59
+    },
+    "tags": [
+      "同城即达"
+    ]
+  },
+  {
+    "id": "v022",
+    "name": "西南运配-22号",
+    "location": {
+      "lat": 1.5561,
+      "lng": 103.6021
+    },
+    "serviceRadiusKm": 80,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 10000,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.869,
+      "priceIndex": 0.88,
+      "capacityUtilization": 0.3
+    },
+    "tags": [
+      "干线网络",
+      "重载专线"
+    ]
+  }
+]

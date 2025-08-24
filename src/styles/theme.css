@@ -1,0 +1,159 @@
+/* =========================================================
+   Global Theme — 科技蓝
+   - 统一字体：Inter + 苹方/思源黑体/微软雅黑 等中文优先
+   - 统一品牌色：--brand / --brand-weak
+   - 统一面板与文字色：--panel-* / --text-*
+   ========================================================= */
+:root{
+  /* 品牌主色 */
+  --brand:       #4EA1FF;
+  --brand-weak:  rgba(78,161,255,.16);
+
+  /* 背景与面板 */
+  --bg-start:    #081420;
+  --bg-end:      #0F2238;
+  --panel-bg:        rgba(10, 22, 36, .60);
+  --panel-bg-strong: rgba(10, 22, 36, .78);
+  --panel-border:    rgba(100, 160, 255, .18);
+  --panel-shadow:    0 10px 40px rgba(0,0,0,.28);
+
+  /* 文本色阶（亮 → 暗） */
+  --text-1: #EAF2FF;       /* 主文本 */
+  --text-2: rgba(234,242,255,.78);
+  --text-3: rgba(234,242,255,.55);
+
+  /* 圆角与间距基线（可按需微调） */
+  --radius-card: 16px;
+  --radius-btn:  10px;
+}
+
+html, body, #app{
+  height: 100%;
+}
+
+html, body{
+  margin: 0;
+  /* ✅ 全局字体栈（中英混排友好、等宽数字） */
+  font-family: Inter, "SF Pro SC", "SF Pro Text", "PingFang SC",
+               "Helvetica Neue", "Microsoft YaHei", "Noto Sans CJK SC",
+               "Source Han Sans SC", "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-1);
+  background: linear-gradient(180deg, var(--bg-start), var(--bg-end));
+}
+
+/* =========================================================
+   Fluent Acrylic（主页与场景的卡片/抽屉/顶栏都用它）
+   ========================================================= */
+.fluent-acrylic{
+  background: var(--panel-bg);
+  backdrop-filter: saturate(1.05) blur(10px);
+  -webkit-backdrop-filter: saturate(1.05) blur(10px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--panel-shadow);
+  color: var(--text-1);
+}
+
+.fluent-acrylic-strong{
+  background: var(--panel-bg-strong);
+  backdrop-filter: saturate(1.1) blur(12px);
+  -webkit-backdrop-filter: saturate(1.1) blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--panel-shadow);
+  color: var(--text-1);
+}
+
+/* =========================================================
+   通用按钮（TopBar 的 nav-btn/页面里的 btn 都走同一视觉）
+   ========================================================= */
+button, .btn, .nav-btn{
+  height: 32px;
+  padding: 0 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--panel-border);
+  background: rgba(255,255,255,.06);
+  color: var(--text-1);
+  cursor: pointer; text-decoration: none;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+button:hover, .btn:hover, .nav-btn:hover{
+  background: rgba(255,255,255,.10);
+}
+.nav-btn.active, .btn.primary{
+  background: var(--brand-weak);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.btn.primary{
+  background: var(--brand);
+  color: #fff;
+}
+
+/* =========================================================
+   卡片（FluentCard）标题与正文色阶
+   ========================================================= */
+.card-title, .fluent-card .title{
+  color: var(--text-1);
+}
+.card-subtitle{
+  color: var(--text-2);
+}
+.card-muted, .text-muted{
+  color: var(--text-3);
+}
+
+/* =========================================================
+   抽屉框架（与首页保持一致的 class 名）
+   ========================================================= */
+.drawer .drawer-inner{
+  background: var(--panel-bg-strong);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--panel-shadow);
+  color: var(--text-1);
+}
+.drawer .drawer-header{
+  border-bottom: 1px dashed rgba(234,242,255,.10);
+}
+.drawer .drawer-header .title{
+  color: var(--text-1);
+}
+.drawer .drawer-header .pin{
+  background: rgba(255,255,255,.06);
+  color: var(--text-2);
+}
+.drawer .drawer-header .pin:hover{
+  background: rgba(255,255,255,.1);
+}
+
+/* 表单 & 标签（筛选区） */
+label{ color: var(--text-2); }
+select{
+  color: var(--text-1);
+  background: rgba(0,0,0,.2);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+select:focus{ outline: none; border-color: var(--brand); }
+
+/* 图层列表与图例中的文案 */
+.layer-row .name, .legend-item{ color: var(--text-2); }
+
+/* 顶栏时间/用户名显色 */
+.time{ color: var(--text-2); }
+.name{ color: var(--text-1); }
+
+/* 让滚动条更“隐形”一点（暗色主题） */
+*::-webkit-scrollbar{ width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,.12);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+}
+*::-webkit-scrollbar-track{ background: transparent; }

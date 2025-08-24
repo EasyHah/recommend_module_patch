@@ -1,0 +1,84 @@
+{
+  "type": "FeatureCollection",
+  "name": "green",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "park1",
+      "properties": {
+        "gid": "park1",
+        "name": "示例公园",
+        "type": "park",
+        "area_m2": 32000,
+        "year": 2020,
+        "status": "open"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              116.38850000000001,
+              39.8985
+            ],
+            [
+              116.3897,
+              39.8985
+            ],
+            [
+              116.38985,
+              39.8994
+            ],
+            [
+              116.38895,
+              39.899699999999996
+            ],
+            [
+              116.38850000000001,
+              39.8985
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "lawn1",
+      "properties": {
+        "gid": "lawn1",
+        "name": "中央草坪",
+        "type": "lawn",
+        "area_m2": 15000,
+        "year": 2021,
+        "status": "open"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              116.3909,
+              39.8988
+            ],
+            [
+              116.3918,
+              39.898649999999996
+            ],
+            [
+              116.39165,
+              39.8994
+            ],
+            [
+              116.39105,
+              39.89955
+            ],
+            [
+              116.3909,
+              39.8988
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

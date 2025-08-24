@@ -1,0 +1,1 @@
+<template><div class='map fluent-acrylic'><iframe src='https://opensource.icegl.cn/#/plugins/digitalPark/simplePark' frameborder='0' referrerpolicy='no-referrer'></iframe></div></template><style scoped>.map{position:absolute;inset:8px;border-radius:14px;overflow:hidden}.map iframe{width:100%;height:100%}</style>
