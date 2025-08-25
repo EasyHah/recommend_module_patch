@@ -29,11 +29,11 @@ onBeforeUnmount(()=> window.removeEventListener('keydown', onKey));
 function zhType(t:'normal'|'cold'|'hazmat'|'fragile'){ return ({normal:'普货',cold:'冷链',hazmat:'危化',fragile:'易碎'})[t]; }
 </script>
 <style scoped>
-.drawer{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-8px 0 20px rgba(0,0,0,.08);border-left:1px solid #eee;transition:right .25s ease;z-index:2200;display:flex;flex-direction:column}
-.drawer.open{right:0}.head{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;border-bottom:1px solid #f0f0f0}.title{font-weight:700;color:#222}.icon{width:32px;height:32px;border-radius:8px;border:1px solid #eee;background:#fafafa}
-.body{padding:12px;overflow:auto}.empty{color:#777;font-size:13px}.list{display:flex;flex-direction:column;gap:10px}.card{border:1px solid #eee;border-radius:12px;padding:10px;background:#fff}
-.top{display:flex;align-items:center;justify-content:space-between}.name{font-weight:600}.remove{border:1px solid #eee;background:#fef2f2;color:#d00;padding:4px 8px;border-radius:8px}
+.drawer{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#82a4ee;box-shadow:-8px 0 20px rgba(0,0,0,.08);border-left:1px solid #eee;transition:right .25s ease;z-index:2200;display:flex;flex-direction:column}
+.drawer.open{right:0}.head{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;border-bottom:1px solid #f0f0f0}.title{font-weight:700;color:#222}.icon{width:32px;height:32px;border-radius:8px;border:1px solid #eee;background:#3260c4}
+.body{padding:12px;overflow:auto}.empty{color:#777;font-size:13px}.list{display:flex;flex-direction:column;gap:10px}.card{border:1px solid #eee;border-radius:12px;padding:10px;background:#50a0ce}
+.top{display:flex;align-items:center;justify-content:space-between}.name{font-weight:600}.remove{border:1px solid #eee;background:#4f81df;color:#d00;padding:4px 8px;border-radius:8px}
 .grid{margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid label{color:#777;margin-right:6px}.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.tag{background:#f1f3ff;color:#3445ff;border:1px solid #dfe3ff;padding:2px 6px;border-radius:999px;font-size:12px}
+.tag{background:#6b7de4;color:#3445ff;border:1px solid #626fd3;padding:2px 6px;border-radius:999px;font-size:12px}
 .backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.28); z-index:2100; }
 </style>

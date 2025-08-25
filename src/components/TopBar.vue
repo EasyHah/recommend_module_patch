@@ -11,12 +11,12 @@
     <!-- 中：导航（含“三维场景”入口） -->
     <nav class="center">
       <RouterLink class="nav-btn" :class="{ active: isActive('/') }" to="/">总览</RouterLink>
-      <RouterLink class="nav-btn" :class="{ active: isActive('/route') }" to="/route">路径规划</RouterLink>
       <RouterLink class="nav-btn" :class="{ active: isActive('/scene') }" to="/scene/gu">三维场景</RouterLink>
     </nav>
 
     <!-- 右：用户/标题位 -->
     <div class="right">
+      <button class="nav-btn" @click="toggleRecommend()">推荐侧栏</button>
       <div class="persona">
         <!-- 这里用已有资源，避免 /favicon.ico 缺失 -->
         <img class="avatar" alt="logo" src="/wallpaper.jpg" />
@@ -33,6 +33,7 @@ import { storeToRefs } from 'pinia'
 import { useUIStore } from '@/stores/ui'
 
 const ui = useUIStore()
+import { toggleRecommend } from '@/bridge/recommendUI'
 const { fullscreen } = storeToRefs(ui)
 
 const timeText = ref('— —')

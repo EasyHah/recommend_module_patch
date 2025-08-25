@@ -38,9 +38,9 @@ const feasibleCount = computed(()=> props.items.filter(i=>i.feasible).length);
 const sorted = computed(()=>{ const arr=[...props.items]; switch(sortKey.value){ case 'distance': return arr.sort((a,b)=> a.distanceKm-b.distanceKm); case 'rating': return arr.sort((a,b)=> b.vendor.metrics.rating-a.vendor.metrics.rating); case 'price': return arr.sort((a,b)=> a.vendor.metrics.priceIndex-b.vendor.metrics.priceIndex); case 'onTime': return arr.sort((a,b)=> b.vendor.metrics.onTimeRate-a.vendor.metrics.onTimeRate); default: return arr.sort((a,b)=> b.score-a.score);} });
 </script>
 <style scoped>
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.toolbar .left{color:#444}.toolbar .right{display:flex;gap:8px;align-items:center}
-.table-wrap{border:1px solid #ececec;border-radius:12px;overflow:hidden}table.tab{width:100%;border-collapse:collapse;background:#fff}
-th,td{padding:10px 12px;border-bottom:1px solid #f0f0f0;text-align:left}th{background:#fafafa;font-weight:600;color:#333}td.num{text-align:right;font-variant-numeric:tabular-nums}
-.name{font-weight:600;color:#222}.tips{color:#888;font-size:12px;margin-top:2px}.cap{color:#555}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{background:#f1f3ff;color:#3445ff;border:1px solid #dfe3ff;padding:2px 6px;border-radius:999px;font-size:12px}
-.unfeasible{opacity:.55}.btn.small{padding:6px 10px;border:1px solid #ccc;border-radius:10px;background:#f7f7f9}.btn.small:disabled{opacity:.5;cursor:not-allowed}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.toolbar .left{color:#969191}.toolbar .right{display:flex;gap:8px;align-items:center}
+.table-wrap{border:1px solid #3a3737;border-radius:12px;overflow:hidden}table.tab{width:100%;border-collapse:collapse;background:#3e56a5}
+th,td{padding:10px 12px;border-bottom:1px solid #0f2444;text-align:left}th{background:#3e56a5;font-weight:600;color:#ebe4e4}td.num{text-align:right;font-variant-numeric:tabular-nums}
+.name{font-weight:600;color:#222}.tips{color:#97e075;font-size:12px;margin-top:2px}.cap{color:#f1f3ff}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{background:#f1f3ff;color:#3445ff;border:1px solid #dfe3ff;padding:2px 6px;border-radius:999px;font-size:12px}
+.unfeasible{opacity:.55}.btn.small{padding:6px 10px;border:1px solid #ccc;border-radius:10px;background:#3e56a5}.btn.small:disabled{opacity:.5;cursor:not-allowed}
 </style>

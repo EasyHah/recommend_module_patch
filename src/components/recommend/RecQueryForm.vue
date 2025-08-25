@@ -42,5 +42,20 @@ watch(local, v=> emit('update:modelValue', JSON.parse(JSON.stringify(v))), {deep
 function reset(){ local.origin={lat:31.2304,lng:121.4737}; local.destination={lat:31.299, lng:121.3846}; local.window=[new Date().toISOString(), new Date(Date.now()+4*3600e3).toISOString()]; local.demand={type:'normal', weightKg:500, temperature:null}; }
 </script>
 <style scoped>
-.grid{display:grid}.grid-cols-2{grid-template-columns:1fr 1fr}.gap-12,.gap-3{gap:12px}.mb-4{margin-bottom:16px}.row{display:flex;align-items:center;gap:8px;margin:6px 0}.row label{width:68px;color:#666}.row input,.row select{flex:1;padding:8px 10px;border:1px solid #e5e5e5;border-radius:8px;background:#fff}.inline{display:flex;align-items:center;gap:6px}.sep{color:#999}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}.btn{padding:8px 14px;border-radius:10px;border:1px solid #d0d0d0;background:#f7f7f9}.btn.primary{background:#2962ff;color:#fff;border-color:#2962ff}.sec-title{margin:4px 0 6px;color:#333;font-weight:600}
+.grid{display:grid}
+.grid-cols-2{grid-template-columns:1fr 1fr}
+.gap-12,
+.gap-3{gap:12px}
+.mb-4{margin-bottom:16px}
+.row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.row label{width:68px;color:#b8b3b3}.row input,
+.row select{flex:1;padding:8px 10px;border:1px solid #3f5ea1;
+border-radius:8px;background:#3f5ea1}
+.inline{display:flex;align-items:center;gap:6px}
+.sep{color:#eee2e2}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.btn{padding:8px 14px;border-radius:10px;border:1px solid #ec9c24;
+background:#ec9c24}
+.btn.primary{background:#2962ff;color:#fff;border-color:#2962ff}
+.sec-title{margin:4px 0 6px;color:#e0d8d8;font-weight:600}
 </style>
