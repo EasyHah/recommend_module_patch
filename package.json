@@ -10,19 +10,20 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.2",
-    "pinia": "^2.1.7",
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@creatorsn/vfluent3": "^0.3.7",
+    "cesium": "^1.114.0",
     "echarts": "^5.5.0",
-    "cesium": "^1.114.0"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
     "@types/node": "^20.11.19",
+    "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.4.2",
     "vite": "^5.2.0",
-    "vue-tsc": "^2.0.7",
-    "vite-plugin-cesium": "^1.2.2"
+    "vite-plugin-cesium": "^1.2.2",
+    "vue-tsc": "^2.0.7"
   }
 }

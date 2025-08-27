@@ -21,7 +21,7 @@
       </header>
 
       <section class="rec-body">
-        <RecQueryForm v-model="query" @submit="runQuery" />
+        <RecQueryForm v-model="query" @submit="handleSubmit" />
         <RecResultTable :items="matches" @add-compare="addCompare" />
       </section>
 
@@ -75,6 +75,12 @@ async function loadVendors() {
 function runQuery() {
   if (!vendors.value.length) return
   matches.value = matchVendors(query.value, vendors.value)
+}
+
+function handleSubmit(q: Query) {
+  // 将子组件提交的最新查询对象写入，并立即执行匹配
+  if (q) query.value = q
+  runQuery()
 }
 function addCompare(v: Vendor) {
   if (!compareList.value.find(x => x.id === v.id)) compareList.value.push(v)
