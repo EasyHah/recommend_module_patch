@@ -36,3 +36,7 @@ export function subscribeBridge(cb: (data: BridgePayload)=>void) {
   const stop = watch(lastRoute, (v) => { if (v) cb(v as BridgePayload); }, { immediate: false });
   return () => stop();
 }
+
+/* ====== 兼容别名（供 RecommendSidebar 等代码使用）====== */
+export type RoutePacket = BridgePayload;
+export function publishRoute(data: RoutePacket){ publishBridge(data); }

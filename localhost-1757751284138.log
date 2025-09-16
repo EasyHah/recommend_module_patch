@@ -1,0 +1,144 @@
+client:495 [vite] connecting...
+client:618 [vite] connected.
+weatherTestUtils.ts:247 🔧 天气功能测试工具已加载到 window.weatherTest
+weatherTestUtils.ts:248 可用方法: full(), layers(), env(), quick()
+runtime-core.esm-bundler.js:51  [Vue warn]: injection "Symbol(router)" not found. 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text or teleport root nodes. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+:5175/favicon.ico:1   Failed to load resource: the server responded with a status of 404 (Not Found)
+runtime-core.esm-bundler.js:51  [Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+RecQueryForm.vue:240 [Form] submit clicked Object
+RecQueryForm.vue:200 [AMap] JSAPI loaded
+RecQueryForm.vue:211 [AMap] plugins ready: Array(1)
+RecQueryForm.vue:223 [AMap] geocode status= complete Object
+RecQueryForm.vue:211 [AMap] plugins ready: Array(1)
+RecQueryForm.vue:223 [AMap] geocode status= complete Object
+RecQueryForm.vue:253 [Form] emit submit with query: Object
+runtime-core.esm-bundler.js:51  [Vue warn]: Failed to resolve component: FluentCard
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+  at <RecQueryForm modelValue= Object onUpdate:modelValue=fn onSubmit=fn<handleSubmit> > 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Unhandled error during execution of native event handler 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:268  Uncaught TypeError: Cannot read properties of undefined (reading 'push')
+    at goToWeatherAnalysis (RecommendSidebar.vue:177:10)
+    at callWithErrorHandling (runtime-core.esm-bundler.js:199:19)
+    at callWithAsyncErrorHandling (runtime-core.esm-bundler.js:206:17)
+    at HTMLButtonElement.invoker (runtime-dom.esm-bundler.js:730:5)
+runtime-core.esm-bundler.js:51  [Vue warn]: Unhandled error during execution of native event handler 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:268  Uncaught TypeError: Cannot read properties of undefined (reading 'push')
+    at goToWeatherAnalysis (RecommendSidebar.vue:177:10)
+    at callWithErrorHandling (runtime-core.esm-bundler.js:199:19)
+    at callWithAsyncErrorHandling (runtime-core.esm-bundler.js:206:17)
+    at HTMLButtonElement.invoker (runtime-dom.esm-bundler.js:730:5)
+runtime-core.esm-bundler.js:51  [Vue warn]: Unhandled error during execution of native event handler 
+  at <RecommendSidebar> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+logError @ runtime-core.esm-bundler.js:263
+handleError @ runtime-core.esm-bundler.js:255
+callWithErrorHandling @ runtime-core.esm-bundler.js:201
+callWithAsyncErrorHandling @ runtime-core.esm-bundler.js:206
+invoker @ runtime-dom.esm-bundler.js:730
+runtime-core.esm-bundler.js:268  Uncaught TypeError: Cannot read properties of undefined (reading 'push')
+    at goToWeatherAnalysis (RecommendSidebar.vue:177:10)
+    at callWithErrorHandling (runtime-core.esm-bundler.js:199:19)
+    at callWithAsyncErrorHandling (runtime-core.esm-bundler.js:206:17)
+    at HTMLButtonElement.invoker (runtime-dom.esm-bundler.js:730:5)
+goToWeatherAnalysis @ RecommendSidebar.vue:177
+callWithErrorHandling @ runtime-core.esm-bundler.js:199
+callWithAsyncErrorHandling @ runtime-core.esm-bundler.js:206
+invoker @ runtime-dom.esm-bundler.js:730
