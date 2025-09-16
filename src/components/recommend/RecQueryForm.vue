@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted } from 'vue'
+import FluentCard from '@/components/FluentCard.vue'
 import type { Query } from '@/types/recommend'
 
 // props & emits（这里把 submit 的载荷类型设为 [Query]）
@@ -102,7 +103,7 @@ const local = reactive<Query>({
   origin: { lat: 0, lng: 0 },
   destination: { lat: 0, lng: 0 },
   window: ['', ''],
-  demand: { type: '', weightKg: 0, temperature: null }
+  demand: { type: 'normal', weightKg: 0, temperature: null }
 })
 
 // 父 -> 子 同步
