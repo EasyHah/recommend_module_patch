@@ -1,0 +1,108 @@
+client:495 [vite] connecting...
+client:618 [vite] connected.
+weatherTestUtils.ts:247 🔧 天气功能测试工具已加载到 window.weatherTest
+weatherTestUtils.ts:248 可用方法: full(), layers(), env(), quick()
+RecommendSidebar.vue:93 RecommendSidebar 初始化 - 路由器: Object
+RecommendSidebar.vue:210 RecommendSidebar onMounted - 路由器状态: Object
+RecommendSidebar.vue:211 RecommendSidebar onMounted - 路由器push: function
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closePanorama" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closeProfileChart" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "handleProfileHover" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text or teleport root nodes. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+MapView.vue:255 开始加载数据源...
+DataSourceManager.js:36 开始加载 3D Tileset: osgb
+DataSourceManager.js:36 开始加载 3D Tileset: ck
+DataSourceManager.js:90 开始加载 GeoJSON: warehouse
+DataSourceManager.js:135 开始加载管线数据: water-pipe
+DataSourceManager.js:135 开始加载管线数据: tv-cable
+DataSourceManager.js:135 开始加载管线数据: communication
+DataSourceManager.js:135 开始加载管线数据: gas
+DataSourceManager.js:135 开始加载管线数据: sewage
+DataSourceManager.js:135 开始加载管线数据: rainwater
+DataSourceManager.js:135 开始加载管线数据: heating
+DataSourceManager.js:135 开始加载管线数据: power
+DataSourceManager.js:135 开始加载管线数据: street-light
+DataSourceManager.js:60 3D Tileset osgb 加载完成
+DataSourceManager.js:60 3D Tileset ck 加载完成
+DataSourceManager.js:105 GeoJSON warehouse 加载完成
+DataSourceManager.js:204  加载管线数据 water-pipe 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 water-pipe 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 tv-cable 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 tv-cable 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 communication 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 communication 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 sewage 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 sewage 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 rainwater 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 rainwater 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 heating 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 heating 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 power 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 power 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 street-light 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 street-light 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:204  加载管线数据 gas 失败: DeveloperError
+loadPipelineData @ DataSourceManager.js:204
+DataSourceManager.js:401  加载数据源 gas 失败: 管径 is already a registered property.
+(匿名) @ DataSourceManager.js:401
+DataSourceManager.js:406 数据源加载完成，成功加载 3/12 个数据源
+runtime-core.esm-bundler.js:51  [Vue warn]: Unhandled error during execution of mounted hook 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+MapView.vue:840  Uncaught (in promise) TypeError: pipelineCategories.forEach is not a function
+    at initializePipelineLegend (MapView.vue:840:24)
+    at MapView.vue:265:3
+(索引):1  Access to XMLHttpRequest at 'http://ecn.t3.tiles.virtualearth.net/tiles/a13210302020300110030.jpeg?n=z&g=15361' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+TileProviderError.js:143 An error occurred in "IonImageryProvider": Failed to obtain image tile X: 868658 Y: 414978 Level: 19.
+ecn.t3.tiles.virtualearth.net/tiles/a13210302020300110030.jpeg?n=z&g=15361:1   Failed to load resource: net::ERR_FAILED
+(索引):1  Access to XMLHttpRequest at 'http://ecn.t1.tiles.virtualearth.net/tiles/a13210302020100.jpeg?n=z&g=15361' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+TileProviderError.js:143 An error occurred in "IonImageryProvider": Failed to obtain image tile X: 13572 Y: 6480 Level: 13.
+ecn.t1.tiles.virtualearth.net/tiles/a13210302020100.jpeg?n=z&g=15361:1   Failed to load resource: net::ERR_FAILED
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒

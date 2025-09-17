@@ -1,13 +1,24 @@
 <template>
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 
-  <!-- 图层面板（极简，不改变你整体风格） -->
+  <!-- 图层面板（右上角） -->
   <div class="layer-panel">
     <div class="row title">图层</div>
     <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
     <label class="row"><input type="checkbox" v-model="ui.ck"> 分类 CK</label>
     <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
     <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
+
+    <div class="row sep"></div>
+
+    <!-- 管线图层控制 -->
+    <label class="row">
+      <input type="checkbox" v-model="ui.pipelines"> 地下管线
+    </label>
+    <template v-if="ui.pipelines">
+      <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
+      <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
+    </template>
 
     <div class="row sep"></div>
 
@@ -37,14 +48,85 @@
     <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
     <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
   </div>
+
+  <!-- 管线分析工具面板（左上角） -->
+  <div class="analysis-panel" v-if="ui.pipelines">
+    <div class="panel-header">
+      <h3>地下管线分析</h3>
+    </div>
+    <div class="control-group">
+      <button @click="startSectionAnalysis" :class="{ active: sectionMode }">
+        {{ sectionMode ? '取消剖面' : '剖面分析' }}
+      </button>
+      <button @click="startExcavationAnalysis" :class="{ active: excavationMode }">
+        {{ excavationMode ? '取消挖方' : '挖方分析' }}
+      </button>
+      <button @click="clearAllAnalysis">清除分析</button>
+    </div>
+    
+    <!-- 管线信息面板 -->
+    <div class="info-panel" v-if="pipelineInfo.show">
+      <div class="panel-header">
+        <h3>{{ pipelineInfo.title }}</h3>
+        <button @click="pipelineInfo.show = false" class="close-btn">×</button>
+      </div>
+      <div class="info-content">
+        <div v-if="pipelineInfo.pipelines.length === 0" class="no-data">
+          未发现管线
+        </div>
+        <div v-else class="pipeline-list">
+          <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item">
+            <h4>管线 {{ index + 1 }}: {{ pipeline.name }}</h4>
+            <div class="properties">
+              <div v-for="(value, key) in pipeline.properties" :key="key" class="property">
+                <span class="label">{{ key }}:</span>
+                <span class="value">{{ value }}</span>
+              </div>
+              <div v-if="pipeline.distance !== undefined" class="property">
+                <span class="label">距离:</span>
+                <span class="value">{{ pipeline.distance.toFixed(1) }}m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管线图例面板（左下角） -->
+  <div class="legend-panel" v-if="ui.pipelines">
+    <div class="panel-header">
+      <h3>管线图例</h3>
+    </div>
+    <div class="legend-content">
+      <div v-for="(group, name) in pipelineGroups" :key="name" class="legend-item">
+        <label>
+          <input type="checkbox" 
+                 :checked="group.visible !== false" 
+                 @change="togglePipelineGroup(name, $event.target.checked)" />
+          <span class="swatch" :style="{ backgroundColor: group.color }"></span>
+          <span class="name">{{ name }}</span>
+          <span class="count">({{ group.entities.length }})</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全景查看器 -->
+  <PanoramaViewer 
+    ref="panoramaViewer"
+    :visible="panoramaModal.show" 
+    @close="closePanorama" />
 </template>
 
 <script setup>
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
-import { onMounted, onUnmounted, reactive, watch, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, watch, ref, nextTick } from 'vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
+import PanoramaViewer from './PanoramaViewer.vue'
+import { DataSourceManager } from '@/utils/DataSourceManager.js'
 
 window.CESIUM_BASE_URL = '/'
 
@@ -53,6 +135,8 @@ const ui = reactive({
   ck: true,
   geo: true,
   pano: true,
+  pipelines: true,     // 管线图层开关
+  terrainAlpha: 0.35,  // 地形透明度
   cluster: true,
   clusterRange: 45, // 像素范围
   sse: 12,          // 屏幕误差（越大越省）
@@ -64,6 +148,37 @@ const ui = reactive({
   warnings: true,
   weatherOpacity: 70
 })
+
+// 管线分析状态
+const sectionMode = ref(false)
+const excavationMode = ref(false)
+const pipelineInfo = reactive({
+  show: false,
+  title: '',
+  pipelines: []
+})
+const pipelineGroups = ref(new Map())
+
+// 全景查看器状态
+const panoramaModal = reactive({
+  show: false
+})
+const panoramaViewer = ref(null)
+
+// 管线分析变量
+let sectionPoints = []
+let excavationPoints = []
+let sectionLine = null
+let excavationPolygon = null
+let sectionPreviewLine = null
+let excavationPreviewPolygon = null
+let currentMousePosition = null
+let sectionClippingPlanes = null
+let excavationClippingPlanes = null
+let highlightedPipelines = []
+let sectionTempEntities = []
+let excavationTempEntities = []
+let dataSourceManager = null
 
 onMounted(async () => {
   Cesium.Ion.defaultAccessToken =
@@ -104,35 +219,40 @@ onMounted(async () => {
   viewer.camera.changed.addEventListener(poke)
   window.addEventListener('resize', poke)
 
-  // 2) 3D Tiles
-  const osgbUrl = '/Assets/data/osgb/tileset.json'
-  const osgb = await Cesium.Cesium3DTileset.fromUrl(osgbUrl)
-  osgb.maximumScreenSpaceError = ui.sse
-  viewer.scene.primitives.add(osgb)
-
-  const ckUrl = '/Assets/data/ck/tileset.json'
-  const ck = await Cesium.Cesium3DTileset.fromUrl(ckUrl, {
-    classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
+  // 2) 创建数据源管理器并加载所有数据
+  dataSourceManager = new DataSourceManager(viewer)
+  
+  // 管线地形透明度设置
+  viewer.scene.screenSpaceCameraController.enableCollisionDetection = false
+  viewer.scene.globe.translucency.enabled = true
+  viewer.scene.globe.translucency.frontFaceAlpha = ui.terrainAlpha
+  viewer.scene.globe.translucency.backFaceAlpha = 0.05
+  viewer.scene.pickTranslucentDepth = true
+  
+  // 批量加载所有预定义数据源
+  console.log('开始加载数据源...')
+  const loadedSources = await dataSourceManager.loadPredefinedDataSources()
+  
+  // 获取主要建筑数据用于缩放
+  const osgb = dataSourceManager.getDataSource('osgb')
+  if (osgb) {
+    viewer.zoomTo(osgb)
+  }
+  
+  // 设置管线图例
+  const pipelineSources = dataSourceManager.getPipelineDataSources()
+  const groups = new Map()
+  pipelineSources.forEach((value, key) => {
+    groups.set(value.config.name, {
+      entities: value.entities,
+      color: value.config.color,
+      visible: true,
+      dataSource: value.dataSource
+    })
   })
-  ck.maximumScreenSpaceError = ui.sse
-  ck.modelMatrix = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, 135))
-  viewer.scene.primitives.add(ck)
-
-  viewer.zoomTo(osgb)
-  poke()
-
-  // 3) GeoJSON（只对 Tiles 分类，避免 BOTH 带来的额外管线）
-  const geoDS = await Cesium.GeoJsonDataSource.load('/Assets/data/geojson/仓库.json', {
-    clampToGround: true
-  })
-  geoDS.entities.values.forEach((e) => {
-    if (e.polygon) {
-      e.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE
-      e.polygon.material = Cesium.Color.fromCssColorString('rgba(0,255,255,0.01)')
-      e.polygon.outline = false
-    }
-  })
-  await viewer.dataSources.add(geoDS)
+  pipelineGroups.value = groups
+  
+  console.log(`数据源加载完成: ${loadedSources.size} 个数据源`)
   poke()
 
   // 4) 点击高亮 + 红点跳转（共用一个 handler）
@@ -153,14 +273,34 @@ onMounted(async () => {
   handler.setInputAction((movement) => {
     const picked = viewer.scene.pick(movement.position)
 
-    // 红点 / 任何带 url 的目标：打开页面
+    // 红点 / 任何带 url 的目标：根据类型处理
     if (picked && picked.id) {
       const ent = picked.id
       const url =
         ent.url ||
         (ent.properties && ent.properties.url && ent.properties.url.getValue && ent.properties.url.getValue())
+      const type = 
+        ent.type ||
+        (ent.properties && ent.properties.type && ent.properties.type.getValue && ent.properties.type.getValue())
+      
       if (url) {
-        window.open(url, '_blank')
+        if (type === 'marzipano') {
+          // 本地全景：使用全景查看器
+          openPanorama(url, {
+            name: `360° 全景点位`,
+            url: url,
+            type: type,
+            coordinates: { lon: ent.lon, lat: ent.lat }
+          })
+        } else {
+          // 外部链接：使用全景查看器显示外部内容
+          openPanorama(url, {
+            name: `全景点位 ${ent.lon?.toFixed(6)}, ${ent.lat?.toFixed(6)}`,
+            url: url,
+            type: type || 'external',
+            coordinates: { lon: ent.lon, lat: ent.lat }
+          })
+        }
         poke()
         return
       }
@@ -199,9 +339,9 @@ onMounted(async () => {
   const sharedDot = createDot()
 
 const redPoints = [
-    { lon: 118.22840000032071, lat: 35.10694586947898, url: 'http://192.168.2.9:3001 ' },
-    { lon: 118.22810000032071, lat: 35.10656486947898, url: 'http://172.20.10.2:3002 ' },
-    { lon: 118.227706, lat: 35.10656486947898, url: 'http://172.20.10.2:3096 ' },
+    { lon: 118.22840000032071, lat: 35.10694586947898, url: '/Assets/data/project-title/', type: 'marzipano' },
+    { lon: 118.22810000032071, lat: 35.10656486947898, url: 'http://172.20.10.2:3002', type: 'external' },
+    { lon: 118.227706, lat: 35.10656486947898, url: 'http://172.20.10.2:3096', type: 'external' },
     { lon: 118.227311, lat: 35.10656486947898, url: 'http://192.168.2.9:3003 ' },
     { lon: 118.226933, lat: 35.10656486947898, url: 'http://192.168.2.9:3097 ' },
     { lon: 118.226555, lat: 35.10656486947898, url: 'http://192.168.2.9:3004' },
@@ -328,21 +468,59 @@ const redPoints = [
     { lon: 118.22935000032071, lat: 35.10277526147898, url: 'http://192.168.2.9:3095 ' }
   ]
 
+  // 创建不同类型的点标记
+  function createPanoDot(type = 'external') {
+    const canvas = document.createElement('canvas')
+    canvas.width = 20
+    canvas.height = 20
+    const ctx = canvas.getContext('2d')
+    ctx.beginPath()
+    ctx.arc(10, 10, 8, 0, 2 * Math.PI)
+    
+    if (type === 'marzipano') {
+      // 本地全景点：蓝色带360°标识
+      ctx.fillStyle = '#007acc'
+      ctx.fill()
+      ctx.strokeStyle = 'white'
+      ctx.lineWidth = 2
+      ctx.stroke()
+      // 添加360°标识
+      ctx.fillStyle = 'white'
+      ctx.font = '8px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('360', 10, 13)
+    } else {
+      // 外部链接：传统红色
+      ctx.fillStyle = 'red'
+      ctx.fill()
+      ctx.strokeStyle = 'white'
+      ctx.lineWidth = 2
+      ctx.stroke()
+    }
+    
+    return canvas
+  }
+
   const panoDS = new Cesium.CustomDataSource('pano-dots')
   redPoints.forEach((pt) => {
     panoDS.entities.add({
       position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 0),
       billboard: {
-        image: sharedDot,
-        width: 24,
-        height: 24,
+        image: createPanoDot(pt.type),
+        width: 28,
+        height: 28,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 6000, 0.3),
         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 6500),
         heightReference: Cesium.HeightReference.NONE,
         disableDepthTestDistance: 1e6
       },
-      properties: { url: pt.url }
+      properties: { 
+        url: pt.url,
+        type: pt.type || 'external'
+      },
+      lon: pt.lon,
+      lat: pt.lat
     })
   })
   await viewer.dataSources.add(panoDS)
@@ -555,11 +733,287 @@ const redPoints = [
   // 初始加载天气图层
   await updateWeatherLayers()
 
+  // ================= 管线分析功能 =================
+
+  // 剖面分析
+  function startSectionAnalysis() {
+    if (sectionMode.value) {
+      endSectionAnalysis()
+      return
+    }
+    
+    sectionMode.value = true
+    excavationMode.value = false
+    sectionPoints = []
+    clearClipping()
+    
+    viewer.canvas.style.cursor = 'crosshair'
+    
+    // 创建预览线
+    sectionPreviewLine = viewer.entities.add({
+      polyline: {
+        positions: new Cesium.CallbackProperty(() => {
+          if (sectionPoints.length === 0) return []
+          if (sectionPoints.length === 1 && currentMousePosition) {
+            return [
+              Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
+              Cesium.Cartesian3.fromRadians(currentMousePosition.longitude, currentMousePosition.latitude, currentMousePosition.height)
+            ]
+          }
+          if (sectionPoints.length === 2) {
+            return [
+              Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
+              Cesium.Cartesian3.fromRadians(sectionPoints[1].longitude, sectionPoints[1].latitude, sectionPoints[1].height)
+            ]
+          }
+          return []
+        }, false),
+        width: 4,
+        material: Cesium.Color.YELLOW,
+        clampToGround: true
+      }
+    })
+  }
+
+  function endSectionAnalysis() {
+    sectionMode.value = false
+    sectionPoints = []
+    viewer.canvas.style.cursor = 'default'
+    
+    if (sectionPreviewLine) {
+      viewer.entities.remove(sectionPreviewLine)
+      sectionPreviewLine = null
+    }
+    
+    sectionTempEntities.forEach(entity => viewer.entities.remove(entity))
+    sectionTempEntities = []
+  }
+
+  // 挖方分析
+  function startExcavationAnalysis() {
+    if (excavationMode.value) {
+      endExcavationAnalysis()
+      return
+    }
+    
+    excavationMode.value = true
+    sectionMode.value = false
+    excavationPoints = []
+    clearClipping()
+    
+    viewer.canvas.style.cursor = 'crosshair'
+  }
+
+  function endExcavationAnalysis() {
+    excavationMode.value = false
+    excavationPoints = []
+    viewer.canvas.style.cursor = 'default'
+    
+    if (excavationPreviewPolygon) {
+      viewer.entities.remove(excavationPreviewPolygon)
+      excavationPreviewPolygon = null
+    }
+    
+    excavationTempEntities.forEach(entity => viewer.entities.remove(entity))
+    excavationTempEntities = []
+  }
+
+  // 清除所有分析
+  function clearAllAnalysis() {
+    endSectionAnalysis()
+    endExcavationAnalysis()
+    clearClipping()
+    pipelineInfo.show = false
+  }
+
+  // 清除裁剪
+  function clearClipping() {
+    viewer.scene.globe.clippingPlanes = undefined
+    if (osgb) osgb.clippingPlanes = undefined
+    if (ck) ck.clippingPlanes = undefined
+  }
+
+  // 分析剖面管线
+  function analyzeSectionPipelines(startCart, endCart) {
+    const pipelines = []
+    const startPos = Cesium.Cartesian3.fromRadians(startCart.longitude, startCart.latitude, startCart.height)
+    const endPos = Cesium.Cartesian3.fromRadians(endCart.longitude, endCart.latitude, endCart.height)
+    
+    if (dataSourceManager) {
+      const pipelineSources = dataSourceManager.getPipelineDataSources()
+      
+      pipelineSources.forEach((sourceData) => {
+        sourceData.entities.forEach(entity => {
+          if (entity.polylineVolume && entity.polylineVolume.positions) {
+            const positions = entity.polylineVolume.positions.getValue(Cesium.JulianDate.now())
+            if (positions && positions.length >= 2) {
+              for (let i = 0; i < positions.length - 1; i++) {
+                const segStart = positions[i]
+                const segEnd = positions[i + 1]
+                const distance = calculateLineSegmentDistance(startPos, endPos, segStart, segEnd)
+                
+                if (distance < 50.0) { // 50米缓冲区
+                  const properties = {}
+                  if (entity.properties) {
+                    const propertyNames = entity.properties.propertyNames || []
+                    propertyNames.forEach(name => {
+                      let value = entity.properties[name]
+                      if (value && typeof value.getValue === 'function') {
+                        value = value.getValue(Cesium.JulianDate.now())
+                      }
+                      if (value !== undefined && value !== null) {
+                        properties[name] = value
+                      }
+                    })
+                  }
+                  
+                  pipelines.push({
+                    entity: entity,
+                    name: entity.name || '未知管线',
+                    properties: properties,
+                    distance: distance
+                  })
+                  break
+                }
+              }
+            }
+          }
+        })
+      })
+    }
+    
+    return pipelines
+  }
+
+  // 计算线段距离
+  function calculateLineSegmentDistance(line1Start, line1End, line2Start, line2End) {
+    const d1 = Cesium.Cartesian3.distance(line1Start, line2Start)
+    const d2 = Cesium.Cartesian3.distance(line1Start, line2End)
+    const d3 = Cesium.Cartesian3.distance(line1End, line2Start)
+    const d4 = Cesium.Cartesian3.distance(line1End, line2End)
+    return Math.min(d1, d2, d3, d4)
+  }
+
+  // 显示管线信息
+  function showPipelineInfo(pipelines, title) {
+    pipelineInfo.title = title
+    pipelineInfo.pipelines = pipelines
+    pipelineInfo.show = true
+  }
+
+  // 管线分析鼠标事件
+  const analysisHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  
+  // 鼠标移动
+  analysisHandler.setInputAction((movement) => {
+    const ray = viewer.camera.getPickRay(movement.endPosition)
+    const cartesian = viewer.scene.globe.pick(ray, viewer.scene)
+    if (cartesian) {
+      currentMousePosition = Cesium.Cartographic.fromCartesian(cartesian)
+    } else {
+      currentMousePosition = null
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+  
+  // 点击事件
+  analysisHandler.setInputAction((movement) => {
+    if (sectionMode.value) {
+      const ray = viewer.camera.getPickRay(movement.position)
+      const cartesian = viewer.scene.globe.pick(ray, viewer.scene)
+      if (cartesian) {
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+        sectionPoints.push(cartographic)
+        
+        if (sectionPoints.length === 1) {
+          // 添加第一个点
+          const pointEntity = viewer.entities.add({
+            position: Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height),
+            point: {
+              pixelSize: 10,
+              color: Cesium.Color.YELLOW,
+              outlineColor: Cesium.Color.BLACK,
+              outlineWidth: 2
+            }
+          })
+          sectionTempEntities.push(pointEntity)
+        } else if (sectionPoints.length === 2) {
+          // 完成剖面分析
+          const pipelines = analyzeSectionPipelines(sectionPoints[0], sectionPoints[1])
+          showPipelineInfo(pipelines, '剖面分析结果')
+          endSectionAnalysis()
+        }
+      }
+    } else if (excavationMode.value) {
+      const ray = viewer.camera.getPickRay(movement.position)
+      const cartesian = viewer.scene.globe.pick(ray, viewer.scene)
+      if (cartesian) {
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+        excavationPoints.push(cartographic)
+        
+        // 添加点标记
+        const pointEntity = viewer.entities.add({
+          position: Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height),
+          point: {
+            pixelSize: 8,
+            color: Cesium.Color.CYAN,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 1
+          }
+        })
+        excavationTempEntities.push(pointEntity)
+        
+        if (excavationPoints.length >= 3) {
+          // 可以完成挖方分析
+          // 这里可以添加挖方分析逻辑
+          endExcavationAnalysis()
+        }
+      }
+    }
+    
+    poke()
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
+  // 管线图例控制
+  function togglePipelineGroup(name, visible) {
+    const group = pipelineGroups.value.get(name)
+    if (group) {
+      group.visible = visible
+      group.dataSource.show = visible
+      poke()
+    }
+  }
+
+  // 全景查看器控制
+  function openPanorama(url, info = null) {
+    panoramaModal.show = true
+    
+    // 等待组件挂载后再加载全景
+    nextTick(() => {
+      if (panoramaViewer.value) {
+        panoramaViewer.value.loadPanorama(url, info)
+      }
+    })
+  }
+
+  function closePanorama() {
+    panoramaModal.show = false
+  }
+
   // ================= 图层面板联动（只改 show/参数，不破坏你的交互） =================
   const applyToggles = () => {
-    osgb.show = ui.osgb
-    ck.show = ui.ck
-    geoDS.show = ui.geo
+    // 使用数据源管理器控制显示
+    if (dataSourceManager) {
+      dataSourceManager.toggleDataSource('osgb', ui.osgb)
+      dataSourceManager.toggleDataSource('ck', ui.ck)
+      dataSourceManager.toggleDataSource('warehouse', ui.geo)
+      
+      // 管线图层显示控制
+      const pipelineSources = dataSourceManager.getPipelineDataSources()
+      pipelineSources.forEach((value, key) => {
+        dataSourceManager.toggleDataSource(key, ui.pipelines)
+      })
+    }
+    
     panoDS.show = ui.pano
     
     // 天气图层显示控制
@@ -582,7 +1036,31 @@ const redPoints = [
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.ck, ui.geo, ui.pano], applyToggles)
+  watch(() => [ui.osgb, ui.ck, ui.geo, ui.pano, ui.pipelines], applyToggles)
+
+  // 地形透明度监听
+  watch(() => ui.terrainAlpha, (alpha) => {
+    viewer.scene.globe.translucency.frontFaceAlpha = alpha
+    
+    // 同步调整建筑透明度
+    if (dataSourceManager) {
+      const osgb = dataSourceManager.getDataSource('osgb')
+      if (osgb) {
+        osgb.style = new Cesium.Cesium3DTileStyle({
+          color: `rgba(255,255,255, ${alpha})`
+        })
+      }
+      
+      const ck = dataSourceManager.getDataSource('ck')
+      if (ck) {
+        ck.style = new Cesium.Cesium3DTileStyle({
+          color: `rgba(255,255,255, ${alpha})`
+        })
+      }
+    }
+    
+    poke()
+  })
 
   watch(() => ui.cluster, (v) => {
     panoDS.clustering.enabled = v
@@ -595,8 +1073,13 @@ const redPoints = [
   })
 
   watch(() => ui.sse, (v) => {
-    osgb.maximumScreenSpaceError = v
-    ck.maximumScreenSpaceError = v
+    if (dataSourceManager) {
+      const osgb = dataSourceManager.getDataSource('osgb')
+      if (osgb) osgb.maximumScreenSpaceError = v
+      
+      const ck = dataSourceManager.getDataSource('ck')
+      if (ck) ck.maximumScreenSpaceError = v
+    }
     poke()
   })
 
@@ -624,6 +1107,12 @@ const redPoints = [
     if (weatherUpdateInterval) {
       clearInterval(weatherUpdateInterval)
     }
+    if (analysisHandler) {
+      analysisHandler.destroy()
+    }
+    if (dataSourceManager) {
+      dataSourceManager.destroy()
+    }
   })
 })
 </script>
@@ -633,25 +1122,101 @@ const redPoints = [
 #app { margin: 0; padding: 0; }
 #cesiumContainer { width: 100vw; height: 100vh; }
 
-/* 极简图层面板（右上角） */
+/* Fluent 设计风格图层面板（右上角） */
 .layer-panel {
   position: absolute;
-  right: 12px;
-  top: 12px;
+  right: 20px;
+  top: 20px;
   z-index: 10;
-  background: rgba(0,0,0,0.55);
+  background: rgba(44, 44, 44, 0.95);
   color: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  min-width: 200px;
-  font-size: 12px;
-  backdrop-filter: blur(4px);
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 240px;
+  font-size: 13px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.layer-panel .row { margin: 6px 0; display: flex; align-items: center; gap: 6px; }
-.layer-panel .title { font-weight: 600; font-size: 13px; }
-.layer-panel .small { opacity: 0.9; }
-.layer-panel .sep { height: 1px; background: rgba(255,255,255,0.25); margin: 6px 0; }
-.layer-panel .slider { width: 100%; }
+.layer-panel .row { 
+  margin: 8px 0; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.layer-panel .row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.layer-panel .title { 
+  font-weight: 600; 
+  font-size: 15px; 
+  color: #0078d4;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0, 120, 212, 0.3);
+}
+
+.layer-panel .small { 
+  opacity: 0.85;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.layer-panel .sep { 
+  height: 1px; 
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); 
+  margin: 12px 0; 
+}
+
+.layer-panel .slider { 
+  width: 100%; 
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.layer-panel .slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #0078d4, #106ebe);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
+  transition: all 0.2s ease;
+}
+
+.layer-panel .slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(0, 120, 212, 0.6);
+}
+
+.layer-panel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0078d4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.layer-panel label {
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex: 1;
+}
+
+.layer-panel label:hover {
+  color: #4cc2ff;
+}
 
 /* 天气图层样式增强 */
 .layer-panel .row.small {
@@ -662,6 +1227,322 @@ const redPoints = [
 
 .layer-panel .row.small input[type="checkbox"] {
   transform: scale(0.9);
+}
+
+/* 管线分析面板样式 - Fluent 设计风格 */
+.analysis-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(44, 44, 44, 0.95);
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 280px;
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.analysis-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.analysis-panel h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #fefefe;
+}
+
+.analysis-panel .close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analysis-panel .close-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.control-group button {
+  background: linear-gradient(135deg, #0078d4, #106ebe);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.control-group button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.control-group button:hover {
+  background: linear-gradient(135deg, #106ebe, #005a9e);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 120, 212, 0.3);
+}
+
+.control-group button:hover::before {
+  left: 100%;
+}
+
+.control-group button.active {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
+}
+
+.control-group button:active {
+  transform: translateY(0);
+}
+
+.info-panel {
+  background: rgba(32, 32, 32, 0.96);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid rgba(0, 120, 212, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.info-content {
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #0078d4 rgba(255, 255, 255, 0.1);
+}
+
+.info-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.info-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.info-content::-webkit-scrollbar-thumb {
+  background: #0078d4;
+  border-radius: 3px;
+}
+
+.no-data {
+  color: #a0a0a0;
+  text-align: center;
+  padding: 32px 20px;
+  font-style: italic;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.pipeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pipeline-item {
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.1), rgba(16, 110, 190, 0.1));
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #0078d4;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 120, 212, 0.5), transparent);
+}
+
+.pipeline-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 212, 0.2);
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.15), rgba(16, 110, 190, 0.15));
+}
+
+.pipeline-item h4 {
+  margin: 0 0 12px 0;
+  color: #4cc2ff;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pipeline-item h4::before {
+  content: '🔧';
+  font-size: 12px;
+}
+
+.properties {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.property {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.property .label {
+  color: #b0b0b0;
+  font-weight: 500;
+  min-width: 90px;
+  font-size: 12px;
+}
+
+.property .value {
+  color: #fff;
+  text-align: right;
+  flex: 1;
+  font-weight: 400;
+  background: rgba(0, 120, 212, 0.1);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: 'Consolas', monospace;
+}
+
+/* 管线图例面板样式 - Fluent 设计风格 */
+.legend-panel {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  background: rgba(44, 44, 44, 0.95);
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 280px;
+  max-height: 40vh;
+  overflow-y: auto;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.legend-panel .panel-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #fefefe;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 6px;
+}
+
+.legend-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.legend-item label:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(2px);
+}
+
+.legend-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0078d4;
+  cursor: pointer;
+}
+
+.legend-item .swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.legend-item label:hover .swatch {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.legend-item .name {
+  color: #fff;
+  flex: 1;
+  font-weight: 500;
+}
+
+.legend-item .count {
+  color: #a0a0a0;
+  font-size: 12px;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 20px;
+  text-align: center;
 }
 </style>
 
