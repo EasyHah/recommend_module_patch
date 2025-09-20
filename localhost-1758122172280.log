@@ -1,0 +1,191 @@
+client:495 [vite] connecting...
+client:618 [vite] connected.
+weatherTestUtils.ts:247 🔧 天气功能测试工具已加载到 window.weatherTest
+weatherTestUtils.ts:248 可用方法: full(), layers(), env(), quick()
+RecommendSidebar.vue:93 RecommendSidebar 初始化 - 路由器: Object
+RecommendSidebar.vue:210 RecommendSidebar onMounted - 路由器状态: Object
+RecommendSidebar.vue:211 RecommendSidebar onMounted - 路由器push: function
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closePanorama" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closeProfileChart" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "handleProfileHover" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text or teleport root nodes. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+MapView.vue:253 开始加载数据源...
+DataSourceManager.js:35 开始加载 3D Tileset: osgb
+DataSourceManager.js:35 开始加载 3D Tileset: ck
+DataSourceManager.js:89 开始加载 GeoJSON: warehouse
+DataSourceManager.js:134 开始加载管线数据: water-pipe
+DataSourceManager.js:134 开始加载管线数据: tv-cable
+DataSourceManager.js:134 开始加载管线数据: communication
+DataSourceManager.js:134 开始加载管线数据: gas
+DataSourceManager.js:134 开始加载管线数据: sewage
+DataSourceManager.js:134 开始加载管线数据: rainwater
+DataSourceManager.js:134 开始加载管线数据: heating
+DataSourceManager.js:134 开始加载管线数据: power
+DataSourceManager.js:134 开始加载管线数据: street-light
+DataSourceManager.js:59 3D Tileset osgb 加载完成
+DataSourceManager.js:59 3D Tileset ck 加载完成
+DataSourceManager.js:104 GeoJSON warehouse 加载完成
+DataSourceManager.js:191  加载管线数据 water-pipe 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 3)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 water-pipe 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 tv-cable 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 4)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 tv-cable 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 communication 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 5)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 communication 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 sewage 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 7)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 sewage 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 rainwater 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 8)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 rainwater 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 heating 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 9)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 heating 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 power 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 10)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 power 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 street-light 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 11)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 street-light 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:191  加载管线数据 gas 失败: TypeError: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+    at DataSourceManager.createPropertyDescriptor (DataSourceManager.js:325:30)
+    at DataSourceManager.js:172:34
+    at Array.forEach (<anonymous>)
+    at DataSourceManager.loadPipelineData (DataSourceManager.js:150:26)
+    at async DataSourceManager.js:501:22
+    at async Promise.all (:5173/index 6)
+    at async DataSourceManager.loadPredefinedDataSources (DataSourceManager.js:514:5)
+    at async MapView.vue:254:25
+loadPipelineData @ DataSourceManager.js:191
+DataSourceManager.js:510  加载数据源 gas 失败: Cannot set property propertyNames of #<PropertyBag> which has only a getter
+(匿名) @ DataSourceManager.js:510
+DataSourceManager.js:515 数据源加载完成，成功加载 3/12 个数据源
+MapView.vue:275 数据源加载完成: 3 个数据源
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closePanorama" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "closeProfileChart" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Property "handleProfileHover" was accessed during render but is not defined on instance. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+runtime-core.esm-bundler.js:51  [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text or teleport root nodes. 
+  at <MapView class="map" > 
+  at <Dashboard onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
+  at <RouterView> 
+  at <App>
+warn$1 @ runtime-core.esm-bundler.js:51
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+[Violation]'requestAnimationFrame' handler 用时 <N> 毫秒
+MapView.vue:1201  [Vue warn]: onUnmounted is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+warn$1 @ runtime-core.esm-bundler.js:51
+injectHook @ runtime-core.esm-bundler.js:2829
+(匿名) @ runtime-core.esm-bundler.js:2836
+(匿名) @ MapView.vue:1201

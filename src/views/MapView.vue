@@ -43,8 +43,51 @@
 
 <script setup>  
 import * as Cesium from 'cesium';  
-import "./Widgets/widgets.css";  
+import "../Widgets/widgets.css";  
 import { onMounted, onUnmounted, ref } from 'vue';  
+// 引入工具函数
+import { 
+  safeGetEntities, 
+  extractEntityProperties, 
+  safeForEachEntity, 
+  safeGetEntityPositions
+} from '../utils/CesiumUtils.js';
+import { 
+  parseNumberLike, 
+  parseDiameterMeters, 
+  parseDepthMeters,
+  validateArray 
+} from '../utils/NumberUtils.js';
+// 引入模块化的管线分析与裁剪工具（最小侵入对接）
+import {
+  createSectionClippingPlanes as createSectionClippingPlanesUtil,
+  applyClippingPlanes,
+  clearClipping as clearClippingUtil,
+  highlightPipelines as highlightPipelinesUtil,
+  collectPipesAlongLine,
+  isPointInPolygonCartographic as isPointInPolygonUtil,
+  // 预留：更多工具后续接入
+} from '../utils/PipelineAnalysis.js'
+// 引入新的工具函数
+import {
+  safeGetEntities,
+  safeGetPropertyNames,
+  safeGetEntityPositions,
+  safeGetVolumePositions,
+  extractEntityProperties,
+  isViewerValid,
+  safeExecuteWithViewer,
+  safeForEachEntity,
+  safeClearEntities
+} from '../utils/CesiumUtils.js'
+import {
+  parseNumberLike,
+  getNumericProperty,
+  parseDepthMeters,
+  parseDiameterMeters,
+  validateArray,
+  safeCalculation
+} from '../utils/NumberUtils.js'
 
 window.CESIUM_BASE_URL = "/";  
 
@@ -52,6 +95,9 @@ window.CESIUM_BASE_URL = "/";
 let viewer = null;
 // 保存所有管线数据源的数组
 let pipelineDataSources = [];
+
+// 定义组件的响应式变量，解决模板访问undefined问题
+const closePanorama = ref(() => {});
 
 onMounted(async () => {  
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZTFmMDI1YS05MTRkLTRhMzYtYTNiZi0wYmM2YTdlYjU5ODMiLCJpZCI6MjIwNDYzLCJpYXQiOjE3MTc2NTIwMDF9.U1PZjG0GiZdXjIvHRyAGsHRMveUVQdINghXIfF6xJDE';
@@ -103,6 +149,11 @@ onMounted(async () => {
 
   // 抛物线动画函数（从 App1.vue 移植）
   function animatedParabola(twoPoints) {
+    // 使用工具函数验证数组参数
+    if (!validateArray(twoPoints, 4, 'twoPoints')) {
+      return;
+    }
+    
     const start = [twoPoints[0], twoPoints[1], 0];
     const step = 80;
     const heightProportion = 0.125;
@@ -230,9 +281,8 @@ onMounted(async () => {
     }
 
     function applyClipping(planes) {
-      viewer.scene.globe.clippingPlanes = planes;
-      if (osgb) osgb.clippingPlanes = planes;
-      if (classificationTileset) classificationTileset.clippingPlanes = planes;
+      // 适配到工具函数，统一裁剪到地形与重点 tileset
+      applyClippingPlanes(viewer, planes, [osgb, classificationTileset])
     }
 
     function createTrench() {
@@ -250,9 +300,8 @@ onMounted(async () => {
     }
 
     function clearClipping() {
-      viewer.scene.globe.clippingPlanes = undefined;
-      if (osgb) osgb.clippingPlanes = undefined;
-      if (classificationTileset) classificationTileset.clippingPlanes = undefined;
+      // 适配到工具函数
+      clearClippingUtil(viewer, [osgb, classificationTileset])
     }
 
     // 剖面分析相关变量
@@ -271,133 +320,41 @@ onMounted(async () => {
     let excavationClippingPlanes = null; // 挖方裁剪平面
     let sectionVolume = null; // 剖面区域实体
     let excavationVolume = null; // 挖方区域实体
-    let highlightedPipelines = []; // 高亮显示的管线
+  let highlightedPipelines = []; // 高亮显示的管线
     
-    // 剖面分析：沿线检测管线
-    function analyzeSectionPipelines(startCart, endCart) {
-      const pipelines = [];
-      const startPos = Cesium.Cartesian3.fromRadians(startCart.longitude, startCart.latitude, startCart.height);
-      const endPos = Cesium.Cartesian3.fromRadians(endCart.longitude, endCart.latitude, endCart.height);
-      
-      console.log('开始剖面分析，数据源数量:', viewer.dataSources._dataSources.length);
-      
-      // 遍历所有管线实体
-      viewer.dataSources._dataSources.forEach((dataSource, dsIndex) => {
-        console.log(`数据源 ${dsIndex}:`, dataSource.entities.values.length, '个实体');
-        dataSource.entities.values.forEach((entity, entityIndex) => {
-          if (entity.polylineVolume && entity.polylineVolume.positions) {
-            const positions = entity.polylineVolume.positions.getValue(Cesium.JulianDate.now());
-            if (positions && positions.length >= 2) {
-              // 检查管线是否与剖面线相交或接近
-              for (let i = 0; i < positions.length - 1; i++) {
-                const segStart = positions[i];
-                const segEnd = positions[i + 1];
-                
-                // 计算管线段与剖面线的最短距离
-                const distance = calculateLineSegmentDistance(startPos, endPos, segStart, segEnd);
-                if (distance < 50.0) { // 50米缓冲区
-                  // 正确提取属性
-                  const properties = {};
-                  if (entity.properties) {
-                    const propertyNames = entity.properties.propertyNames || Object.keys(entity.properties);
-                    propertyNames.forEach(name => {
-                      let value = entity.properties[name];
-                      if (value && typeof value.getValue === 'function') {
-                        value = value.getValue(Cesium.JulianDate.now());
-                      }
-                      if (value !== undefined && value !== null) {
-                        properties[name] = value;
-                      }
-                    });
-                  }
-                  
-                  console.log(`找到管线 ${entityIndex}:`, properties);
-                  
-                  pipelines.push({
-                    entity: entity,
-                    name: entity.name || properties['设施名'] || properties['类型'] || properties['管线类型'] || '未知管线',
-                    properties: properties,
-                    distance: distance
-                  });
-                  break;
-                }
-              }
-            }
-          }
-        });
-      });
-      
-      return pipelines;
-    }
-    
-    // 挖方分析：检测多边形内的管线
+    // 挖方分析：检测多边形内的管线（使用工具函数优化）
     function analyzeExcavationPipelines(polygonPoints) {
-      const pipelines = [];
-      
-      viewer.dataSources._dataSources.forEach((dataSource, dsIndex) => {
-        dataSource.entities.values.forEach((entity, entityIndex) => {
-          if (entity.polylineVolume && entity.polylineVolume.positions) {
-            const positions = entity.polylineVolume.positions.getValue(Cesium.JulianDate.now());
-            if (positions && positions.length >= 2) {
-              // 检查管线点是否在多边形内
-              for (let pos of positions) {
-                const cart = Cesium.Cartographic.fromCartesian(pos);
-                if (isPointInPolygon(cart, polygonPoints)) {
-                  // 正确提取属性
-                  const properties = {};
-                  if (entity.properties) {
-                    const propertyNames = entity.properties.propertyNames || Object.keys(entity.properties);
-                    propertyNames.forEach(name => {
-                      let value = entity.properties[name];
-                      if (value && typeof value.getValue === 'function') {
-                        value = value.getValue(Cesium.JulianDate.now());
-                      }
-                      if (value !== undefined && value !== null) {
-                        properties[name] = value;
-                      }
-                    });
-                  }
-                  
-                  pipelines.push({
-                    entity: entity,
-                    name: entity.name || properties['设施名'] || properties['类型'] || properties['管线类型'] || '未知管线',
-                    properties: properties
-                  });
-                  break;
-                }
-              }
-            }
-          }
-        });
-      });
-      
-      return pipelines;
-    }
-    
-    // 计算两条线段之间的最短距离
-    function calculateLineSegmentDistance(line1Start, line1End, line2Start, line2End) {
-      // 简化计算：使用端点到线段的距离
-      const d1 = Cesium.Cartesian3.distance(line1Start, line2Start);
-      const d2 = Cesium.Cartesian3.distance(line1Start, line2End);
-      const d3 = Cesium.Cartesian3.distance(line1End, line2Start);
-      const d4 = Cesium.Cartesian3.distance(line1End, line2End);
-      return Math.min(d1, d2, d3, d4);
-    }
-    
-    // 点在多边形内判断
-    function isPointInPolygon(point, polygon) {
-      let inside = false;
-      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-        const xi = polygon[i].longitude, yi = polygon[i].latitude;
-        const xj = polygon[j].longitude, yj = polygon[j].latitude;
-        
-        if (((yi > point.latitude) !== (yj > point.latitude)) &&
-            (point.longitude < (xj - xi) * (point.latitude - yi) / (yj - yi) + xi)) {
-          inside = !inside;
-        }
+      if (!validateArray(polygonPoints, 3, 'polygonPoints')) {
+        return [];
       }
-      return inside;
+      
+      // 使用安全的实体遍历器
+      return safeForEachEntity(viewer, (entity) => {
+        const positions = safeGetVolumePositions(entity);
+        if (!positions || positions.length < 2) {
+          return;
+        }
+        
+        // 检查管线点是否在多边形内
+        for (let pos of positions) {
+          const cart = Cesium.Cartographic.fromCartesian(pos);
+          if (isPointInPolygonUtil(cart, polygonPoints)) {
+            // 使用工具函数提取属性
+            const { properties } = extractEntityProperties(entity);
+            
+            return {
+              entity: entity,
+              name: entity.name || properties['设施名'] || properties['类型'] || properties['管线类型'] || '未知管线',
+              properties: properties
+            };
+          }
+        }
+      }, {
+        filterEntity: (entity) => entity.polylineVolume && entity.polylineVolume.positions
+      });
     }
+    
+    // 点在多边形内判断已由 isPointInPolygonUtil 提供
     
     // 显示管线信息
     function showPipelineInfo(pipelines, title) {
@@ -408,7 +365,7 @@ onMounted(async () => {
       infoTitle.textContent = title;
       
       let html = '';
-      if (pipelines.length === 0) {
+      if (!Array.isArray(pipelines) || pipelines.length === 0) {
         html = '<div style="color: #ccc; text-align: center; padding: 20px;">未发现管线</div>';
       } else {
         pipelines.forEach((pipeline, index) => {
@@ -637,35 +594,33 @@ onMounted(async () => {
     
     // 清除管线高亮
     function clearPipelineHighlight() {
-      highlightedPipelines.forEach(entity => {
-        if (entity.polylineVolume && entity.__origMaterial) {
-          entity.polylineVolume.material = entity.__origMaterial;
-          entity.__origMaterial = undefined;
-        }
-      });
-      highlightedPipelines = [];
+      if (Array.isArray(highlightedPipelines)) {
+        highlightedPipelines.forEach(entity => {
+          if (entity && entity.polylineVolume && entity.__origMaterial) {
+            entity.polylineVolume.material = entity.__origMaterial;
+            entity.__origMaterial = undefined;
+          }
+        });
+        highlightedPipelines = [];
+      }
     }
     
     // 高亮管线
     function highlightPipelines(pipelines) {
       clearPipelineHighlight();
       
-      pipelines.forEach(pipeline => {
-        const entity = pipeline.entity;
-        if (entity.polylineVolume) {
+      if (!Array.isArray(pipelines)) return;
+      
+      pipelines.forEach(entity => {
+        if (entity && entity.polylineVolume && entity.polylineVolume.material) {
           // 保存原始材质
-          if (!entity.__origMaterial) {
-            entity.__origMaterial = entity.polylineVolume.material;
-          }
-          
+          entity.__origMaterial = entity.polylineVolume.material;
           // 设置高亮材质
-          entity.polylineVolume.material = new Cesium.ColorMaterialProperty(
-            Cesium.Color.YELLOW.withAlpha(1.0)
-          );
-          
-          highlightedPipelines.push(entity);
+          entity.polylineVolume.material = Cesium.Color.YELLOW.withAlpha(0.8);
         }
       });
+      
+      highlightedPipelines = pipelines;
     }
     
     // 创建剖面区域
@@ -776,55 +731,9 @@ onMounted(async () => {
     
     // 创建剖面裁剪区域
     function createSectionClippingPlanes(startCart, endCart) {
-      const startPos = Cesium.Cartesian3.fromRadians(startCart.longitude, startCart.latitude, startCart.height);
-      const endPos = Cesium.Cartesian3.fromRadians(endCart.longitude, endCart.latitude, endCart.height);
-      
-      // 计算中心点
-      const center = Cesium.Cartesian3.midpoint(startPos, endPos, new Cesium.Cartesian3());
-      const centerCart = Cesium.Cartographic.fromCartesian(center);
-      
-      // 创建裁剪平面
-      const enuMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-      const inverseEnuMatrix = Cesium.Matrix4.inverse(enuMatrix, new Cesium.Matrix4());
-      
-      // 转换起点和终点到ENU坐标系
-      const startEnu = Cesium.Matrix4.multiplyByPoint(inverseEnuMatrix, startPos, new Cesium.Cartesian3());
-      const endEnu = Cesium.Matrix4.multiplyByPoint(inverseEnuMatrix, endPos, new Cesium.Cartesian3());
-      
-      // 计算方向向量
-      const direction = Cesium.Cartesian3.subtract(endEnu, startEnu, new Cesium.Cartesian3());
-      const length = Cesium.Cartesian3.magnitude(direction);
-      Cesium.Cartesian3.normalize(direction, direction);
-      
-      // 创建垂直于剖面线的平面
-      const halfLength = length / 2;
-      const halfWidth = 20.0; // 宽度
-      const halfDepth = 50.0; // 深度（调整为50m）
-      
-      function createPlane(normal, distance) {
-        const n = Cesium.Cartesian3.normalize(normal, new Cesium.Cartesian3());
-        return new Cesium.ClippingPlane(n, distance);
-      }
-      
-      // 创建裁剪平面集合
-      const planes = [
-        createPlane(direction, halfLength), // 沿线方向的平面
-        createPlane(Cesium.Cartesian3.negate(direction, new Cesium.Cartesian3()), halfLength), // 反向平面
-        createPlane(new Cesium.Cartesian3(0, 1, 0), halfWidth), // 垂直方向平面
-        createPlane(new Cesium.Cartesian3(0, -1, 0), halfWidth), // 反向垂直平面
-        createPlane(new Cesium.Cartesian3(0, 0, -1), halfDepth), // 向下平面
-      ];
-      
-      sectionClippingPlanes = new Cesium.ClippingPlaneCollection({
-        planes: planes,
-        edgeColor: Cesium.Color.YELLOW,
-        edgeWidth: 1.0,
-        modelMatrix: enuMatrix,
-        enabled: true
-      });
-      
-      // 应用裁剪平面到地形和模型
-      applyClipping(sectionClippingPlanes);
+      // 对接工具函数，保持原 API 不变
+      sectionClippingPlanes = createSectionClippingPlanesUtil(startCart, endCart)
+      applyClipping(sectionClippingPlanes)
     }
     
     // 创建挖方裁剪区域
@@ -849,7 +758,7 @@ onMounted(async () => {
       // 创建裁剪平面
       const planes = [];
       
-      // 为多边形的每条边创建裁剪平面
+      // 为多边形的每条边创建裁剪平面（在 ENU 下）
       for (let i = 0; i < polygonPoints.length; i++) {
         const currentPoint = polygonPoints[i];
         const nextPoint = polygonPoints[(i + 1) % polygonPoints.length];
@@ -860,13 +769,15 @@ onMounted(async () => {
         // 转换到ENU坐标系
         const currentEnu = Cesium.Matrix4.multiplyByPoint(inverseEnuMatrix, currentPos, new Cesium.Cartesian3());
         const nextEnu = Cesium.Matrix4.multiplyByPoint(inverseEnuMatrix, nextPos, new Cesium.Cartesian3());
-        
-        // 计算法向量（朝向多边形内部）
+
+        // 边向量 (x, y) 并得到朝向多边形内部的法向量
+        const edgeVector = Cesium.Cartesian3.subtract(nextEnu, currentEnu, new Cesium.Cartesian3());
         const normal = new Cesium.Cartesian3(-edgeVector.y, edgeVector.x, 0);
-        
-        // 计算距离
+
+        // 归一化法向量，并计算平面距离
+        Cesium.Cartesian3.normalize(normal, normal);
         const distance = Cesium.Cartesian3.dot(currentEnu, normal);
-        
+
         planes.push(new Cesium.ClippingPlane(normal, distance));
       }
       
@@ -896,8 +807,8 @@ onMounted(async () => {
     const ck=viewer.dataSources.add(Cesium.GeoJsonDataSource.load('/Assets/data/geojson/仓库.json', {
       clampToGround: true // 保证贴地
     })).then(function (dataSource) {
-      // 遍历实体，设置 classificationType
-      const entities = dataSource.entities.values;
+      // 遍历实体，设置 classificationType（健壮性处理）
+      const entities = (dataSource && dataSource.entities && dataSource.entities.values) || [];
       for (let i = 0; i < entities.length; i++) {
         const entity = entities[i];
         if (entity.polygon) {
@@ -979,16 +890,133 @@ const pipelines = [
   
 ];
 
+  // 加载管线（确保 UTF-8 解码 + 完整属性提取）
+  pipelines.forEach(async (p) => {
+    try {
+      // 检查viewer是否仍然存在
+      if (!viewer || viewer.isDestroyed()) {
+        return;
+      }
+      
+      // 使用fetch API获取数据并手动解码
+      const response = await fetch(p.url);
+      if (!response.ok) {
+        throw new Error(`网络响应错误: ${response.status}`);
+      }
+      
+      const arrayBuffer = await response.arrayBuffer();
+      const text = new TextDecoder('utf-8').decode(arrayBuffer);
+      const geoJsonData = JSON.parse(text);
+
+      // 加载GeoJSON数据源
+      const dataSource = await Cesium.GeoJsonDataSource.load(geoJsonData, { 
+        clampToGround: false 
+      });
+      
+      // 再次检查viewer是否仍然存在
+      if (!viewer || viewer.isDestroyed()) {
+        if (!dataSource.isDestroyed()) {
+          dataSource.destroy();
+        }
+        return;
+      }
+      
+      viewer.dataSources.add(dataSource);
+      
+      // 隐藏原始数据源的实体
+      dataSource.show = false;
+
+      // 处理每个实体
+      const entities = dataSource.entities && dataSource.entities.values ? dataSource.entities.values : [];
+      entities.forEach((entity) => {
+        // 检查viewer是否仍然存在
+        if (!viewer || viewer.isDestroyed()) {
+          return;
+        }
+        
+        if (entity.polyline) {
+          // 使用工具函数提取属性
+          const { properties, propertiesRaw } = extractEntityProperties(entity);
+
+          // 使用工具函数获取管线位置
+          const positions = safeGetEntityPositions(entity);
+          if (!positions) {
+            console.warn('跳过无效的管线位置数据');
+            return;
+          }
+
+          // 使用工具函数解析管线参数
+          const startDepth = parseDepthMeters(properties, ['起点埋', '起点埋深', 'startDepth', 'StartDepth'], p.depth);
+          const endDepth = parseDepthMeters(properties, ['终点埋', '终点埋深', 'endDepth', 'EndDepth'], p.depth);
+          const diameterMeters = parseDiameterMeters(properties, propertiesRaw, p.diameter);
+
+          // 基于起终埋深进行沿线插值，得到地下位置
+          const undergroundPositions = computeUndergroundPositions(positions, startDepth, endDepth);
+
+          // 创建管线截面形状
+          function createCircleShape(radius) {
+            const shape = [];
+            for (let i = 0; i < 16; i++) {
+              const angle = (i / 16) * 2 * Math.PI;
+              shape.push(new Cesium.Cartesian2(Math.cos(angle) * radius, Math.sin(angle) * radius));
+            }
+            return shape;
+          }
+
+          // 检查viewer是否仍然存在
+          if (!viewer || viewer.isDestroyed()) {
+            return;
+          }
+          
+          // 创建自定义管线实体
+          const pipelineEntity = viewer.entities.add({
+            name: properties["设施名"] || p.name || '管线',
+            polylineVolume: {
+              positions: undergroundPositions,
+              shape: createCircleShape(diameterMeters / 2),
+              material: p.color
+            },
+            // 存储原始属性供后续使用
+            properties: properties,
+            // 完整的属性描述（黑色字体）
+            description: createPropertyDescription(properties)
+          });
+
+          // 加入分组并刷新图例面板
+          addToPipelineGroup(p.name || '管线', p.color, pipelineEntity);
+
+          // 直径异常诊断（> 0.6m 记录）
+          if (diameterMeters > 0.6) {
+            console.warn('大口径管线', {
+              name: pipelineEntity.name,
+              diameterMeters,
+              raw: {
+                管径: propertiesRaw['管径'],
+                直径: propertiesRaw['直径'],
+                口径: propertiesRaw['口径'],
+                diameter: propertiesRaw['diameter']
+              }
+            });
+          }
+        }
+      });
+    } catch (err) {
+      console.error(`管线加载失败：${p.url}`, err);
+    }
+  });
+
 // =============== 管线分组与图例面板 ===============
 const pipelineGroups = new Map(); // key: 分组名, value: { color, entities: Entity[], visible: true }
 
 function renderLegendPanel() {
   const container = document.getElementById('legendContent');
-  if (!container) return;
+  if (!container) {
+    return;
+  }
   let html = '';
   pipelineGroups.forEach((group, name) => {
     const id = `chk_${name}`;
-    const count = group.entities.length;
+    const count = Array.isArray(group.entities) ? group.entities.length : 0;
     const color = group.color && group.color.toCssColorString ? group.color.toCssColorString() : '#00BCD4';
     html += `
       <label class="legend-item">
@@ -1008,7 +1036,9 @@ function renderLegendPanel() {
       el.addEventListener('change', (e) => {
         const checked = e.target.checked;
         group.visible = checked;
-        group.entities.forEach(ent => ent.show = checked);
+        if (Array.isArray(group.entities)) {
+          group.entities.forEach(ent => ent.show = checked);
+        }
       });
     }
   });
@@ -1020,132 +1050,14 @@ function addToPipelineGroup(groupName, color, entity) {
     group = { color, entities: [], visible: true };
     pipelineGroups.set(groupName, group);
   }
+  if (!Array.isArray(group.entities)) {
+    group.entities = [];
+  }
   group.entities.push(entity);
   renderLegendPanel();
 }
 
-// 加载管线（确保 UTF-8 解码 + 完整属性提取）
-pipelines.forEach(async (p) => {
-  try {
-    // 检查viewer是否仍然存在
-    if (!viewer || viewer.isDestroyed()) {
-      return;
-    }
-    
-    // 使用fetch API获取数据并手动解码
-    const response = await fetch(p.url);
-    if (!response.ok) {
-      throw new Error(`网络响应错误: ${response.status}`);
-    }
-    
-    const arrayBuffer = await response.arrayBuffer();
-    const text = new TextDecoder('utf-8').decode(arrayBuffer);
-    const geoJsonData = JSON.parse(text);
 
-    // 加载GeoJSON数据源
-    const dataSource = await Cesium.GeoJsonDataSource.load(geoJsonData, { 
-      clampToGround: false 
-    });
-    
-    // 再次检查viewer是否仍然存在
-    if (!viewer || viewer.isDestroyed()) {
-      if (!dataSource.isDestroyed()) {
-        dataSource.destroy();
-      }
-      return;
-    }
-    
-    viewer.dataSources.add(dataSource);
-    
-    // 隐藏原始数据源的实体
-    dataSource.show = false;
-
-    // 处理每个实体
-    dataSource.entities.values.forEach((entity) => {
-      // 检查viewer是否仍然存在
-      if (!viewer || viewer.isDestroyed()) {
-        return;
-      }
-      
-      if (entity.polyline) {
-        // 提取所有属性（在后续也要使用）
-        const properties = {};
-        const propertiesRaw = {};
-        if (entity.properties) {
-          const propertyNames = entity.properties.propertyNames || 
-                               Object.keys(entity.properties);
-          propertyNames.forEach(name => {
-            let value = entity.properties[name];
-            if (value && typeof value.getValue === 'function') {
-              value = value.getValue(Cesium.JulianDate.now());
-            }
-            propertiesRaw[name] = value;
-            properties[name] = value != null ? value.toString() : '(无数据)';
-          });
-        }
-
-        // 获取管线位置
-        const positions = entity.polyline.positions.getValue(Cesium.JulianDate.now());
-
-        // 基于属性表解析起点/终点埋深与管径（单位：米），有缺省则回落到预设
-        const startDepth = parseDepthMeters(properties, ['起点埋', '起点埋深', 'startDepth', 'StartDepth'], p.depth);
-        const endDepth = parseDepthMeters(properties, ['终点埋', '终点埋深', 'endDepth', 'EndDepth'], p.depth);
-        const diameterMeters = parseDiameterMeters(properties, propertiesRaw, p.diameter);
-
-        // 基于起终埋深进行沿线插值，得到地下位置
-        const undergroundPositions = computeUndergroundPositions(positions, startDepth, endDepth);
-
-        // 创建管线截面形状
-        function createCircleShape(radius) {
-          const shape = [];
-          for (let i = 0; i < 16; i++) {
-            const angle = (i / 16) * 2 * Math.PI;
-            shape.push(new Cesium.Cartesian2(Math.cos(angle) * radius, Math.sin(angle) * radius));
-          }
-          return shape;
-        }
-
-        // 检查viewer是否仍然存在
-        if (!viewer || viewer.isDestroyed()) {
-          return;
-        }
-        
-        // 创建自定义管线实体
-        const pipelineEntity = viewer.entities.add({
-          name: properties["设施名"] || p.name || '管线',
-          polylineVolume: {
-            positions: undergroundPositions,
-            shape: createCircleShape(diameterMeters / 2),
-            material: p.color
-          },
-          // 存储原始属性供后续使用
-          properties: properties,
-          // 完整的属性描述（黑色字体）
-          description: createPropertyDescription(properties)
-        });
-
-        // 加入分组并刷新图例面板
-        addToPipelineGroup(p.name || '管线', p.color, pipelineEntity);
-
-        // 直径异常诊断（> 0.6m 记录）
-        if (diameterMeters > 0.6) {
-          console.warn('大口径管线', {
-            name: pipelineEntity.name,
-            diameterMeters,
-            raw: {
-              管径: propertiesRaw['管径'],
-              直径: propertiesRaw['直径'],
-              口径: propertiesRaw['口径'],
-              diameter: propertiesRaw['diameter']
-            }
-          });
-        }
-      }
-    });
-  } catch (err) {
-    console.error(`管线加载失败：${p.url}`, err);
-  }
-});
 
 // 创建属性描述HTML（黑色字体版本）
 function createPropertyDescription(properties) {
@@ -1222,11 +1134,11 @@ function createPropertyDescription(properties) {
         </div>
         <div class="property">
           <span class="label">管线数量:</span>
-          <span class="value">${pipelines.length} 条</span>
+          <span class="value">${Array.isArray(pipelines) ? pipelines.length : 0} 条</span>
         </div>
       `;
       
-      if (pipelines.length > 0) {
+      if (Array.isArray(pipelines) && pipelines.length > 0) {
         html += '<h4 style="color: #FFD700; margin: 10px 0;">管线详情:</h4>';
         pipelines.forEach((pipeline, index) => {
           const props = pipeline.properties;
@@ -1258,103 +1170,7 @@ function createPropertyDescription(properties) {
       infoPanel.style.display = 'block';
     }
     
-      // —— 属性解析与几何计算辅助函数 ——
-// 将任意值解析为数字（去除单位与空白），失败则返回 NaN
-function parseNumberLike(value) {
-  if (value == null) return NaN;
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    // 去掉常见单位与中文描述
-    const sanitized = trimmed
-      .replace(/毫米|mm/gi, '')
-      .replace(/厘米|cm/gi, '')
-      .replace(/米|m/gi, '')
-      .replace(/长度|管径|直径|起点埋|终点埋|口径|DN/gi, '')
-      .replace(/[：:]/g, '')
-      .replace(/[^0-9+\-.]/g, '') // 保留数字/+-/.
-      .trim();
-    const n = Number(sanitized);
-    return Number.isFinite(n) ? n : NaN;
-  }
-  return NaN;
-}
-
-// 从属性集合中按候选键读取数字；按需应用转换器
-function getNumericProperty(properties, candidateKeys, defaultValue, transformFn) {
-  for (let i = 0; i < candidateKeys.length; i++) {
-    const key = candidateKeys[i];
-    if (Object.prototype.hasOwnProperty.call(properties, key)) {
-      const raw = properties[key];
-      let num = parseNumberLike(raw);
-      if (!Number.isFinite(num)) continue;
-      if (typeof transformFn === 'function') {
-        num = transformFn(num, raw);
-      }
-      return num;
-    }
-  }
-  return defaultValue;
-}
-
-// 解析管径（尽量转换为米）。经验规则：>50 认为是毫米；>5 可能是厘米；否则按米
-function parseDiameterMeters(properties, propertiesRaw, fallbackRaw) {
-  const candidateKeys = ['管径', '直径', '口径', 'diameter', 'Diameter', 'DIAMETER'];
-  const val = getNumericProperty(properties, candidateKeys, undefined);
-  // 解析 fallback：如果配置中给的是较大的数，按毫米/厘米规则估计；否则认为是米
-  let fallbackMeters = 0.2; // 安全默认 20cm
-  if (Number.isFinite(fallbackRaw)) {
-    if (fallbackRaw > 50) fallbackMeters = fallbackRaw / 1000; // mm→m
-    else if (fallbackRaw > 5) fallbackMeters = fallbackRaw / 100; // cm→m
-    else fallbackMeters = fallbackRaw; // m
-  }
-
-  // 优先用原始字符串解析，支持 200x200、300×400、DN300 等
-  let primaryFromRaw = undefined;
-  let rawUnitHint = '';
-  for (const k of candidateKeys) {
-    const raw = propertiesRaw && propertiesRaw[k];
-    if (typeof raw === 'string') {
-      rawUnitHint += raw;
-      const matches = raw.match(/\d+(?:\.\d+)?/g);
-      if (matches && matches.length > 0) {
-        primaryFromRaw = Number(matches[0]); // 取第一个数字，如 200x200 取 200
-        break;
-      }
-    } else if (typeof raw === 'number' && Number.isFinite(raw)) {
-      primaryFromRaw = raw;
-      break;
-    }
-  }
-
-  const base = Number.isFinite(primaryFromRaw) ? primaryFromRaw : val;
-  if (!Number.isFinite(base)) return fallbackMeters;
-
-  let meters = base;
-  // 如果原始字符串中包含 DNxxx，优先认为是毫米
-  for (const k of candidateKeys) {
-    const raw = propertiesRaw && propertiesRaw[k];
-    if (typeof raw === 'string' && /DN\s*\d+/i.test(raw)) {
-      meters = base / 1000;
-      break;
-    }
-  }
-  if (/mm/i.test(rawUnitHint) || meters > 50) meters = meters / 1000;      // 毫米 → 米
-  else if (/cm/i.test(rawUnitHint) || meters > 5) meters = meters / 100;   // 厘米 → 米
-  // 合理范围夹紧：2cm ~ 2m
-  meters = Math.min(Math.max(meters, 0.02), 2.0);
-  return meters;
-}
-
-// 解析埋深，单位按米处理（若检测到毫米/厘米同上转换）
-function parseDepthMeters(properties, candidateKeys, fallbackMeters) {
-  const val = getNumericProperty(properties, candidateKeys, undefined);
-  if (val == null) return fallbackMeters;
-  if (!Number.isFinite(val)) return fallbackMeters;
-  if (val > 50) return val / 1000; // 毫米 → 米
-  if (val > 5) return val / 100;   // 厘米 → 米
-  return val;                      // 米
-}
+      // —— 几何计算辅助函数 ——
 
 // 根据起终埋深按路径长度线性插值每个顶点的埋深，返回新的地下位置数组
 function computeUndergroundPositions(positions, startDepthM, endDepthM) {
@@ -1683,63 +1499,21 @@ handler.setInputAction(function (movement) {
     return { total, samples: result };
   }
 
-  function getPolylineVolumeRadiusMeters(entity) {
-    try {
-      const shape = entity.polylineVolume.shape.getValue?.(Cesium.JulianDate.now()) || entity.polylineVolume.shape;
-      if (Array.isArray(shape) && shape.length > 0) {
-        const maxR = shape.reduce((m, c) => Math.max(m, Math.sqrt(c.x * c.x + c.y * c.y)), 0);
-        return maxR; // 已是米
-      }
-    } catch (e) {}
-    return 0.1;
-  }
-
-  function projectPointOnLine(startPos, endPos, point) {
-    const ab = Cesium.Cartesian3.subtract(endPos, startPos, new Cesium.Cartesian3());
-    const ap = Cesium.Cartesian3.subtract(point, startPos, new Cesium.Cartesian3());
-    const abLen2 = Cesium.Cartesian3.dot(ab, ab);
-    if (abLen2 === 0) return 0;
-    const t = Cesium.Cartesian3.dot(ap, ab) / abLen2;
-    return Math.min(Math.max(t, 0), 1);
-  }
+  // getPolylineVolumeRadiusMeters / projectPointOnLine 已不再需要，逻辑并入工具函数
 
   function collectPipesOnProfile(startCart, endCart, corridorHalfWidth = 25.0) {
-    const startPos = Cesium.Cartesian3.fromRadians(startCart.longitude, startCart.latitude, startCart.height);
-    const endPos = Cesium.Cartesian3.fromRadians(endCart.longitude, endCart.latitude, endCart.height);
-    const total = Cesium.Cartesian3.distance(startPos, endPos);
-    const items = [];
-    viewer.entities.values.filter(e => e.polylineVolume).forEach(pipe => {
-      const pos = pipe.polylineVolume.positions.getValue?.(Cesium.JulianDate.now()) || pipe.polylineVolume.positions;
-      if (!Array.isArray(pos) || pos.length < 2) return;
-      for (let i = 0; i < pos.length; i++) {
-        const p = pos[i];
-        // 到剖线的最近距离（近似：与端点的最小距离判定 + 走向投影）
-        const d = Cesium.Cartesian3.distance(p, Cesium.Cartesian3.closestPointOnLine?.(startPos, endPos, p) || startPos);
-        // 简化：如果没有 closestPointOnLine，使用投影法近似
-        let projT;
-        if (!Cesium.Cartesian3.closestPointOnLine) {
-          projT = projectPointOnLine(startPos, endPos, p);
-        }
-        if (d <= corridorHalfWidth || projT >= 0 && projT <= 1) {
-          const carto = Cesium.Cartographic.fromCartesian(p);
-          const groundH = viewer.scene.globe.getHeight(carto) || 0;
-          const radius = getPolylineVolumeRadiusMeters(pipe);
-          const t = projectPointOnLine(startPos, endPos, p);
-          items.push({
-            entity: pipe,
-            name: pipe.name || '管线',
-            objectId: pipe.properties?.ObjectId || pipe.properties?.OBJECTID || pipe.properties?.id || '',
-            distance: t * total,
-            groundH,
-            pipeH: carto.height,
-            radius,
-            material: (pipe.properties && (pipe.properties['材质'] || pipe.properties['材料'] || pipe.properties['material'])) || ''
-          });
-          break;
-        }
-      }
+    // 直接使用模块化工具函数，保持返回结构兼容 buildProfileChart 使用
+    const { total, items } = collectPipesAlongLine(viewer, startCart, endCart, corridorHalfWidth);
+    // 补充 buildProfileChart 依赖的字段（objectId/material）
+    const mapped = items.map(it => {
+      const props = it.properties || {};
+      return {
+        ...it,
+        objectId: props.ObjectId || props.OBJECTID || props.id || '',
+        material: props['材质'] || props['材料'] || props['material'] || ''
+      };
     });
-    return { total, items };
+    return { total, items: mapped };
   }
 
   function ensureProfileChart() {
@@ -1852,9 +1626,12 @@ handler.setInputAction(function (movement) {
 
 });
 
-
-
-  
+// 组件卸载时清理资源
+onUnmounted(() => {
+  if (viewer && !viewer.isDestroyed()) {
+    viewer.destroy();
+  }
+});
 
 /* viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(event) {
 

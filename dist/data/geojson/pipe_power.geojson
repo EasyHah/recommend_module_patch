@@ -1,0 +1,58 @@
+{
+  "type": "FeatureCollection",
+  "name": "pipe_power",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "p1",
+      "properties": {
+        "pid": "p1",
+        "voltage": "110kV",
+        "cableType": "XLPE",
+        "install": "2016-03-12",
+        "state": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.3876,
+            39.8985,
+            -8
+          ],
+          [
+            116.3927,
+            39.8994,
+            -8
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "p2",
+      "properties": {
+        "pid": "p2",
+        "voltage": "10kV",
+        "cableType": "XLPE",
+        "install": "2019-11-05",
+        "state": "maintenance"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.3894,
+            39.9024,
+            -8
+          ],
+          [
+            116.3921,
+            39.9009,
+            -8
+          ]
+        ]
+      }
+    }
+  ]
+}

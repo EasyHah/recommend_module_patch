@@ -2,7 +2,7 @@
   <div ref="mapEl" class="amap-container"></div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch, defineExpose } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 type LngLat = { lng:number; lat:number }
 type Mode = 'driving' | 'walking' | 'riding' | 'transit' | 'truck'
