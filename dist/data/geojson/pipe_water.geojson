@@ -1,0 +1,87 @@
+{
+  "type": "FeatureCollection",
+  "name": "pipe_water",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "w1",
+      "properties": {
+        "pid": "w1",
+        "pipeType": "main",
+        "diameter_mm": 400,
+        "material": "ductile_iron",
+        "install": "2018-06-01",
+        "state": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.387,
+            39.9,
+            -5
+          ],
+          [
+            116.393,
+            39.9,
+            -5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "w2",
+      "properties": {
+        "pid": "w2",
+        "pipeType": "service",
+        "diameter_mm": 150,
+        "material": "PVC",
+        "install": "2021-04-15",
+        "state": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.39,
+            39.897,
+            -5
+          ],
+          [
+            116.39,
+            39.903,
+            -5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "w3",
+      "properties": {
+        "pid": "w3",
+        "pipeType": "main",
+        "diameter_mm": 300,
+        "material": "steel",
+        "install": "2015-09-10",
+        "state": "planned"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.387,
+            39.897,
+            -6
+          ],
+          [
+            116.3921,
+            39.9015,
+            -6
+          ]
+        ]
+      }
+    }
+  ]
+}

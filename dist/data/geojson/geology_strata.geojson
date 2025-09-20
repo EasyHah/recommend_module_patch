@@ -1,0 +1,117 @@
+{
+  "type": "FeatureCollection",
+  "name": "geology_strata",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "geo1",
+      "properties": {
+        "layer": "Fill",
+        "desc": "人工填土",
+        "year": 2010,
+        "status": "mapped"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              116.3876,
+              39.8976
+            ],
+            [
+              116.3906,
+              39.8976
+            ],
+            [
+              116.3906,
+              39.8994
+            ],
+            [
+              116.3876,
+              39.8994
+            ],
+            [
+              116.3876,
+              39.8976
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "geo2",
+      "properties": {
+        "layer": "Alluvium",
+        "desc": "全新统冲洪积层",
+        "year": 2012,
+        "status": "mapped"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              116.3891,
+              39.899699999999996
+            ],
+            [
+              116.3921,
+              39.899699999999996
+            ],
+            [
+              116.3921,
+              39.9018
+            ],
+            [
+              116.3891,
+              39.9018
+            ],
+            [
+              116.3891,
+              39.899699999999996
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "geo3",
+      "properties": {
+        "layer": "Bedrock",
+        "desc": "基岩出露区",
+        "year": 2008,
+        "status": "inferred"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              116.3882,
+              39.9006
+            ],
+            [
+              116.49,
+              39.9006
+            ],
+            [
+              116.49,
+              39.902699999999996
+            ],
+            [
+              116.3882,
+              39.902699999999996
+            ],
+            [
+              116.3882,
+              39.9006
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# 请将 YOLO ONNX 模型文件放置在此目录
+
+## 快速开始
+
+1. 下载 YOLOv8n ONNX 模型:
+   ```bash
+   wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.onnx
+   ```
+
+2. 将模型文件重命名为 `yolov8n.onnx` 并放置在此目录
+
+3. 刷新页面并点击"开始识别"按钮
+
+## 注意事项
+
+- 模型文件通常较大(6-50MB)，首次加载需要时间
+- 确保网络连接稳定以完成模型下载
+- 支持的格式: .onnx
+
+详细说明请参考 README.md 文件。

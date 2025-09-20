@@ -12,8 +12,10 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@creatorsn/vfluent3": "^0.3.7",
+    "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
     "cesium": "^1.114.0",
     "echarts": "^5.6.0",
+    "onnxruntime-web": "^1.22.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"

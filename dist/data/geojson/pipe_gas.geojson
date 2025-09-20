@@ -1,0 +1,58 @@
+{
+  "type": "FeatureCollection",
+  "name": "pipe_gas",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "g1",
+      "properties": {
+        "pid": "g1",
+        "grade": "A",
+        "pressure": "0.4MPa",
+        "install": "2017-07-20",
+        "state": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.3873,
+            39.9003,
+            -6
+          ],
+          [
+            116.3918,
+            39.9018,
+            -6
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "g2",
+      "properties": {
+        "pid": "g2",
+        "grade": "B",
+        "pressure": "0.2MPa",
+        "install": "2020-02-10",
+        "state": "abandoned"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            116.3909,
+            39.8973,
+            -6
+          ],
+          [
+            116.3888,
+            39.9006,
+            -6
+          ]
+        ]
+      }
+    }
+  ]
+}

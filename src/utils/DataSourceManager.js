@@ -138,7 +138,10 @@ export class DataSourceManager {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
-      const geojson = await response.json()
+      // 使用 TextDecoder 提升中文与 BOM 兼容性
+      const arrayBuffer = await response.arrayBuffer()
+      const text = new TextDecoder('utf-8').decode(arrayBuffer)
+      const geojson = JSON.parse(text)
       const dataSource = new Cesium.CustomDataSource(config.name || id)
       const entities = []
 
@@ -151,16 +154,38 @@ export class DataSourceManager {
                 Cesium.Cartesian3.fromDegrees(coord[0], coord[1], -config.depth || 0)
               )
               
+              // 提取与规范化属性，用于后续显示与图例
+              const properties = {}
+              const propertiesRaw = feature.properties || {}
+              Object.keys(propertiesRaw).forEach((k) => {
+                const v = propertiesRaw[k]
+                properties[k] = v != null ? String(v) : '(无数据)'
+              })
+
+              // 解析直径与起/终埋深（单位尽量转为米），提供合理兜底
+              const diameterMeters = parseDiameterMeters(properties, propertiesRaw, config.diameter)
+              const startDepth = parseDepthMeters(properties, ['起点埋', '起点埋深', 'startDepth', 'StartDepth'], config.depth)
+              const endDepth = parseDepthMeters(properties, ['终点埋', '终点埋深', 'endDepth', 'EndDepth'], config.depth)
+
+              // 依据起终埋深对沿线位置进行线性插值，得到地下位置序列
+              const undergroundPositions = computeUndergroundPositions(
+                positions,
+                startDepth,
+                endDepth
+              )
+
               const entity = dataSource.entities.add({
-                name: feature.properties?.设施名 || config.name || id,
+                name: properties['设施名'] || config.name || id,
                 polylineVolume: {
-                  positions: positions,
-                  shape: this.createPipeShape(config.diameter || 10),
+                  positions: undergroundPositions,
+                  shape: this.createPipeShape(diameterMeters),
                   material: Cesium.Color.fromCssColorString(config.color || '#00ffff').withAlpha(0.8),
                   outline: true,
                   outlineColor: Cesium.Color.fromCssColorString(config.color || '#00ffff')
                 },
-                properties: feature.properties || {}
+                // 存储规范化属性，便于 InfoBox 与后续分析使用
+                properties,
+                description: createPropertyDescription(properties)
               })
               
               entities.push(entity)
@@ -198,6 +223,9 @@ export class DataSourceManager {
     
     return positions
   }
+
+  // 注意：以下辅助函数为文件内使用的纯函数实现，放置在类外更合适；
+  // 但为避免改动导出结构，这里内联定义为文件级函数（见文末）。
 
   /**
    * 批量加载预定义数据源
@@ -450,4 +478,182 @@ export class DataSourceManager {
     this.loading.clear()
     console.log('数据源管理器已清理')
   }
+}
+
+// —— 属性解析与几何辅助（从外部仓库提炼并适配）——
+function parseNumberLike(value) {
+  if (value == null) return NaN
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    const sanitized = trimmed
+      .replace(/毫米|mm/gi, '')
+      .replace(/厘米|cm/gi, '')
+      .replace(/米|m/gi, '')
+      .replace(/长度|管径|直径|起点埋|终点埋|口径|DN/gi, '')
+      .replace(/[：:]/g, '')
+      .replace(/[^0-9+\-.]/g, '')
+      .trim()
+    const n = Number(sanitized)
+    return Number.isFinite(n) ? n : NaN
+  }
+  return NaN
+}
+
+function getNumericProperty(properties, candidateKeys, defaultValue, transformFn) {
+  for (let i = 0; i < candidateKeys.length; i++) {
+    const key = candidateKeys[i]
+    if (Object.prototype.hasOwnProperty.call(properties, key)) {
+      const raw = properties[key]
+      let num = parseNumberLike(raw)
+      if (!Number.isFinite(num)) continue
+      if (typeof transformFn === 'function') {
+        num = transformFn(num, raw)
+      }
+      return num
+    }
+  }
+  return defaultValue
+}
+
+function parseDiameterMeters(properties, propertiesRaw, fallbackRaw) {
+  const candidateKeys = ['管径', '直径', '口径', 'diameter', 'Diameter', 'DIAMETER']
+  const val = getNumericProperty(properties, candidateKeys, undefined)
+
+  let fallbackMeters = 0.2 // 安全默认 20cm
+  if (Number.isFinite(fallbackRaw)) {
+    if (fallbackRaw > 50) fallbackMeters = fallbackRaw / 1000 // mm→m
+    else if (fallbackRaw > 5) fallbackMeters = fallbackRaw / 100 // cm→m
+    else fallbackMeters = fallbackRaw // m
+  }
+
+  let primaryFromRaw = undefined
+  let rawUnitHint = ''
+  for (const k of candidateKeys) {
+    const raw = propertiesRaw && propertiesRaw[k]
+    if (typeof raw === 'string') {
+      rawUnitHint += raw
+      const matches = raw.match(/\d+(?:\.\d+)?/g)
+      if (matches && matches.length > 0) {
+        primaryFromRaw = Number(matches[0])
+        break
+      }
+    } else if (typeof raw === 'number' && Number.isFinite(raw)) {
+      primaryFromRaw = raw
+      break
+    }
+  }
+
+  const base = Number.isFinite(primaryFromRaw) ? primaryFromRaw : val
+  if (!Number.isFinite(base)) return fallbackMeters
+
+  let meters = base
+  for (const k of candidateKeys) {
+    const raw = propertiesRaw && propertiesRaw[k]
+    if (typeof raw === 'string' && /DN\s*\d+/i.test(raw)) {
+      meters = base / 1000
+      break
+    }
+  }
+  if (/mm/i.test(rawUnitHint) || meters > 50) meters /= 1000
+  else if (/cm/i.test(rawUnitHint) || meters > 5) meters /= 100
+  meters = Math.min(Math.max(meters, 0.02), 2.0)
+  return meters
+}
+
+function parseDepthMeters(properties, candidateKeys, fallbackMeters = 1) {
+  const val = getNumericProperty(properties, candidateKeys, undefined)
+  if (val == null) return fallbackMeters
+  if (!Number.isFinite(val)) return fallbackMeters
+  if (val > 50) return val / 1000 // 毫米 → 米
+  if (val > 5) return val / 100 // 厘米 → 米
+  return val
+}
+
+function computeUndergroundPositions(positions, startDepthM, endDepthM) {
+  if (!Array.isArray(positions) || positions.length === 0) return positions
+  const cartos = positions.map((p) => Cesium.Cartographic.fromCartesian(p))
+  let total = 0
+  const seg = []
+  for (let i = 1; i < cartos.length; i++) {
+    const g = new Cesium.EllipsoidGeodesic(cartos[i - 1], cartos[i])
+    const d = g.surfaceDistance || 0
+    seg.push(d)
+    total += d
+  }
+  if (total === 0) {
+    return cartos.map((c) => Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, (c.height || 0) - startDepthM))
+  }
+  let acc = 0
+  const underground = [
+    (function first() {
+      const c = cartos[0]
+      const depth = startDepthM
+      return Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, (c.height || 0) - depth)
+    })(),
+  ]
+  for (let i = 1; i < cartos.length; i++) {
+    acc += seg[i - 1]
+    const t = acc / total
+    const depth = startDepthM + (endDepthM - startDepthM) * t
+    const c = cartos[i]
+    underground.push(Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, (c.height || 0) - depth))
+  }
+  return underground
+}
+
+function createPropertyDescription(properties) {
+  let html = `
+    <div style="
+      color: #000000;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    ">
+      <h3 style="
+        margin: 0 0 15px 0;
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+        font-size: 16px;
+      ">
+        管线属性信息
+      </h3>
+      <table style="
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        color: #000000;
+      ">
+  `
+  Object.entries(properties).forEach(([key, value]) => {
+    html += `
+      <tr>
+        <th style="
+          text-align: left;
+          padding: 8px;
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          width: 30%;
+          color: #000000;
+          word-break: break-word;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        ">${key}</th>
+        <td style="
+          padding: 8px;
+          border: 1px solid #dee2e6;
+          word-break: break-word;
+          white-space: normal;
+          overflow-wrap: anywhere;
+          color: #000000;
+        ">${value}</td>
+      </tr>`
+  })
+  html += `</table></div>`
+  return html
 }
