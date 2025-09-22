@@ -1,5 +1,5 @@
 <template>  
-  <div id="cesiumContainer" ref="cesiumContainer"></div>  
+  <div id="cesiumContainer" ref="cesiumContainer" v-bind="$attrs"></div>  
   <!-- 左侧容器：上=地下管线分析，下=管线图例 -->
   <div class="left-pane">
     <div class="tool-panel">
@@ -42,7 +42,12 @@
 </template>  
 
 <script setup>  
-import * as Cesium from 'cesium';  
+import * as Cesium from 'cesium';
+
+// 禁用自动属性继承，手动处理  
+defineOptions({
+  inheritAttrs: false
+});  
 import "../Widgets/widgets.css";  
 import { onMounted, onUnmounted, ref } from 'vue';  
 // 引入工具函数
@@ -98,6 +103,18 @@ let pipelineDataSources = [];
 
 // 定义组件的响应式变量，解决模板访问undefined问题
 const closePanorama = ref(() => {});
+
+// 确保 closePanorama 方法被正确暴露给模板
+defineExpose({
+  closePanorama
+});
+
+// 组件卸载时清理资源（必须在任何异步操作之前注册）
+onUnmounted(() => {
+  if (viewer && !viewer.isDestroyed()) {
+    viewer.destroy();
+  }
+});
 
 onMounted(async () => {  
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZTFmMDI1YS05MTRkLTRhMzYtYTNiZi0wYmM2YTdlYjU5ODMiLCJpZCI6MjIwNDYzLCJpYXQiOjE3MTc2NTIwMDF9.U1PZjG0GiZdXjIvHRyAGsHRMveUVQdINghXIfF6xJDE';
@@ -1624,13 +1641,6 @@ handler.setInputAction(function (movement) {
     highlightPipelines(pipelines);
   }
 
-});
-
-// 组件卸载时清理资源
-onUnmounted(() => {
-  if (viewer && !viewer.isDestroyed()) {
-    viewer.destroy();
-  }
 });
 
 /* viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(event) {

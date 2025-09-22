@@ -71,10 +71,6 @@
       </footer>
 
       <div class="resize-handle" @mousedown="startResize" title="拖拽调整宽度"></div>
-      <VoiceAssistantFloat 
-        :visible="isOpen"
-        @command="handleVoiceCommand"
-      />
     </aside>
   </teleport>
 </template>
@@ -90,7 +86,7 @@ import { matchVendors } from '@/utils/recommendScore'
 import { enhancedMatchVendors, getWeatherRecommendations } from '@/utils/enhancedRecommendScore'
 import { recommendSidebarOpen, closeRecommend } from '@/bridge/recommendUI'
 import { getBridge, subscribeBridge, publishBridge } from '@/bridge/routeBridge'
-import VoiceAssistantFloat from '@/components/VoiceAssistantFloat.vue'
+import { onVoiceCommand } from '@/bridge/voiceBus'
 
 const router = useRouter()
 
@@ -233,6 +229,9 @@ onMounted(async () => {
       runQuery()
     })
   } catch {}
+
+  // 订阅全局语音事件
+  onVoiceCommand((e) => handleVoiceCommand(e))
 })
 
 const asideRef = ref<HTMLElement | null>(null)

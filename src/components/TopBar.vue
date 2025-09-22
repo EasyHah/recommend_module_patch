@@ -13,6 +13,7 @@
       <RouterLink class="nav-btn" :class="{ active: isActive('/') }" to="/">总览</RouterLink>
       <RouterLink class="nav-btn" :class="{ active: isActive('/scene') }" to="/scene/gu">三维场景</RouterLink>
       <RouterLink class="nav-btn" :class="{ active: isActive('/video-recognition') }" to="/video-recognition">视频识别</RouterLink>
+      <RouterLink class="nav-btn" :class="{ active: isActive('/fire-evacuation') }" to="/fire-evacuation">🔥 火灾疏散</RouterLink>
     </nav>
 
     <!-- 右：用户/标题位 -->
@@ -57,7 +58,10 @@ onBeforeUnmount(() => {
 })
 
 const route = useRoute()
-const isActive = (path: string) => route.path === path
+const isActive = (path: string) => {
+  if (path === '/') return route.path === path
+  return route.path.startsWith(path)
+}
 </script>
 
 <style scoped>

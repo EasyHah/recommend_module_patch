@@ -214,7 +214,7 @@
                 </div>
               </FloatingPanel>
 
-              <VoiceAssistantFloat :visible="true" @command="onVoiceCommandInFullscreen" />
+              
             </div>
           </div>
         </Teleport>
@@ -356,7 +356,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import FluentCard from '@/components/FluentCard.vue'
 import WeatherTooltip from '@/components/WeatherTooltip.vue'
-import VoiceAssistantFloat from '@/components/VoiceAssistantFloat.vue'
+import { onVoiceCommand } from '@/bridge/voiceBus'
 import FloatingPanel from '@/components/FloatingPanel.vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
@@ -1429,6 +1429,13 @@ onUnmounted(() => {
   // 恢复body样式
   document.body.style.overflow = ''
 })
+// 订阅全局语音命令
+onMounted(() => {
+  onVoiceCommand((e) => {
+    onVoiceCommandInFullscreen(e)
+  })
+})
+
 </script>
 
 <style scoped>

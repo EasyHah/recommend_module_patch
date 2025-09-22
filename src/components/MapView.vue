@@ -54,28 +54,23 @@
     <div class="panel-header">
       <h3>地下管线分析</h3>
     </div>
-    <div class="control-group">
-      <button @click="startSectionAnalysis" :class="{ active: sectionMode }">
-        {{ sectionMode ? '取消剖面' : '剖面分析' }}
-      </button>
-      <button @click="startExcavationAnalysis" :class="{ active: excavationMode }">
-        {{ excavationMode ? '取消挖方' : '挖方分析' }}
-      </button>
-      <button @click="clearAllAnalysis">清除分析</button>
-    </div>
-    
-    <!-- 管线信息面板 -->
+
+    <!-- 信息面板（优先显示结果） -->
     <div class="info-panel" v-if="pipelineInfo.show">
       <div class="panel-header">
         <h3>{{ pipelineInfo.title }}</h3>
         <button @click="pipelineInfo.show = false" class="close-btn">×</button>
+      </div>
+      <div class="control-group" v-if="pipelineInfo.pipelines.length > 0" style="margin-top: 8px;">
+        <button @click="exportPipelinesGeoJSON">导出 GeoJSON</button>
+        <button @click="exportPipelinesCSV">导出 CSV</button>
       </div>
       <div class="info-content">
         <div v-if="pipelineInfo.pipelines.length === 0" class="no-data">
           未发现管线
         </div>
         <div v-else class="pipeline-list">
-          <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item">
+          <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item" @click="focusPipeline(index)" style="cursor: pointer;">
             <h4>管线 {{ index + 1 }}: {{ pipeline.name }}</h4>
             <div class="properties">
               <div v-for="(value, key) in pipeline.properties" :key="key" class="property">
@@ -91,24 +86,60 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 管线图例面板（左下角） -->
-  <div class="legend-panel" v-if="ui.pipelines">
-    <div class="panel-header">
-      <h3>管线图例</h3>
-    </div>
-    <div class="legend-content">
-      <div v-for="([name, group]) in pipelineGroupEntries" :key="name" class="legend-item">
-        <label>
-          <input type="checkbox" 
-                 :checked="group.visible !== false" 
-                 @change="togglePipelineGroup(name, $event.target.checked)" />
-          <span class="swatch" :style="{ backgroundColor: group.color }"></span>
-          <span class="name">{{ name }}</span>
-          <span class="count">({{ Array.isArray(group.entities) ? group.entities.length : 0 }})</span>
-        </label>
+    <!-- 管线图例（信息面板下方，随分析面板滚动） -->
+    <div class="legend-section" v-if="ui.pipelines">
+      <div class="panel-header">
+        <h3>管线图例</h3>
       </div>
+      <div class="legend-content">
+        <div v-for="([name, group]) in pipelineGroupEntries" :key="name" class="legend-item">
+          <label>
+            <input type="checkbox" 
+                   :checked="group.visible !== false" 
+                   @change="togglePipelineGroup(name, $event.target.checked)" />
+            <span class="swatch" :style="{ backgroundColor: group.color }"></span>
+            <span class="name">{{ name }}</span>
+            <span class="count">({{ Array.isArray(group.entities) ? group.entities.length : 0 }})</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 剖面工具 -->
+    <div class="subsection">
+      <div class="sub-title">剖面工具</div>
+      <div class="control-group">
+        <button @click="startSectionAnalysis" :class="{ active: sectionMode }" title="剖面分析：依次点击两点生成剖面，并列出附近管线">
+          {{ sectionMode ? '取消剖面' : '剖面分析' }}
+        </button>
+        <div class="row small" style="margin-left: 2px;">缓冲距离：{{ ui.sectionBuffer }} m</div>
+        <input class="slider" type="range" min="10" max="200" step="5" v-model.number="ui.sectionBuffer" />
+      </div>
+    </div>
+
+    <!-- 挖方工具：聚合相关按钮，明确用途 -->
+    <div class="subsection">
+      <div class="sub-title">挖方工具</div>
+      <div class="control-group">
+        <button @click="startExcavationAnalysis" :class="{ active: excavationMode }" title="挖方分析：进入多边形绘制模式，单击加点">
+          {{ excavationMode ? '取消挖方' : '挖方分析' }}
+        </button>
+        <button @click="completeExcavation" :disabled="!excavationMode || excavationPointsCount < 3" title="完成挖方：点位≥3后生成挖方范围并展示结果">
+          完成挖方
+        </button>
+        <button @click="undoExcavationPoint" :disabled="!excavationMode || excavationPointsCount === 0" title="撤销一点：可按 Backspace/Delete 快捷键">
+          撤销一点
+        </button>
+      </div>
+      <div class="row small" v-if="excavationMode">
+        已选点：{{ excavationPointsCount }}（单击加点，双击完成，Backspace 撤销，Esc 取消）
+      </div>
+    </div>
+
+    <!-- 通用操作 -->
+    <div class="control-group">
+      <button @click="clearAllAnalysis" title="清除分析：移除临时绘制、结果列表与范围标注">清除分析</button>
     </div>
   </div>
 
@@ -130,6 +161,13 @@ import { DataSourceManager } from '@/utils/DataSourceManager.js'
 
 window.CESIUM_BASE_URL = '/'
 
+// 全局 Viewer 引用与重绘方法（requestRender）
+const viewerRef = ref(null)
+const requestRender = () => {
+  const v = viewerRef.value
+  if (v && v.scene) v.scene.requestRender()
+}
+
 const ui = reactive({
   osgb: true,
   ck: true,
@@ -146,7 +184,9 @@ const ui = reactive({
   precipitation: false,
   wind: false,
   warnings: true,
-  weatherOpacity: 70
+  weatherOpacity: 70,
+  // 剖面分析缓冲距离（米）
+  sectionBuffer: 50
 })
 
 // 管线分析状态
@@ -175,9 +215,13 @@ function togglePipelineGroup(name, visible) {
   if (group) {
     group.visible = visible
     if (group.dataSource && typeof group.dataSource.show !== 'undefined') {
-      group.dataSource.show = visible
+      // 仅当总开关开启时才真正设置显示；否则只记录状态
+      if (ui.pipelines) {
+        group.dataSource.show = visible
+      }
     }
   }
+  requestRender()
 }
 
 // 全景查看器状态
@@ -189,8 +233,11 @@ const panoramaViewer = ref(null)
 // 管线分析变量
 let sectionPoints = []
 let excavationPoints = []
+const excavationPointsCount = ref(0)
 let sectionLine = null
 let excavationPolygon = null
+let excavationResultPolygon = null
+let excavationResultLabel = null
 let sectionPreviewLine = null
 let excavationPreviewPolygon = null
 let currentMousePosition = null
@@ -200,6 +247,472 @@ let highlightedPipelines = []
 let sectionTempEntities = []
 let excavationTempEntities = []
 let dataSourceManager = null
+
+// —— 剖面/挖方分析：顶层实现，以便模板按钮可调用 ——
+function startSectionAnalysis() {
+  const viewer = viewerRef.value
+  if (!viewer) return
+  if (sectionMode.value) {
+    endSectionAnalysis()
+    return
+  }
+  sectionMode.value = true
+  excavationMode.value = false
+  sectionPoints = []
+  clearClipping()
+  viewer.canvas.style.cursor = 'crosshair'
+  // 创建预览线
+  sectionPreviewLine = viewer.entities.add({
+    polyline: {
+      positions: new Cesium.CallbackProperty(() => {
+        if (sectionPoints.length === 0) return []
+        if (sectionPoints.length === 1 && currentMousePosition) {
+          return [
+            Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
+            Cesium.Cartesian3.fromRadians(currentMousePosition.longitude, currentMousePosition.latitude, currentMousePosition.height)
+          ]
+        }
+        if (sectionPoints.length === 2) {
+          return [
+            Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
+            Cesium.Cartesian3.fromRadians(sectionPoints[1].longitude, sectionPoints[1].latitude, sectionPoints[1].height)
+          ]
+        }
+        return []
+      }, false),
+      width: 4,
+      material: Cesium.Color.YELLOW,
+      clampToGround: true
+    }
+  })
+  requestRender()
+}
+
+function endSectionAnalysis() {
+  const viewer = viewerRef.value
+  sectionMode.value = false
+  sectionPoints = []
+  if (viewer) viewer.canvas.style.cursor = 'default'
+  if (sectionPreviewLine && viewer) {
+    viewer.entities.remove(sectionPreviewLine)
+    sectionPreviewLine = null
+  }
+  if (viewer) {
+    sectionTempEntities.forEach(entity => viewer.entities.remove(entity))
+  }
+  sectionTempEntities = []
+  requestRender()
+}
+
+function startExcavationAnalysis() {
+  const viewer = viewerRef.value
+  if (!viewer) return
+  if (excavationMode.value) {
+    endExcavationAnalysis()
+    return
+  }
+  excavationMode.value = true
+  sectionMode.value = false
+  excavationPoints = []
+  excavationPointsCount.value = 0
+  clearClipping()
+  viewer.canvas.style.cursor = 'crosshair'
+  // 预览面（动态包含鼠标位置）
+  excavationPreviewPolygon = viewer.entities.add({
+    polygon: {
+      show: new Cesium.CallbackProperty(() => {
+        const pts = [...excavationPoints]
+        if (currentMousePosition) pts.push(currentMousePosition)
+        return pts.length >= 3
+      }, false),
+      hierarchy: new Cesium.CallbackProperty(() => {
+        const pts = [...excavationPoints]
+        if (currentMousePosition) pts.push(currentMousePosition)
+        if (pts.length < 3) return undefined
+        const positions = pts.map(p => Cesium.Cartesian3.fromRadians(p.longitude, p.latitude, p.height || 0))
+        return new Cesium.PolygonHierarchy(positions)
+      }, false),
+      material: Cesium.Color.CYAN.withAlpha(0.2),
+      outline: true,
+      outlineColor: Cesium.Color.CYAN
+    }
+  })
+  requestRender()
+}
+
+function endExcavationAnalysis() {
+  const viewer = viewerRef.value
+  excavationMode.value = false
+  excavationPoints = []
+  excavationPointsCount.value = 0
+  if (viewer) viewer.canvas.style.cursor = 'default'
+  if (excavationPreviewPolygon && viewer) {
+    viewer.entities.remove(excavationPreviewPolygon)
+    excavationPreviewPolygon = null
+  }
+  if (viewer) {
+    excavationTempEntities.forEach(entity => viewer.entities.remove(entity))
+  }
+  excavationTempEntities = []
+  requestRender()
+}
+
+function clearAllAnalysis() {
+  endSectionAnalysis()
+  endExcavationAnalysis()
+  clearClipping()
+  pipelineInfo.show = false
+  // 清除已完成的挖方范围
+  const viewer = viewerRef.value
+  if (viewer && excavationResultPolygon) {
+    viewer.entities.remove(excavationResultPolygon)
+    excavationResultPolygon = null
+  }
+  if (viewer && excavationResultLabel) {
+    viewer.entities.remove(excavationResultLabel)
+    excavationResultLabel = null
+  }
+  clearHighlightedPipelines()
+  requestRender()
+}
+
+function clearClipping() {
+  const viewer = viewerRef.value
+  if (viewer) viewer.scene.globe.clippingPlanes = undefined
+  // 若未来对 3DTiles 使用裁剪，这里也应清理
+  const osgb = dataSourceManager?.getDataSource?.('osgb')
+  const ck = dataSourceManager?.getDataSource?.('ck')
+  if (osgb) osgb.clippingPlanes = undefined
+  if (ck) ck.clippingPlanes = undefined
+}
+
+//（移除重复的早期实现，保留下方更精确的版本）
+
+function focusPipeline(index) {
+  const viewer = viewerRef.value
+  if (!viewer) return
+  const item = pipelineInfo.pipelines[index]
+  if (!item || !item.entity) return
+  try {
+    viewer.zoomTo(item.entity)
+    if (item.entity.polylineVolume) {
+      let count = 0
+      const blink = setInterval(() => {
+        count++
+        const on = count % 2 === 1
+        item.entity.polylineVolume.material = on ? Cesium.Color.ORANGE.withAlpha(1.0) : Cesium.Color.YELLOW.withAlpha(0.9)
+        requestRender()
+        if (count >= 6) {
+          clearInterval(blink)
+          item.entity.polylineVolume.material = Cesium.Color.YELLOW.withAlpha(0.9)
+          requestRender()
+        }
+      }, 300)
+    }
+  } catch {}
+}
+
+function exportPipelinesGeoJSON() {
+  const fc = {
+    type: 'FeatureCollection',
+    features: pipelineInfo.pipelines.map(p => entityToFeature(p.entity, p.properties, p.name))
+  }
+  const blob = new Blob([JSON.stringify(fc, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  triggerDownload(url, `${pipelineInfo.title || 'pipelines'}.geojson`)
+}
+
+function exportPipelinesCSV() {
+  const headers = ['name', ...collectPropertyKeys(pipelineInfo.pipelines)]
+  const rows = pipelineInfo.pipelines.map(p => [
+    escapeCsv(p.name || ''),
+    ...headers.slice(1).map(k => escapeCsv(p.properties?.[k] ?? ''))
+  ])
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  triggerDownload(url, `${pipelineInfo.title || 'pipelines'}.csv`)
+}
+
+function collectPropertyKeys(list) {
+  const set = new Set()
+  list.forEach(p => Object.keys(p.properties || {}).forEach(k => set.add(k)))
+  return Array.from(set)
+}
+
+function escapeCsv(v) {
+  const s = String(v)
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"'
+  return s
+}
+
+function entityToFeature(entity, props, name) {
+  let coords = []
+  try {
+    const positions = entity.polylineVolume?.positions?.getValue?.(Cesium.JulianDate.now())
+    if (positions && positions.length) {
+      coords = positions.map(c => {
+        const cart = Cesium.Cartographic.fromCartesian(c)
+        return [Cesium.Math.toDegrees(cart.longitude), Cesium.Math.toDegrees(cart.latitude), cart.height || 0]
+      })
+    }
+  } catch {}
+  return {
+    type: 'Feature',
+    properties: { name, ...(props || {}) },
+    geometry: {
+      type: 'LineString',
+      coordinates: coords
+    }
+  }
+}
+
+function triggerDownload(url, filename) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+function showPipelineInfo(pipelines, title) {
+  pipelineInfo.title = title
+  pipelineInfo.pipelines = pipelines
+  pipelineInfo.show = true
+  highlightPipelines(pipelines)
+}
+
+// —— 高亮与定位 ——
+function highlightPipelines(pipelines) {
+  clearHighlightedPipelines()
+  const viewer = viewerRef.value
+  if (!viewer) return
+  pipelines.forEach(p => {
+    const ent = p.entity
+    if (ent && ent.polylineVolume) {
+      const originalShape = ent.polylineVolume.shape
+      const original = {
+        material: ent.polylineVolume.material,
+        outlineColor: ent.polylineVolume.outlineColor,
+        outline: ent.polylineVolume.outline,
+        shape: Array.isArray(originalShape) ? originalShape.slice() : originalShape
+      }
+      highlightedPipelines.push({ entity: ent, original })
+      // 更亮的黄色 + 白色描边
+      ent.polylineVolume.material = Cesium.Color.fromCssColorString('#FFE600').withAlpha(1.0)
+      ent.polylineVolume.outline = true
+      ent.polylineVolume.outlineColor = Cesium.Color.WHITE
+      // 放大直径以强调（基于原 shape 圆截面缩放）
+      if (Array.isArray(originalShape) && originalShape.length > 0) {
+        const factor = 1.6 // 高亮加粗系数
+        ent.polylineVolume.shape = originalShape.map(v => new Cesium.Cartesian2(v.x * factor, v.y * factor))
+      }
+    }
+  })
+  requestRender()
+}
+
+function clearHighlightedPipelines() {
+  highlightedPipelines.forEach(({ entity, original }) => {
+    if (entity && entity.polylineVolume) {
+      entity.polylineVolume.material = original.material
+      entity.polylineVolume.outline = original.outline
+      entity.polylineVolume.outlineColor = original.outlineColor
+      if (original.shape) {
+        entity.polylineVolume.shape = original.shape
+      }
+    }
+  })
+  highlightedPipelines = []
+  requestRender()
+}
+
+// 简单的点在多边形内测试（射线法），输入经纬度（弧度）数组
+function cartographicInPolygon(cart, polygonCarts) {
+  const x = Cesium.Math.toDegrees(cart.longitude)
+  const y = Cesium.Math.toDegrees(cart.latitude)
+  const pts = polygonCarts.map(c => ({
+    x: Cesium.Math.toDegrees(c.longitude),
+    y: Cesium.Math.toDegrees(c.latitude)
+  }))
+  let inside = false
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y
+    const xj = pts[j].x, yj = pts[j].y
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-12) + xi)
+    if (intersect) inside = !inside
+  }
+  return inside
+}
+
+function analyzeExcavationPipelines(polygonCartographics) {
+  const pipelines = []
+  if (!dataSourceManager) return pipelines
+  const pipelineSources = dataSourceManager.getPipelineDataSources()
+  pipelineSources.forEach(sourceData => {
+    sourceData.entities.forEach(entity => {
+      if (entity.polylineVolume && entity.polylineVolume.positions) {
+        const positions = entity.polylineVolume.positions.getValue(Cesium.JulianDate.now())
+        if (!positions || positions.length === 0) return
+        // 取若干采样点判断是否落在多边形内
+        const sampleCount = Math.min(10, positions.length)
+        for (let s = 0; s < sampleCount; s++) {
+          const idx = Math.floor((s / sampleCount) * (positions.length - 1))
+          const cart = Cesium.Cartographic.fromCartesian(positions[idx])
+          if (cartographicInPolygon(cart, polygonCartographics)) {
+            const properties = {}
+            if (entity.properties) {
+              const propertyNames = entity.properties.propertyNames || []
+              propertyNames.forEach(name => {
+                let value = entity.properties[name]
+                if (value && typeof value.getValue === 'function') {
+                  value = value.getValue(Cesium.JulianDate.now())
+                }
+                if (value !== undefined && value !== null) properties[name] = value
+              })
+            }
+            pipelines.push({
+              entity,
+              name: entity.name || '未知管线',
+              properties
+            })
+            break
+          }
+        }
+      }
+    })
+  })
+  return pipelines
+}
+
+// 手动完成挖方分析（按钮或双击触发）
+function completeExcavation() {
+  if (!excavationMode.value) return
+  if (excavationPoints.length < 3) return
+  const viewer = viewerRef.value
+  if (viewer) {
+    // 绘制最终挖方范围多边形
+    const positions = excavationPoints.map(p => Cesium.Cartesian3.fromRadians(p.longitude, p.latitude, p.height || 0))
+    if (excavationResultPolygon) {
+      viewer.entities.remove(excavationResultPolygon)
+      excavationResultPolygon = null
+    }
+    excavationResultPolygon = viewer.entities.add({
+      polygon: {
+        hierarchy: new Cesium.PolygonHierarchy(positions),
+        material: Cesium.Color.CYAN.withAlpha(0.25),
+        outline: true,
+        outlineColor: Cesium.Color.CYAN,
+        clampToGround: true
+      }
+    })
+    // 自动缩放至挖方范围
+    viewer.zoomTo(excavationResultPolygon)
+    // 计算面积与周长并标注
+    const metrics = computeAreaPerimeter(excavationPoints)
+    const center = centroidOfCartographics(excavationPoints)
+    const centerPos = Cesium.Cartesian3.fromRadians(center.longitude, center.latitude, center.height || 0)
+    if (excavationResultLabel) {
+      viewer.entities.remove(excavationResultLabel)
+      excavationResultLabel = null
+    }
+    excavationResultLabel = viewer.entities.add({
+      position: centerPos,
+      label: {
+        text: `面积: ${formatArea(metrics.area)}\n周长: ${formatLength(metrics.perimeter)}`,
+        font: '14px sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: new Cesium.Cartesian2(0, -10),
+        showBackground: true,
+        backgroundColor: Cesium.Color.fromCssColorString('rgba(0,0,0,0.4)')
+      }
+    })
+  }
+  const pipelines = analyzeExcavationPipelines(excavationPoints)
+  showPipelineInfo(pipelines, '挖方分析结果')
+  endExcavationAnalysis()
+}
+
+// 撤销最后一个点（按钮或 Backspace）
+function undoExcavationPoint() {
+  if (!excavationMode.value) return
+  if (excavationPoints.length === 0) return
+  const viewer = viewerRef.value
+  excavationPoints.pop()
+  excavationPointsCount.value = excavationPoints.length
+  const last = excavationTempEntities.pop()
+  if (viewer && last) viewer.entities.remove(last)
+  requestRender()
+}
+
+// 键盘快捷键：Backspace/Delete 撤销一点
+const onKeydown = (e) => {
+  if (!excavationMode.value) return
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    e.preventDefault()
+    undoExcavationPoint()
+  } else if (e.key === 'Escape') {
+    // 取消当前绘制：仅退出模式并清理临时点/预览，不影响已完成结果
+    e.preventDefault()
+    endExcavationAnalysis()
+  }
+}
+
+// —— 计算工具 ——
+// 使用局部 ENU 平面计算面积与周长（单位：米/平方米）
+function computeAreaPerimeter(cartographics) {
+  if (!cartographics || cartographics.length < 3) return { area: 0, perimeter: 0 }
+  const origin = Cesium.Cartesian3.fromRadians(cartographics[0].longitude, cartographics[0].latitude, cartographics[0].height || 0)
+  const ellipsoid = Cesium.Ellipsoid.WGS84
+  const enu = Cesium.Transforms.eastNorthUpToFixedFrame(origin, ellipsoid)
+  const inv = Cesium.Matrix4.inverse(enu, new Cesium.Matrix4())
+  const pts = cartographics.map(c => {
+    const p = Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, c.height || 0)
+    const local = Cesium.Matrix4.multiplyByPoint(inv, p, new Cesium.Cartesian3())
+    return { x: local.x, y: local.y }
+  })
+  // 周长
+  let perimeter = 0
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i]
+    const b = pts[(i + 1) % pts.length]
+    perimeter += Math.hypot(b.x - a.x, b.y - a.y)
+  }
+  // 面积（有向面积公式）
+  let area2 = 0
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i]
+    const b = pts[(i + 1) % pts.length]
+    area2 += a.x * b.y - b.x * a.y
+  }
+  const area = Math.abs(area2) / 2
+  return { area, perimeter }
+}
+
+function centroidOfCartographics(cartographics) {
+  const len = cartographics.length
+  let lon = 0, lat = 0, h = 0
+  for (const c of cartographics) {
+    lon += c.longitude; lat += c.latitude; h += (c.height || 0)
+  }
+  return new Cesium.Cartographic(lon / len, lat / len, h / len)
+}
+
+function formatArea(a) {
+  if (a < 1e6) return `${a.toFixed(1)} m²`
+  return `${(a / 1e6).toFixed(3)} km²`
+}
+
+function formatLength(l) {
+  if (l < 1000) return `${l.toFixed(1)} m`
+  return `${(l / 1000).toFixed(3)} km`
+}
 
 onMounted(async () => {
   Cesium.Ion.defaultAccessToken =
@@ -239,6 +752,8 @@ onMounted(async () => {
   const poke = () => viewer.scene.requestRender()
   viewer.camera.changed.addEventListener(poke)
   window.addEventListener('resize', poke)
+  // 存下全局引用用于其他顶层方法
+  viewerRef.value = viewer
 
   // 2) 创建数据源管理器并加载所有数据
   dataSourceManager = new DataSourceManager(viewer)
@@ -757,102 +1272,7 @@ const redPoints = [
   // ================= 管线分析功能 =================
 
   // 剖面分析
-  function startSectionAnalysis() {
-    if (sectionMode.value) {
-      endSectionAnalysis()
-      return
-    }
-    
-    sectionMode.value = true
-    excavationMode.value = false
-    sectionPoints = []
-    clearClipping()
-    
-    viewer.canvas.style.cursor = 'crosshair'
-    
-    // 创建预览线
-    sectionPreviewLine = viewer.entities.add({
-      polyline: {
-        positions: new Cesium.CallbackProperty(() => {
-          if (sectionPoints.length === 0) return []
-          if (sectionPoints.length === 1 && currentMousePosition) {
-            return [
-              Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
-              Cesium.Cartesian3.fromRadians(currentMousePosition.longitude, currentMousePosition.latitude, currentMousePosition.height)
-            ]
-          }
-          if (sectionPoints.length === 2) {
-            return [
-              Cesium.Cartesian3.fromRadians(sectionPoints[0].longitude, sectionPoints[0].latitude, sectionPoints[0].height),
-              Cesium.Cartesian3.fromRadians(sectionPoints[1].longitude, sectionPoints[1].latitude, sectionPoints[1].height)
-            ]
-          }
-          return []
-        }, false),
-        width: 4,
-        material: Cesium.Color.YELLOW,
-        clampToGround: true
-      }
-    })
-  }
-
-  function endSectionAnalysis() {
-    sectionMode.value = false
-    sectionPoints = []
-    viewer.canvas.style.cursor = 'default'
-    
-    if (sectionPreviewLine) {
-      viewer.entities.remove(sectionPreviewLine)
-      sectionPreviewLine = null
-    }
-    
-    sectionTempEntities.forEach(entity => viewer.entities.remove(entity))
-    sectionTempEntities = []
-  }
-
-  // 挖方分析
-  function startExcavationAnalysis() {
-    if (excavationMode.value) {
-      endExcavationAnalysis()
-      return
-    }
-    
-    excavationMode.value = true
-    sectionMode.value = false
-    excavationPoints = []
-    clearClipping()
-    
-    viewer.canvas.style.cursor = 'crosshair'
-  }
-
-  function endExcavationAnalysis() {
-    excavationMode.value = false
-    excavationPoints = []
-    viewer.canvas.style.cursor = 'default'
-    
-    if (excavationPreviewPolygon) {
-      viewer.entities.remove(excavationPreviewPolygon)
-      excavationPreviewPolygon = null
-    }
-    
-    excavationTempEntities.forEach(entity => viewer.entities.remove(entity))
-    excavationTempEntities = []
-  }
-
-  // 清除所有分析
-  function clearAllAnalysis() {
-    endSectionAnalysis()
-    endExcavationAnalysis()
-    clearClipping()
-    pipelineInfo.show = false
-  }
-
-  // 清除裁剪
-  function clearClipping() {
-    viewer.scene.globe.clippingPlanes = undefined
-    if (osgb) osgb.clippingPlanes = undefined
-    if (ck) ck.clippingPlanes = undefined
-  }
+  // 上述分析方法已在顶层实现，这里移除重复定义
 
   // 分析剖面管线
   function analyzeSectionPipelines(startCart, endCart) {
@@ -872,8 +1292,7 @@ const redPoints = [
                 const segStart = positions[i]
                 const segEnd = positions[i + 1]
                 const distance = calculateLineSegmentDistance(startPos, endPos, segStart, segEnd)
-                
-                if (distance < 50.0) { // 50米缓冲区
+                if (distance < ui.sectionBuffer) { // 可调缓冲区（米）
                   const properties = {}
                   if (entity.properties) {
                     const propertyNames = entity.properties.propertyNames || []
@@ -887,7 +1306,6 @@ const redPoints = [
                       }
                     })
                   }
-                  
                   pipelines.push({
                     entity: entity,
                     name: entity.name || '未知管线',
@@ -906,13 +1324,52 @@ const redPoints = [
     return pipelines
   }
 
-  // 计算线段距离
-  function calculateLineSegmentDistance(line1Start, line1End, line2Start, line2End) {
-    const d1 = Cesium.Cartesian3.distance(line1Start, line2Start)
-    const d2 = Cesium.Cartesian3.distance(line1Start, line2End)
-    const d3 = Cesium.Cartesian3.distance(line1End, line2Start)
-    const d4 = Cesium.Cartesian3.distance(line1End, line2End)
-    return Math.min(d1, d2, d3, d4)
+  // 计算两条3D线段的最短距离
+  function calculateLineSegmentDistance(a, b, c, d) {
+    // 算法参考: 3D 线段-线段最近距离（基于投影与参数裁剪），返回欧氏距离
+    const EPS = 1e-8
+    const u = Cesium.Cartesian3.subtract(b, a, new Cesium.Cartesian3())
+    const v = Cesium.Cartesian3.subtract(d, c, new Cesium.Cartesian3())
+    const w = Cesium.Cartesian3.subtract(a, c, new Cesium.Cartesian3())
+    const aU = Cesium.Cartesian3.dot(u, u) // |u|^2
+    const bU = Cesium.Cartesian3.dot(u, v) // u·v
+    const cU = Cesium.Cartesian3.dot(v, v) // |v|^2
+    const dU = Cesium.Cartesian3.dot(u, w) // u·w
+    const eU = Cesium.Cartesian3.dot(v, w) // v·w
+    const D = aU * cU - bU * bU
+    let sc, sN, sD = D
+    let tc, tN, tD = D
+    if (D < EPS) {
+      // 线段几乎平行，退化处理：令 s=0，沿 v 找最近点
+      sN = 0.0
+      sD = 1.0
+      tN = eU
+      tD = cU
+    } else {
+      sN = (bU * eU - cU * dU)
+      tN = (aU * eU - bU * dU)
+      if (sN < 0) { sN = 0; tN = eU; tD = cU }
+      else if (sN > sD) { sN = sD; tN = eU + bU; tD = cU }
+    }
+    if (tN < 0) {
+      tN = 0
+      if (-dU < 0) sN = 0
+      else if (-dU > aU) sN = sD
+      else { sN = -dU; sD = aU }
+    } else if (tN > tD) {
+      tN = tD
+      if ((-dU + bU) < 0) sN = 0
+      else if ((-dU + bU) > aU) sN = sD
+      else { sN = (-dU + bU); sD = aU }
+    }
+    sc = Math.abs(sN) < EPS ? 0 : sN / sD
+    tc = Math.abs(tN) < EPS ? 0 : tN / tD
+    const dP = Cesium.Cartesian3.subtract(
+      Cesium.Cartesian3.add(w, Cesium.Cartesian3.multiplyByScalar(u, sc, new Cesium.Cartesian3()), new Cesium.Cartesian3()),
+      Cesium.Cartesian3.multiplyByScalar(v, tc, new Cesium.Cartesian3()),
+      new Cesium.Cartesian3()
+    )
+    return Cesium.Cartesian3.magnitude(dP)
   }
 
   // 显示管线信息
@@ -934,6 +1391,7 @@ const redPoints = [
     } else {
       currentMousePosition = null
     }
+    requestRender()
   }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
   
   // 点击事件
@@ -970,6 +1428,7 @@ const redPoints = [
       if (cartesian) {
         const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
         excavationPoints.push(cartographic)
+        excavationPointsCount.value = excavationPoints.length
         
         // 添加点标记
         const pointEntity = viewer.entities.add({
@@ -982,17 +1441,18 @@ const redPoints = [
           }
         })
         excavationTempEntities.push(pointEntity)
-        
-        if (excavationPoints.length >= 3) {
-          // 可以完成挖方分析
-          // 这里可以添加挖方分析逻辑
-          endExcavationAnalysis()
-        }
       }
     }
     
     poke()
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
+  // 双击完成挖方
+  analysisHandler.setInputAction(() => {
+    if (excavationMode.value && excavationPoints.length >= 3) {
+      completeExcavation()
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
 
   // 管线图例控制交互在顶层 togglePipelineGroup 中实现，这里仅触发重绘
 
@@ -1025,6 +1485,23 @@ const redPoints = [
       pipelineSources.forEach((value, key) => {
         dataSourceManager.toggleDataSource(key, ui.pipelines)
       })
+
+      // 同步图例各组的数据源显示（当总开关关闭时仅隐藏，不改组可见状态；开启时按组状态恢复）
+      const groups = pipelineGroups.value
+      if (groups) {
+        const setShow = (ds, show) => { if (ds && typeof ds.show !== 'undefined') ds.show = show }
+        if (typeof groups.forEach === 'function') {
+          groups.forEach((group, name) => {
+            const ds = group?.dataSource
+            setShow(ds, ui.pipelines && (group.visible !== false))
+          })
+        } else {
+          Object.values(groups).forEach(group => {
+            const ds = group?.dataSource
+            setShow(ds, ui.pipelines && (group.visible !== false))
+          })
+        }
+      }
     }
     
     panoDS.show = ui.pano
@@ -1126,7 +1603,9 @@ const redPoints = [
     if (dataSourceManager) {
       dataSourceManager.destroy()
     }
+    window.removeEventListener('keydown', onKeydown)
   })
+  window.addEventListener('keydown', onKeydown)
 })
 </script>
 
@@ -1254,7 +1733,7 @@ const redPoints = [
   min-width: 280px;
   max-height: 60vh;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 10; /* 让外部“信息栏”展开时可覆盖在此面板之上 */
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -1345,6 +1824,14 @@ const redPoints = [
 
 .control-group button:active {
   transform: translateY(0);
+}
+
+.subsection { margin-bottom: 10px; }
+.sub-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a8d8ff;
+  margin: 6px 0 6px 2px;
 }
 
 .info-panel {
@@ -1481,7 +1968,7 @@ const redPoints = [
   min-width: 280px;
   max-height: 40vh;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 10; /* 统一降低层级，避免压过左侧信息栏 */
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -1556,6 +2043,23 @@ const redPoints = [
   border-radius: 12px;
   min-width: 20px;
   text-align: center;
+}
+
+/* 内嵌到分析面板中的图例区块（不使用绝对定位） */
+.legend-section {
+  background: rgba(44, 44, 44, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.legend-section .panel-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #fefefe;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 6px;
 }
 </style>
 
