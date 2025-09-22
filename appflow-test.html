@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appflow Chat SDK 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .loading { background-color: #fff3cd; color: #856404; }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .console-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤖 Appflow Chat SDK 测试页面</h1>
+        
+        <div id="status" class="status loading">
+            ⏳ 正在加载 Appflow Chat SDK...
+        </div>
+        
+        <div class="test-controls">
+            <button id="testInit" class="test-button">🔄 重新初始化</button>
+            <button id="testShow" class="test-button">👁️ 显示聊天窗口</button>
+            <button id="testHide" class="test-button">🙈 隐藏聊天窗口</button>
+            <button id="testSend" class="test-button">💬 发送测试消息</button>
+            <button id="checkAPI" class="test-button">🔍 检查API</button>
+        </div>
+        
+        <div class="console-output" id="console">
+            <div><strong>控制台输出:</strong></div>
+        </div>
+        
+        <div class="sdk-info">
+            <h3>📋 SDK 信息</h3>
+            <p><strong>集成ID:</strong> cit-44fd57644e264fecabe0</p>
+            <p><strong>请求域名:</strong> https://1677039950952251.appflow.aliyunnest.com</p>
+            <p><strong>SDK 版本:</strong> <span id="sdkVersion">检测中...</span></p>
+        </div>
+    </div>
+
+    <!-- Appflow Chat SDK -->
+    <script src="https://o.alicdn.com/appflow/chatbot/v1/AppflowChatSDK.js"></script>
+    
+    <script>
+        // 控制台输出到页面
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function logToPage(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? '#dc3545' : type === 'warn' ? '#ffc107' : '#28a745';
+            div.innerHTML = `[${timestamp}] ${message}`;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logToPage(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logToPage('❌ ERROR: ' + args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            logToPage('⚠️ WARN: ' + args.join(' '), 'warn');
+        };
+        
+        // 状态更新函数
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+        
+        // SDK 加载检查
+        let initAttempts = 0;
+        const maxAttempts = 3;
+        
+        function checkSDKLoaded() {
+            return new Promise((resolve, reject) => {
+                if (window.APPFLOW_CHAT_SDK) {
+                    console.log('✅ Appflow Chat SDK 已加载');
+                    resolve(true);
+                } else {
+                    console.log('❌ Appflow Chat SDK 未找到');
+                    reject(new Error('SDK not loaded'));
+                }
+            });
+        }
+        
+        function initializeSDK() {
+            initAttempts++;
+            console.log(`🔄 尝试初始化 SDK (第 ${initAttempts}/${maxAttempts} 次)`);
+            
+            try {
+                if (!window.APPFLOW_CHAT_SDK) {
+                    throw new Error('APPFLOW_CHAT_SDK 不存在');
+                }
+                
+                const config = {
+                    integrateConfig: {
+                        integrateId: 'cit-44fd57644e264fecabe0',
+                        domain: {
+                            requestDomain: 'https://1677039950952251.appflow.aliyunnest.com'
+                        }
+                    }
+                };
+                
+                console.log('📋 配置参数:', JSON.stringify(config, null, 2));
+                
+                // 初始化 SDK
+                window.APPFLOW_CHAT_SDK.init(config);
+                
+                console.log('✅ SDK 初始化完成');
+                updateStatus('✅ SDK 初始化成功！可以进行测试', 'success');
+                
+                // 检查 SDK 版本
+                if (window.APPFLOW_CHAT_SDK.version) {
+                    document.getElementById('sdkVersion').textContent = window.APPFLOW_CHAT_SDK.version;
+                }
+                
+                return true;
+                
+            } catch (error) {
+                console.error('SDK 初始化失败:', error.message);
+                updateStatus(`❌ SDK 初始化失败: ${error.message}`, 'error');
+                
+                if (initAttempts < maxAttempts) {
+                    console.log(`⏳ ${2000}ms 后重试...`);
+                    setTimeout(initializeSDK, 2000);
+                } else {
+                    updateStatus('❌ SDK 初始化失败，已达最大重试次数', 'error');
+                }
+                
+                return false;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            console.log('📄 页面加载完成，开始检查 SDK...');
+            
+            // 延迟检查，确保外部脚本加载完成
+            setTimeout(() => {
+                checkSDKLoaded()
+                    .then(() => {
+                        initializeSDK();
+                    })
+                    .catch(() => {
+                        updateStatus('❌ SDK 脚本加载失败，请检查网络连接', 'error');
+                        
+                        if (initAttempts < maxAttempts) {
+                            setTimeout(() => {
+                                checkSDKLoaded().then(initializeSDK).catch(() => {
+                                    console.error('多次尝试后仍无法加载 SDK');
+                                });
+                            }, 3000);
+                        }
+                    });
+            }, 1000);
+        });
+        
+        // 测试按钮事件
+        document.getElementById('testInit').addEventListener('click', function() {
+            initAttempts = 0;
+            initializeSDK();
+        });
+        
+        document.getElementById('testShow').addEventListener('click', function() {
+            try {
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.show) {
+                    window.APPFLOW_CHAT_SDK.show();
+                    console.log('🎬 尝试显示聊天窗口');
+                } else {
+                    console.error('show 方法不存在');
+                }
+            } catch (error) {
+                console.error('显示聊天窗口失败:', error.message);
+            }
+        });
+        
+        document.getElementById('testHide').addEventListener('click', function() {
+            try {
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.hide) {
+                    window.APPFLOW_CHAT_SDK.hide();
+                    console.log('🙈 尝试隐藏聊天窗口');
+                } else {
+                    console.error('hide 方法不存在');
+                }
+            } catch (error) {
+                console.error('隐藏聊天窗口失败:', error.message);
+            }
+        });
+        
+        document.getElementById('testSend').addEventListener('click', function() {
+            try {
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.sendMessage) {
+                    const testMessage = '这是一条来自语音助手的测试消息';
+                    window.APPFLOW_CHAT_SDK.sendMessage(testMessage);
+                    console.log('💬 发送测试消息:', testMessage);
+                } else {
+                    console.error('sendMessage 方法不存在');
+                }
+            } catch (error) {
+                console.error('发送消息失败:', error.message);
+            }
+        });
+        
+        document.getElementById('checkAPI').addEventListener('click', function() {
+            console.log('🔍 检查可用的 API 方法:');
+            
+            if (window.APPFLOW_CHAT_SDK) {
+                const methods = Object.getOwnPropertyNames(window.APPFLOW_CHAT_SDK);
+                console.log('📋 可用方法:', methods);
+                
+                methods.forEach(method => {
+                    console.log(`  - ${method}: ${typeof window.APPFLOW_CHAT_SDK[method]}`);
+                });
+            } else {
+                console.error('APPFLOW_CHAT_SDK 不存在');
+            }
+        });
+        
+        // 监听 SDK 事件（如果有的话）
+        window.addEventListener('appflowChatReady', function(event) {
+            console.log('🎉 Appflow Chat 已准备就绪:', event.detail);
+            updateStatus('🎉 聊天组件已准备就绪！', 'success');
+        });
+        
+        window.addEventListener('appflowChatMessage', function(event) {
+            console.log('💬 收到聊天消息:', event.detail);
+        });
+        
+        // 错误监听
+        window.addEventListener('error', function(event) {
+            if (event.filename && event.filename.includes('AppflowChatSDK')) {
+                console.error('SDK 脚本错误:', event.message);
+                updateStatus('❌ SDK 脚本执行出错', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

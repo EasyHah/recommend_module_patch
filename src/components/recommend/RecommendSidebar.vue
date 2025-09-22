@@ -71,6 +71,10 @@
       </footer>
 
       <div class="resize-handle" @mousedown="startResize" title="拖拽调整宽度"></div>
+      <VoiceAssistantFloat 
+        :visible="isOpen"
+        @command="handleVoiceCommand"
+      />
     </aside>
   </teleport>
 </template>
@@ -86,6 +90,7 @@ import { matchVendors } from '@/utils/recommendScore'
 import { enhancedMatchVendors, getWeatherRecommendations } from '@/utils/enhancedRecommendScore'
 import { recommendSidebarOpen, closeRecommend } from '@/bridge/recommendUI'
 import { getBridge, subscribeBridge, publishBridge } from '@/bridge/routeBridge'
+import VoiceAssistantFloat from '@/components/VoiceAssistantFloat.vue'
 
 const router = useRouter()
 
@@ -254,6 +259,26 @@ function startResize(e: MouseEvent) {
   }
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', onUp)
+}
+
+// === 语音命令处理 ===
+function handleVoiceCommand(e: { transcript: string; isFinal: boolean }) {
+  const text = (e.transcript || '').trim()
+  if (!text) return
+  const t = text.replace(/，/g, ',').toLowerCase()
+  // 基础指令
+  if (/关闭|收起|隐藏/.test(t)) { closeRecommend(); return }
+  if (/打开|展开|显示/.test(t)) { /* 侧栏由外部控制，这里无显式打开 */ }
+  if (/天气|分析|天气分析/.test(t)) { goToWeatherAnalysis(); return }
+  if (/查询|搜索|开始|执行/.test(t)) { runQuery(); return }
+  // 解析起终点（示例：“起点 北京，终点 上海”）
+  const m = t.match(/起点\s*([\u4e00-\u9fa5a-z]+)[,，]\s*终点\s*([\u4e00-\u9fa5a-z]+)/)
+  if (m) {
+    ;(query.value as any).originName = m[1]
+    ;(query.value as any).destinationName = m[2]
+    runQuery()
+    return
+  }
 }
 </script>
 

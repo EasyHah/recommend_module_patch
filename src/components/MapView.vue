@@ -99,14 +99,14 @@
       <h3>管线图例</h3>
     </div>
     <div class="legend-content">
-      <div v-for="(group, name) in pipelineGroups" :key="name" class="legend-item">
+      <div v-for="([name, group]) in pipelineGroupEntries" :key="name" class="legend-item">
         <label>
           <input type="checkbox" 
                  :checked="group.visible !== false" 
                  @change="togglePipelineGroup(name, $event.target.checked)" />
           <span class="swatch" :style="{ backgroundColor: group.color }"></span>
           <span class="name">{{ name }}</span>
-          <span class="count">({{ group.entities.length }})</span>
+          <span class="count">({{ Array.isArray(group.entities) ? group.entities.length : 0 }})</span>
         </label>
       </div>
     </div>
@@ -122,7 +122,7 @@
 <script setup>
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
-import { onMounted, onUnmounted, reactive, watch, ref, nextTick } from 'vue'
+import { onMounted, onUnmounted, reactive, watch, ref, nextTick, computed } from 'vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import PanoramaViewer from './PanoramaViewer.vue'
@@ -158,6 +158,27 @@ const pipelineInfo = reactive({
   pipelines: []
 })
 const pipelineGroups = ref(new Map())
+const pipelineGroupEntries = computed(() => {
+  const val = pipelineGroups.value
+  if (val && typeof val.entries === 'function') {
+    return Array.from(val.entries())
+  }
+  // 兼容对象
+  return Object.entries(val || {})
+})
+
+// 暴露给模板的组切换函数（需在顶层定义，避免闭包导致模板取不到）
+function togglePipelineGroup(name, visible) {
+  const val = pipelineGroups.value
+  if (!val) return
+  const group = typeof val.get === 'function' ? val.get(name) : val[name]
+  if (group) {
+    group.visible = visible
+    if (group.dataSource && typeof group.dataSource.show !== 'undefined') {
+      group.dataSource.show = visible
+    }
+  }
+}
 
 // 全景查看器状态
 const panoramaModal = reactive({
@@ -973,15 +994,7 @@ const redPoints = [
     poke()
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-  // 管线图例控制
-  function togglePipelineGroup(name, visible) {
-    const group = pipelineGroups.value.get(name)
-    if (group) {
-      group.visible = visible
-      group.dataSource.show = visible
-      poke()
-    }
-  }
+  // 管线图例控制交互在顶层 togglePipelineGroup 中实现，这里仅触发重绘
 
   // 全景查看器控制
   function openPanorama(url, info = null) {

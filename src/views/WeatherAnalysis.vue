@@ -87,6 +87,134 @@
                   ✕
                 </button>
               </div>
+              <!-- 完整功能的悬浮信息面板 -->
+              <FloatingPanel
+                v-if="showFloatingInfo"
+                title="🌤️ 路线天气分析"
+                :initial-x="16"
+                :initial-y="16"
+                :initial-width="380"
+                :initial-height="450"
+                :min-width="320"
+                :min-height="200"
+                :max-width="600"
+                :max-height="700"
+                @close="hideFloatingInfo"
+              >
+                <div class="weather-analysis-content">
+                  <!-- 路线基础信息 -->
+                  <div v-if="startCity && endCity" class="route-basic-info">
+                    <div class="route-endpoints">
+                      <div class="endpoint">
+                        <span class="label">起点:</span>
+                        <span class="value">{{ startCity.name }}</span>
+                      </div>
+                      <div class="endpoint">
+                        <span class="label">终点:</span>
+                        <span class="value">{{ endCity.name }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 风险评估 -->
+                  <div v-if="routeAnalysis" class="risk-assessment">
+                    <div class="risk-header">
+                      <h4>🚨 风险评估</h4>
+                    </div>
+                    <div class="risk-summary" :class="`risk-${routeAnalysis.overallRisk}`">
+                      <div class="risk-level">
+                        <span class="label">整体风险:</span>
+                        <span class="value">{{ getRiskText(routeAnalysis.overallRisk) }}</span>
+                      </div>
+                      <div class="risk-score">
+                        <span class="label">风险评分:</span>
+                        <span class="value">{{ (routeAnalysis.riskScore * 100).toFixed(0) }}%</span>
+                      </div>
+                    </div>
+
+                    <!-- 关键风险路段 -->
+                    <div v-if="routeAnalysis.criticalSections?.length" class="critical-sections">
+                      <h5>⚠️ 关键风险路段</h5>
+                      <div class="section-list">
+                        <div 
+                          v-for="(section, index) in routeAnalysis.criticalSections" 
+                          :key="index"
+                          class="section-item"
+                        >
+                          <div class="section-header">
+                            <span class="section-risk">{{ section.riskType }}</span>
+                            <span class="severity-badge" :class="`severity-${Math.floor(section.severity / 3)}`">
+                              {{ section.severity }}/10
+                            </span>
+                          </div>
+                          <div class="section-recommendation">{{ section.recommendation }}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 建议路线 -->
+                    <div v-if="routeAnalysis.alternativeRoutes?.length" class="alternatives">
+                      <h5>🛣️ 建议路线</h5>
+                      <div class="alternative-list">
+                        <div 
+                          v-for="(alt, index) in routeAnalysis.alternativeRoutes" 
+                          :key="index"
+                          class="alternative-item"
+                        >
+                          <div class="alt-description">{{ alt.description }}</div>
+                          <div class="alt-metrics">
+                            <span class="metric">+{{ alt.additionalDistance }}km</span>
+                            <span class="metric risk-reduced">-{{ (alt.reducedRisk * 100).toFixed(0) }}% 风险</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 最佳时机建议 -->
+                    <div v-if="routeAnalysis.timing" class="timing-recommendations">
+                      <h5>⏰ 出行时机建议</h5>
+                      <div class="timing-list">
+                        <div v-if="routeAnalysis.timing.bestDepartureTime" class="timing-item good">
+                          <span class="icon">✅</span>
+                          <span class="text">推荐出发: {{ routeAnalysis.timing.bestDepartureTime }}</span>
+                        </div>
+                        <div v-if="routeAnalysis.timing.worstConditions" class="timing-item bad">
+                          <span class="icon">❌</span>
+                          <span class="text">避免时段: {{ routeAnalysis.timing.worstConditions }}</span>
+                        </div>
+                        <div v-if="routeAnalysis.timing.optimalWindow" class="timing-item optimal">
+                          <span class="icon">🎯</span>
+                          <span class="text">最佳窗口: {{ routeAnalysis.timing.optimalWindow.join(' - ') }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 实时天气预警 -->
+                  <div v-if="warnings.length" class="weather-warnings">
+                    <h4>📢 实时预警</h4>
+                    <div class="warning-list">
+                      <div 
+                        v-for="warning in warnings.slice(0, 3)" 
+                        :key="warning.id"
+                        class="warning-item"
+                        :class="`level-${warning.level}`"
+                      >
+                        <div class="warning-header">
+                          <span class="warning-type">{{ warning.type }}</span>
+                          <span class="warning-level">{{ warning.level }}级</span>
+                        </div>
+                        <div class="warning-title">{{ warning.title }}</div>
+                        <div class="warning-impact">
+                          影响: {{ warning.logisticsImpact?.roadClosure ? '道路封闭' : '通行正常' }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </FloatingPanel>
+
+              <VoiceAssistantFloat :visible="true" @command="onVoiceCommandInFullscreen" />
             </div>
           </div>
         </Teleport>
@@ -228,6 +356,8 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import FluentCard from '@/components/FluentCard.vue'
 import WeatherTooltip from '@/components/WeatherTooltip.vue'
+import VoiceAssistantFloat from '@/components/VoiceAssistantFloat.vue'
+import FloatingPanel from '@/components/FloatingPanel.vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import type { ProvinceWeatherData, RouteWeatherAnalysis, WeatherAlert } from '@/types/weather'
@@ -276,6 +406,10 @@ let weatherMarkers: any[] = []
 const tooltipVisible = ref(false)
 const tooltipData = ref({})
 const tooltipPosition = ref({ x: 0, y: 0 })
+const showFloatingInfo = ref(true)
+
+// 路线分析状态扩展
+const routeAnalyzing = ref(false)
 
 // 主要城市列表
 const majorCities = ref([
@@ -380,6 +514,76 @@ async function analyzeRouteWeather() {
     console.error('路径天气分析失败:', error)
   } finally {
     loading.value.route = false
+  }
+}
+
+function hideFloatingInfo() { showFloatingInfo.value = false }
+
+
+function onVoiceCommandInFullscreen(e: { transcript: string; isFinal: boolean; parsed?: any }) {
+  if (!e.isFinal || !e.parsed) return
+  
+  const { parsed } = e
+  
+  // 基础控制命令
+  if (parsed.isClose || /退出|关闭/.test(parsed.text)) {
+    if (/全屏/.test(parsed.text)) {
+      toggleFullscreen()
+      return
+    }
+    if (/面板|信息/.test(parsed.text)) {
+      hideFloatingInfo()
+      return
+    }
+  }
+  
+  // 图层控制
+  if (parsed.isLayer) {
+    if (/天气图层|天气/.test(parsed.text)) {
+      showWeatherLayer.value = !showWeatherLayer.value
+      toggleWeatherLayer()
+      return
+    }
+    if (/省份|风险色彩/.test(parsed.text)) {
+      showProvinceColors.value = !showProvinceColors.value
+      toggleProvinceColors()
+      return
+    }
+  }
+  
+  // 时间相关命令
+  if (parsed.time) {
+    const timeMatch = parsed.time.pattern.exec(parsed.text)
+    if (timeMatch) {
+      // 这里可以设置出发时间相关逻辑
+      console.log('设置出发时间:', timeMatch)
+    }
+  }
+  
+  // 车辆类型设置
+  if (parsed.vehicle) {
+    console.log('设置车辆类型:', parsed.vehicle.type)
+    // 这里可以调用设置车辆类型的逻辑
+  }
+  
+  // 路线设置
+  if (parsed.location) {
+    const [, origin, destination] = parsed.location || []
+    if (origin && destination) {
+      routeOrigin.value = origin.trim()
+      routeDestination.value = destination.trim()
+      console.log('设置路线:', routeOrigin.value, '→', routeDestination.value)
+      // 触发路线分析
+      analyzeRouteWeather()
+    }
+  }
+  
+  // 查询命令
+  if (parsed.isQuery) {
+    routeAnalyzing.value = true
+    analyzeRouteWeather().finally(() => {
+      routeAnalyzing.value = false
+    })
   }
 }
 
@@ -2020,4 +2224,16 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
 }
+
+/* 悬浮信息面板样式 */
+.floating-info { position: absolute; left: 16px; top: 16px; width: min(360px, 80vw); background: rgba(255,255,255,.92); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); overflow: hidden; backdrop-filter: blur(6px); }
+.floating-header { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; background: rgba(0,0,0,.65); color: #fff; font-size: 14px; }
+.floating-header .close{ border:none; background:transparent; color:#fff; font-size:18px; cursor:pointer; }
+.floating-body{ padding: 10px 12px; color: #111; }
+.risk-line{ display:flex; align-items:center; gap:8px; font-size: 13px; }
+.risk-line .score{ margin-left:auto; font-weight:600; color:#2563eb; }
+.sections{ margin-top: 8px; display:flex; flex-direction:column; gap:8px; }
+.section{ background: rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.06); border-radius: 8px; padding:8px 10px; }
+.section .t{ font-weight: 600; margin-bottom: 4px; }
+.section .d{ font-size: 12px; color: #333; }
 </style>
