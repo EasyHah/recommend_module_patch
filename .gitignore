@@ -1,1 +1,7 @@
 /node_modules
+
+# Build output (Vite/webpack)
+/dist
+
+# Large media in public (do not commit)
+/public/FireEvacuation/*.mp4
