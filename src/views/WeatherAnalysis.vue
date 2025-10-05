@@ -361,6 +361,7 @@ import FloatingPanel from '@/components/FloatingPanel.vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import type { ProvinceWeatherData, RouteWeatherAnalysis, WeatherAlert } from '@/types/weather'
+import { ensureAMapLoaded } from '@/utils/amapLoader'
 
 // 全局AMap类型声明
 declare global {
@@ -683,68 +684,6 @@ function toggleFullscreen() {
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape' && mapFullscreen.value) {
     toggleFullscreen()
-  }
-}
-
-// 确保高德地图API已加载
-async function ensureAMapLoaded() {
-  if (typeof window.AMap !== 'undefined' && window.AMap.Driving) {
-    return window.AMap
-  }
-
-  const key = (import.meta as any).env.VITE_AMAP_KEY
-  const sec = (import.meta as any).env.VITE_AMAP_SECURITY
-  
-  if (!key) {
-    console.error('请在环境变量中设置 VITE_AMAP_KEY')
-    return null
-  }
-
-  if (sec) {
-    (window as any)._AMapSecurityConfig = { securityJsCode: sec }
-  }
-
-  console.log('开始加载高德地图API...')
-  
-  try {
-    // 加载基础API
-    if (typeof window.AMap === 'undefined') {
-      await new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = `https://webapi.amap.com/maps?v=2.0&key=${key}`
-        script.async = true
-        script.onload = () => {
-          console.log('高德地图API加载成功')
-          resolve()
-        }
-        script.onerror = () => {
-          reject(new Error('高德地图API加载失败'))
-        }
-        document.head.appendChild(script)
-      })
-    }
-
-    // 加载需要的插件
-    if (!window.AMap.Driving) {
-      console.log('加载高德地图插件...')
-      await new Promise<void>((resolve) => {
-        window.AMap.plugin([
-          'AMap.Driving',
-          'AMap.Geocoder',
-          'AMap.InfoWindow',
-          'AMap.Marker',
-          'AMap.Circle'
-        ], () => {
-          console.log('高德地图插件加载成功')
-          resolve()
-        })
-      })
-    }
-    
-    return window.AMap
-  } catch (error) {
-    console.error('高德地图API加载失败:', error)
-    return null
   }
 }
 
@@ -2234,7 +2173,7 @@ onMounted(() => {
 
 /* 悬浮信息面板样式 */
 .floating-info { position: absolute; left: 16px; top: 16px; width: min(360px, 80vw); background: rgba(255,255,255,.92); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); overflow: hidden; backdrop-filter: blur(6px); }
-.floating-header { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; background: rgba(0,0,0,.65); color: #fff; font-size: 14px; }
+.floating-header { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; background: rgba(0,0,0,.65); color: #fff; font-size:  14px; }
 .floating-header .close{ border:none; background:transparent; color:#fff; font-size:18px; cursor:pointer; }
 .floating-body{ padding: 10px 12px; color: #111; }
 .risk-line{ display:flex; align-items:center; gap:8px; font-size: 13px; }
