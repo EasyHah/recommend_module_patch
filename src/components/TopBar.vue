@@ -11,7 +11,6 @@
     <!-- 中：导航（含"三维场景"入口） -->
     <nav class="center">
       <RouterLink class="nav-btn" :class="{ active: isActive('/') }" to="/">总览</RouterLink>
-      <RouterLink class="nav-btn" :class="{ active: isActive('/scene') }" to="/scene/gu">三维场景</RouterLink>
       <RouterLink class="nav-btn" :class="{ active: isActive('/video-recognition') }" to="/video-recognition">视频识别</RouterLink>
       <RouterLink class="nav-btn" :class="{ active: isActive('/fire-evacuation') }" to="/fire-evacuation">🔥 火灾疏散</RouterLink>
     </nav>

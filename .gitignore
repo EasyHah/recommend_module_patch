@@ -5,8 +5,5 @@
 
 # Large media in public (do not commit)
 /public/FireEvacuation/*.mp4
-
-# Local environment files (do not commit secrets)
-# ignore all .env.* except the example
+\n# Local environment files (do not commit secrets)
 .env*
-!.env.example

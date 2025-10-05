@@ -6,7 +6,6 @@ import VideoRecognition from '@/views/VideoRecognition.vue'
 import FireEvacuation from '@/views/FireEvacuation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
-import GuScene from '@/modules/gu/GuScene.vue'
 import LKETest from '@/views/LKETest.vue'
 
 const router = createRouter({
@@ -19,7 +18,6 @@ const router = createRouter({
     { path:'/video-recognition', name:'video-recognition', component: VideoRecognition },
     { path:'/fire-evacuation', name:'fire-evacuation', component: FireEvacuation },
     { path:'/', name:'dashboard', component: Dashboard },
-    { path:'/scene/gu', name:'gu-scene', component: GuScene },
     { path:'/lke-test', name:'lke-test', component: LKETest }
   ]
 })

@@ -135,8 +135,7 @@ export function parseCommand(input: string): ParsedCommand {
     weather: { keywords: /(天气分析|天气|weather)/, path: '/weather', page: 'weather' },
     weatherTest: { keywords: /(天气测试|weather test|weather-test)/, path: '/weather-test', page: 'weather-test' },
     video: { keywords: /(视频识别|目标识别|video|video recognition)/, path: '/video-recognition', page: 'video-recognition' },
-    fire: { keywords: /(疏散|消防|演练|fire|evacuation)/, path: '/fire-evacuation', page: 'fire-evacuation' },
-    guScene: { keywords: /(古景|古场景|古建筑|gu scene)/, path: '/scene/gu', page: 'gu-scene' }
+  fire: { keywords: /(疏散|消防|演练|fire|evacuation)/, path: '/fire-evacuation', page: 'fire-evacuation' }
   }
   let navigation: ParsedCommand['navigation']
   for (const k in pageMap) {
