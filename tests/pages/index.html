@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面统一入口</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .test-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .test-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .test-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .test-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .test-link {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .test-link.secondary {
+            background: #6c757d;
+        }
+        
+        .test-link.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .docs-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+        
+        .docs-section h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .docs-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .docs-link {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .docs-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .badge {
+            background: #28a745;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .badge.debug {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .badge.integration {
+            background: #17a2b8;
+        }
+        
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-links, .docs-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 测试页面统一入口</h1>
+            <p>工业园区智能可视化与 AI 平台 - 功能测试与调试工具集</p>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Appflow Chat 测试 -->
+            <div class="test-card">
+                <h3>🤖 Appflow Chat 测试 <span class="badge">核心</span></h3>
+                <p>测试 AI 聊天机器人的集成、配置和错误处理机制。支持独立环境验证和项目内集成测试。</p>
+                <div class="test-links">
+                    <a href="appflow-test-standalone.html" class="test-link">🧪 独立测试</a>
+                    <a href="appflow-test.html" class="test-link secondary">📋 集成测试</a>
+                </div>
+            </div>
+            
+            <!-- 语音功能测试 -->
+            <div class="test-card">
+                <h3>🎤 语音助手测试 <span class="badge debug">调试</span></h3>
+                <p>测试语音识别、TTS播报和语音命令解析功能。包含浏览器兼容性检查和权限诊断。</p>
+                <div class="test-links">
+                    <a href="voice-debug.html" class="test-link">🔍 语音诊断</a>
+                    <a href="test-tts.html" class="test-link secondary">🔊 TTS测试</a>
+                </div>
+            </div>
+            
+            <!-- 语音+Chat 集成 -->
+            <div class="test-card">
+                <h3>🎯 语音+Chat 集成 <span class="badge integration">集成</span></h3>
+                <p>完整的语音识别与AI聊天机器人联动演示。展示多模态交互和智能预处理功能。</p>
+                <div class="test-links">
+                    <a href="voice-ai-integration.html" class="test-link">🚀 完整演示</a>
+                </div>
+            </div>
+            
+            <!-- 基础语音测试 -->
+            <div class="test-card">
+                <h3>🎵 基础语音测试 <span class="badge debug">基础</span></h3>
+                <p>简单的语音识别功能验证，适用于快速检查浏览器支持和权限状态。</p>
+                <div class="test-links">
+                    <a href="voice-test.html" class="test-link secondary">⚡ 快速测试</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 文档与主应用入口 -->
+        <div class="docs-section">
+            <h3>📚 相关资源</h3>
+            <div class="docs-links">
+                <!-- 注意：从 tests/pages/ 返回根目录需要 ../../ -->
+                <a href="../../index.html" class="docs-link">🏠 主应用</a>
+                <a href="../../docs/README.md" class="docs-link">📖 文档索引</a>
+                <a href="../../docs/modules/appflow-chat.md" class="docs-link">🤖 Chat文档</a>
+                <a href="../../docs/modules/voice.md" class="docs-link">🎤 语音文档</a>
+                <a href="../../docs/troubleshooting/voice.md" class="docs-link">🔧 故障排查</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

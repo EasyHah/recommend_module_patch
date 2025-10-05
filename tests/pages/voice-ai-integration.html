@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音助手 + AI聊天机器人集成演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .demo-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .voice-control {
+            text-align: center;
+        }
+        
+        .voice-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 1rem;
+        }
+        
+        .voice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .voice-button.listening {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+        
+        .voice-button.processing {
+            animation: spin 1s linear infinite;
+            background: linear-gradient(45deg, #feca57, #ff9ff3);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .status {
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            font-weight: 500;
+        }
+        
+        .status.idle {
+            background: #e8f4fd;
+            color: #1e88e5;
+            border-left: 4px solid #1e88e5;
+        }
+        
+        .status.listening {
+            background: #fff3e0;
+            color: #f57c00;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .status.processing {
+            background: #fce4ec;
+            color: #c2185b;
+            border-left: 4px solid #c2185b;
+        }
+        
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+        
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+        
+        .transcript-area {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 1rem;
+            border-radius: 10px;
+            min-height: 100px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: #495057;
+        }
+        
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+        
+        .integration-area {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+        
+        .integration-area h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .integration-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .integration-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .integration-option h4 {
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        
+        .integration-option p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .control-panel {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+        
+        .message.user {
+            background: #e3f2fd;
+            text-align: right;
+        }
+        
+        .message.ai {
+            background: #f3e5f5;
+            text-align: left;
+        }
+        
+        .message.system {
+            background: #fff3e0;
+            text-align: center;
+            font-style: italic;
+            color: #f57c00;
+        }
+        
+        .sdk-status {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .sdk-status h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logs {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+        
+        .doc-nav-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1200;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 18px;
+            margin: -32px -32px 24px -32px;
+            background: linear-gradient(90deg,#312e81,#1e3a8a);
+            color: #fff;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+            border-radius: 14px 14px 0 0;
+        }
+        
+        .doc-nav-bar a {
+            color: #93c5fd;
+            text-decoration: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            transition: .2s;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(4px);
+        }
+        
+        .doc-nav-bar a:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        
+        .doc-nav-bar .spacer {
+            flex: 1;
+        }
+        
+        .doc-nav-bar .tag {
+            background: #6366f1;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            letter-spacing: .5px;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .integration-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="doc-nav-bar">
+            <strong>测试页导航</strong>
+            <a href="index.html" target="_self">测试首页</a>
+            <a href="../../index.html" target="_self">主应用</a>
+            <a href="../../docs/README.md" target="_blank">文档索引</a>
+            <a href="appflow-test-standalone.html" target="_self">Chat 独立</a>
+            <a href="voice-debug.html" target="_self">语音诊断</a>
+            <a href="test-tts.html" target="_self">TTS 测试</a>
+            <span class="spacer"></span>
+            <span class="tag">语音 + Chat 集成</span>
+        </div>
+        
+        <div class="header">
+            <h1>🤖 智能语音助手 + AI聊天机器人</h1>
+            <p>演示语音识别与阿里云 Appflow Chat SDK 的深度集成</p>
+        </div>
+        
+        <div class="sdk-status">
+            <h4>📊 SDK 状态检测</h4>
+            <div id="sdkStatus">⏳ 正在检测 Appflow Chat SDK...</div>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- 语音控制区域 -->
+            <div class="demo-section">
+                <h3>🎤 语音助手控制</h3>
+                <div class="voice-control">
+                    <button id="voiceButton" class="voice-button" title="点击开始语音识别">
+                        🎤
+                    </button>
+                    <div id="voiceStatus" class="status idle">准备就绪 - 点击开始语音识别</div>
+                    <div class="transcript-area" id="transcriptArea">
+                        语音识别结果将显示在这里...
+                    </div>
+                    
+                    <div class="control-panel">
+                        <button class="control-btn" id="testVoiceBtn">🧪 测试语音</button>
+                        <button class="control-btn" id="clearTranscriptBtn">🗑️ 清空记录</button>
+                        <button class="control-btn" id="helpBtn">❓ 语音命令</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI 聊天区域 -->
+            <div class="demo-section">
+                <h3>💬 AI 聊天机器人</h3>
+                <div class="chat-container" id="chatContainer">
+                    <div class="message system">AI 聊天机器人已准备就绪</div>
+                </div>
+                
+                <div class="control-panel">
+                    <button class="control-btn" id="showChatBtn">👁️ 显示聊天窗</button>
+                    <button class="control-btn" id="hideChatBtn">🙈 隐藏聊天窗</button>
+                    <button class="control-btn" id="sendTestMsgBtn">💬 发送测试消息</button>
+                    <button class="control-btn" id="clearChatBtn">🗑️ 清空聊天</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 集成方案展示 -->
+        <div class="integration-area">
+            <h3>🔗 语音与AI聊天集成方案</h3>
+            <p>以下是将语音助手与 Appflow Chat SDK 结合的多种集成模式：</p>
+            
+            <div class="integration-options">
+                <div class="integration-option">
+                    <h4>🎯 直接传递模式</h4>
+                    <p>将语音识别结果直接发送给AI聊天机器人，实现语音问答功能</p>
+                </div>
+                
+                <div class="integration-option">
+                    <h4>🧠 智能预处理模式</h4>
+                    <p>对语音内容进行意图识别和实体抽取，然后调用相应的AI服务</p>
+                </div>
+                
+                <div class="integration-option">
+                    <h4>🎮 语音控制模式</h4>
+                    <p>使用语音命令控制聊天窗口的显示/隐藏、清空等操作</p>
+                </div>
+                
+                <div class="integration-option">
+                    <h4>📱 多模态交互模式</h4>
+                    <p>结合语音输入、文字输出、图像理解等多种交互方式</p>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <button class="control-btn" id="enableIntegrationBtn">🚀 启用集成模式</button>
+                <button class="control-btn" id="testIntegrationBtn">🧪 测试集成功能</button>
+                <button class="control-btn" id="exportConfigBtn">📥 导出配置</button>
+            </div>
+        </div>
+        
+        <div class="logs" id="logs">
+            <div>[系统] 日志记录已启动...</div>
+        </div>
+    </div>
+
+    <!-- Appflow Chat SDK -->
+    <script src="https://o.alicdn.com/appflow/chatbot/v1/AppflowChatSDK.js"></script>
+    
+    <script>
+        // 全局状态管理
+        const AppState = {
+            isSDKReady: false,
+            isVoiceListening: false,
+            isIntegrationEnabled: false,
+            chatMessages: [],
+            voiceCommands: [
+                "显示聊天窗口",
+                "隐藏聊天窗口", 
+                "清空聊天记录",
+                "发送消息给AI",
+                "开始语音输入",
+                "停止语音输入",
+                "帮助我",
+                "退出程序"
+            ]
+        };
+        
+        // DOM 元素引用
+        const elements = {
+            sdkStatus: document.getElementById('sdkStatus'),
+            voiceButton: document.getElementById('voiceButton'),
+            voiceStatus: document.getElementById('voiceStatus'),
+            transcriptArea: document.getElementById('transcriptArea'),
+            chatContainer: document.getElementById('chatContainer'),
+            logs: document.getElementById('logs')
+        };
+        
+        // 日志系统
+        class Logger {
+            static log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+                console.log(logEntry);
+                
+                const logDiv = document.createElement('div');
+                logDiv.textContent = logEntry;
+                logDiv.style.color = type === 'error' ? '#ff6b6b' : 
+                                   type === 'warn' ? '#feca57' : 
+                                   type === 'success' ? '#00ff00' : '#ffffff';
+                elements.logs.appendChild(logDiv);
+                elements.logs.scrollTop = elements.logs.scrollHeight;
+                
+                // 限制日志条数
+                if (elements.logs.children.length > 50) {
+                    elements.logs.removeChild(elements.logs.firstChild);
+                }
+            }
+        }
+        
+        // 语音识别系统
+        class VoiceRecognition {
+            constructor() {
+                this.recognition = null;
+                this.isSupported = this.checkSupport();
+                this.isListening = false;
+                this.init();
+            }
+            
+            checkSupport() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                return !!SpeechRecognition;
+            }
+            
+            init() {
+                if (!this.isSupported) {
+                    Logger.log('浏览器不支持语音识别功能', 'error');
+                    this.updateStatus('error', '❌ 浏览器不支持语音识别');
+                    return;
+                }
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                
+                // 配置语音识别
+                this.recognition.continuous = true;
+                this.recognition.interimResults = true;
+                this.recognition.lang = 'zh-CN';
+                this.recognition.maxAlternatives = 1;
+                
+                // 绑定事件
+                this.recognition.onstart = () => this.onStart();
+                this.recognition.onresult = (event) => this.onResult(event);
+                this.recognition.onerror = (event) => this.onError(event);
+                this.recognition.onend = () => this.onEnd();
+                
+                Logger.log('语音识别系统初始化完成', 'success');
+            }
+            
+            start() {
+                if (!this.isSupported || this.isListening) return;
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    Logger.log(`启动语音识别失败: ${error.message}`, 'error');
+                }
+            }
+            
+            stop() {
+                if (!this.isSupported || !this.isListening) return;
+                
+                try {
+                    this.recognition.stop();
+                } catch (error) {
+                    Logger.log(`停止语音识别失败: ${error.message}`, 'error');
+                }
+            }
+            
+            onStart() {
+                this.isListening = true;
+                AppState.isVoiceListening = true;
+                this.updateStatus('listening', '🎤 正在监听...');
+                this.updateButton('listening');
+                Logger.log('开始语音识别', 'info');
+            }
+            
+            onResult(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                // 更新显示
+                elements.transcriptArea.innerHTML = `
+                    <div style="color: #28a745;">${finalTranscript}</div>
+                    <div style="color: #6c757d; font-style: italic;">${interimTranscript}</div>
+                `;
+                
+                // 处理最终结果
+                if (finalTranscript) {
+                    Logger.log(`语音识别结果: ${finalTranscript}`, 'success');
+                    this.processVoiceCommand(finalTranscript);
+                    
+                    // 如果启用了集成模式，将语音结果发送给AI
+                    if (AppState.isIntegrationEnabled) {
+                        AIIntegration.processVoiceInput(finalTranscript);
+                    }
+                }
+            }
+            
+            onError(event) {
+                Logger.log(`语音识别错误: ${event.error}`, 'error');
+                this.updateStatus('error', `❌ 识别错误: ${event.error}`);
+                this.isListening = false;
+                AppState.isVoiceListening = false;
+                this.updateButton('idle');
+            }
+            
+            onEnd() {
+                this.isListening = false;
+                AppState.isVoiceListening = false;
+                this.updateStatus('idle', '⏸️ 识别已停止');
+                this.updateButton('idle');
+                Logger.log('语音识别结束', 'info');
+            }
+            
+            processVoiceCommand(command) {
+                const cmd = command.toLowerCase().trim();
+                
+                // 语音命令处理
+                if (cmd.includes('显示聊天') || cmd.includes('打开聊天')) {
+                    ChatManager.showChatWindow();
+                } else if (cmd.includes('隐藏聊天') || cmd.includes('关闭聊天')) {
+                    ChatManager.hideChatWindow();
+                } else if (cmd.includes('清空聊天')) {
+                    ChatManager.clearChat();
+                } else if (cmd.includes('帮助') || cmd.includes('命令')) {
+                    this.showVoiceCommands();
+                } else if (cmd.includes('停止') || cmd.includes('退出')) {
+                    this.stop();
+                }
+                
+                // 记录命令
+                ChatManager.addMessage('user', `🎤 ${command}`);
+            }
+            
+            showVoiceCommands() {
+                const commands = AppState.voiceCommands.join('\n• ');
+                alert(`可用的语音命令：\n\n• ${commands}`);
+            }
+            
+            updateStatus(type, message) {
+                elements.voiceStatus.className = `status ${type}`;
+                elements.voiceStatus.textContent = message;
+            }
+            
+            updateButton(state) {
+                elements.voiceButton.className = `voice-button ${state}`;
+                
+                if (state === 'listening') {
+                    elements.voiceButton.textContent = '⏹️';
+                    elements.voiceButton.title = '点击停止语音识别';
+                } else if (state === 'processing') {
+                    elements.voiceButton.textContent = '⚡';
+                    elements.voiceButton.title = '正在处理...';
+                } else {
+                    elements.voiceButton.textContent = '🎤';
+                    elements.voiceButton.title = '点击开始语音识别';
+                }
+            }
+        }
+        
+        // 聊天管理系统
+        class ChatManager {
+            static addMessage(sender, content) {
+                const message = document.createElement('div');
+                message.className = `message ${sender}`;
+                message.textContent = content;
+                
+                elements.chatContainer.appendChild(message);
+                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+                
+                AppState.chatMessages.push({ sender, content, timestamp: new Date() });
+                Logger.log(`添加消息 [${sender}]: ${content}`, 'info');
+            }
+            
+            static showChatWindow() {
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.show) {
+                    window.APPFLOW_CHAT_SDK.show();
+                    Logger.log('显示AI聊天窗口', 'info');
+                    this.addMessage('system', '💬 AI聊天窗口已显示');
+                } else {
+                    Logger.log('无法显示聊天窗口：SDK未就绪', 'warn');
+                    this.addMessage('system', '⚠️ AI聊天窗口不可用');
+                }
+            }
+            
+            static hideChatWindow() {
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.hide) {
+                    window.APPFLOW_CHAT_SDK.hide();
+                    Logger.log('隐藏AI聊天窗口', 'info');
+                    this.addMessage('system', '🙈 AI聊天窗口已隐藏');
+                } else {
+                    Logger.log('无法隐藏聊天窗口：SDK未就绪', 'warn');
+                }
+            }
+            
+            static clearChat() {
+                elements.chatContainer.innerHTML = '<div class="message system">聊天记录已清空</div>';
+                AppState.chatMessages = [];
+                Logger.log('清空聊天记录', 'info');
+            }
+            
+            static sendTestMessage() {
+                const testMessages = [
+                    "你好，我是语音助手测试消息",
+                    "请问今天天气如何？",
+                    "帮我查询一下路线信息",
+                    "语音识别功能正在测试中"
+                ];
+                
+                const randomMessage = testMessages[Math.floor(Math.random() * testMessages.length)];
+                
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.sendMessage) {
+                    window.APPFLOW_CHAT_SDK.sendMessage(randomMessage);
+                    this.addMessage('user', randomMessage);
+                    Logger.log(`发送测试消息: ${randomMessage}`, 'info');
+                } else {
+                    Logger.log('无法发送消息：SDK未就绪', 'warn');
+                    this.addMessage('system', '⚠️ 无法发送消息，SDK未就绪');
+                }
+            }
+        }
+        
+        // AI集成系统
+        class AIIntegration {
+            static processVoiceInput(voiceText) {
+                Logger.log(`处理语音输入: ${voiceText}`, 'info');
+                
+                // 语音内容预处理
+                const processedText = this.preprocessVoice(voiceText);
+                
+                // 发送给AI聊天机器人
+                if (window.APPFLOW_CHAT_SDK && window.APPFLOW_CHAT_SDK.sendMessage) {
+                    window.APPFLOW_CHAT_SDK.sendMessage(processedText);
+                    ChatManager.addMessage('user', `🧠 ${processedText}`);
+                    Logger.log('语音内容已发送给AI', 'success');
+                } else {
+                    Logger.log('AI SDK未就绪，无法处理语音输入', 'warn');
+                }
+            }
+            
+            static preprocessVoice(text) {
+                // 简单的文本预处理
+                let processed = text.trim();
+                
+                // 添加礼貌用语
+                if (!processed.includes('请') && !processed.includes('帮') && !processed.includes('谢谢')) {
+                    processed = `请帮我${processed}`;
+                }
+                
+                // 确保以问号或句号结尾
+                if (!processed.endsWith('？') && !processed.endsWith('?') && 
+                    !processed.endsWith('。') && !processed.endsWith('.')) {
+                    processed += '？';
+                }
+                
+                return processed;
+            }
+            
+            static enableIntegration() {
+                AppState.isIntegrationEnabled = true;
+                Logger.log('启用语音-AI集成模式', 'success');
+                ChatManager.addMessage('system', '🚀 集成模式已启用');
+            }
+            
+            static testIntegration() {
+                const testVoiceInputs = [
+                    "今天天气怎么样",
+                    "帮我查询附近的餐厅",
+                    "我想了解一下路线规划",
+                    "语音集成测试中"
+                ];
+                
+                const randomInput = testVoiceInputs[Math.floor(Math.random() * testVoiceInputs.length)];
+                Logger.log(`测试集成功能，模拟语音输入: ${randomInput}`, 'info');
+                
+                // 模拟语音识别结果
+                elements.transcriptArea.innerHTML = `<div style="color: #28a745;">🧪 测试: ${randomInput}</div>`;
+                
+                // 处理输入
+                this.processVoiceInput(randomInput);
+            }
+        }
+        
+        // SDK 检测和初始化
+        class SDKManager {
+            static async checkSDK() {
+                Logger.log('开始检测 Appflow Chat SDK...', 'info');
+                
+                // 等待SDK加载
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    
+                    if (window.APPFLOW_CHAT_SDK) {
+                        clearInterval(checkInterval);
+                        this.initializeSDK();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        this.handleSDKFailure();
+                    } else {
+                        Logger.log(`等待SDK加载... (${attempts}/${maxAttempts})`, 'info');
+                        elements.sdkStatus.textContent = `⏳ 等待SDK加载 (${attempts}/${maxAttempts})`;
+                    }
+                }, 1000);
+            }
+            
+            static initializeSDK() {
+                try {
+                    Logger.log('SDK已加载，开始初始化...', 'info');
+                    
+                    const config = {
+                        integrateConfig: {
+                            integrateId: 'cit-44fd57644e264fecabe0',
+                            domain: {
+                                requestDomain: 'https://1677039950952251.appflow.aliyunnest.com'
+                            }
+                        }
+                    };
+                    
+                    window.APPFLOW_CHAT_SDK.init(config);
+                    
+                    AppState.isSDKReady = true;
+                    elements.sdkStatus.innerHTML = `
+                        <span style="color: #28a745;">✅ SDK初始化成功</span><br>
+                        <small>集成ID: ${config.integrateConfig.integrateId}</small>
+                    `;
+                    
+                    Logger.log('Appflow Chat SDK 初始化成功', 'success');
+                    
+                    // 监听SDK事件
+                    this.bindSDKEvents();
+                    
+                } catch (error) {
+                    Logger.log(`SDK初始化失败: ${error.message}`, 'error');
+                    this.handleSDKFailure();
+                }
+            }
+            
+            static handleSDKFailure() {
+                elements.sdkStatus.innerHTML = `
+                    <span style="color: #dc3545;">❌ SDK初始化失败</span><br>
+                    <small>请检查网络连接和配置</small>
+                `;
+                Logger.log('SDK初始化失败，某些功能可能不可用', 'error');
+            }
+            
+            static bindSDKEvents() {
+                // 监听可能的SDK事件
+                window.addEventListener('appflowChatReady', (event) => {
+                    Logger.log('AI聊天机器人已准备就绪', 'success');
+                    ChatManager.addMessage('system', '🤖 AI聊天机器人已上线');
+                });
+                
+                window.addEventListener('appflowChatMessage', (event) => {
+                    Logger.log(`收到AI回复: ${event.detail}`, 'info');
+                    ChatManager.addMessage('ai', `🤖 ${event.detail}`);
+                });
+                
+                window.addEventListener('appflowChatError', (event) => {
+                    Logger.log(`AI聊天错误: ${event.detail}`, 'error');
+                    ChatManager.addMessage('system', `❌ AI错误: ${event.detail}`);
+                });
+            }
+        }
+        
+        // 初始化系统
+        async function initializeApp() {
+            Logger.log('开始初始化应用程序...', 'info');
+            
+            // 检测和初始化SDK
+            await SDKManager.checkSDK();
+            
+            // 初始化语音识别
+            const voiceRecognition = new VoiceRecognition();
+            
+            // 绑定事件监听器
+            bindEventListeners(voiceRecognition);
+            
+            Logger.log('应用程序初始化完成', 'success');
+        }
+        
+        // 绑定事件监听器
+        function bindEventListeners(voiceRecognition) {
+            // 语音按钮
+            elements.voiceButton.addEventListener('click', () => {
+                if (voiceRecognition.isListening) {
+                    voiceRecognition.stop();
+                } else {
+                    voiceRecognition.start();
+                }
+            });
+            
+            // 控制按钮
+            document.getElementById('testVoiceBtn').addEventListener('click', () => {
+                voiceRecognition.processVoiceCommand('这是一个语音测试消息');
+            });
+            
+            document.getElementById('clearTranscriptBtn').addEventListener('click', () => {
+                elements.transcriptArea.textContent = '语音识别结果将显示在这里...';
+            });
+            
+            document.getElementById('helpBtn').addEventListener('click', () => {
+                voiceRecognition.showVoiceCommands();
+            });
+            
+            document.getElementById('showChatBtn').addEventListener('click', () => {
+                ChatManager.showChatWindow();
+            });
+            
+            document.getElementById('hideChatBtn').addEventListener('click', () => {
+                ChatManager.hideChatWindow();
+            });
+            
+            document.getElementById('sendTestMsgBtn').addEventListener('click', () => {
+                ChatManager.sendTestMessage();
+            });
+            
+            document.getElementById('clearChatBtn').addEventListener('click', () => {
+                ChatManager.clearChat();
+            });
+            
+            document.getElementById('enableIntegrationBtn').addEventListener('click', () => {
+                AIIntegration.enableIntegration();
+            });
+            
+            document.getElementById('testIntegrationBtn').addEventListener('click', () => {
+                AIIntegration.testIntegration();
+            });
+            
+            document.getElementById('exportConfigBtn').addEventListener('click', () => {
+                const config = {
+                    appState: AppState,
+                    timestamp: new Date().toISOString(),
+                    integration: {
+                        sdkReady: AppState.isSDKReady,
+                        voiceSupported: voiceRecognition.isSupported,
+                        integrationEnabled: AppState.isIntegrationEnabled
+                    }
+                };
+                
+                const blob = new Blob([JSON.stringify(config, null, 2)], {
+                    type: 'application/json'
+                });
+                
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'voice-ai-integration-config.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                Logger.log('配置文件已导出', 'success');
+            });
+        }
+        
+        // 页面加载完成后启动应用
+        window.addEventListener('load', initializeApp);
+        
+        // 错误处理
+        window.addEventListener('error', (event) => {
+            Logger.log(`全局错误: ${event.message}`, 'error');
+        });
+        
+        // 在页面卸载前清理
+        window.addEventListener('beforeunload', () => {
+            Logger.log('应用程序正在关闭...', 'info');
+        });
+    </script>
+</body>
+</html>
