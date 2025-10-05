@@ -1,6 +1,19 @@
 <template>
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 
+  <!-- 全局加载遮罩：主建筑/管线等初始化阶段显示 -->
+  <div v-if="loading.show" class="loading-overlay">
+    <div class="panel">
+      <h3>场景加载中</h3>
+      <div class="bar"><div class="bar-inner" :style="{ width: loading.progress + '%' }" /></div>
+      <p class="msg">{{ loading.message }} · {{ loading.progress.toFixed(0) }}%</p>
+      <div class="hints">
+        <div v-for="h in loading.hints" :key="h" class="hint">• {{ h }}</div>
+      </div>
+      <button v-if="loading.canCancel" class="cancel-btn" @click="cancelHeavyLoads">跳过次要资源</button>
+    </div>
+  </div>
+
   <!-- 图层面板（右上角） -->
   <div class="layer-panel">
     <div class="row title">图层</div>
@@ -188,6 +201,31 @@ const ui = reactive({
   // 剖面分析缓冲距离（米）
   sectionBuffer: 50
 })
+
+// 加载状态（不引入外部 store，局部即可）
+const loading = reactive({
+  show: true,
+  progress: 0,
+  message: '初始化...',
+  hints: ['启用 requestRenderMode 节能', '按需加载 3D Tiles'],
+  canCancel: false,
+  aborted: false
+})
+
+function setLoading(step, total, message) {
+  loading.message = message
+  loading.progress = Math.min(99, (step / total) * 100)
+}
+function finishLoading() {
+  loading.progress = 100
+  loading.message = '完成'
+  setTimeout(() => (loading.show = false), 500)
+}
+function cancelHeavyLoads() {
+  loading.aborted = true
+  loading.canCancel = false
+  loading.hints.push('已跳过：管线/次要扩展资源')
+}
 
 // 管线分析状态
 const sectionMode = ref(false)
@@ -715,8 +753,17 @@ function formatLength(l) {
 }
 
 onMounted(async () => {
-  Cesium.Ion.defaultAccessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZTFmMDI1YS05MTRkLTRhMzYtYTNiZi0wYmM2YTdlYjU5ODMiLCJpZCI6MjIwNDYzLCJpYXQiOjE3MTc2NTIwMDF9.U1PZjG0GiZdXjIvHRyAGsHRMveUVQdINghXIfF6xJDE'
+  // 1) 注入 Cesium Ion Token（来自 .env.local）
+  const token = import.meta.env.VITE_CESIUM_ION_TOKEN
+  if (token) {
+    Cesium.Ion.defaultAccessToken = token
+  } else {
+    console.warn('[Cesium] 未配置 VITE_CESIUM_ION_TOKEN，某些在线服务可能不可用')
+    loading.hints.push('未配置 Token：在线地形/影像可能降级')
+  }
+  let step = 0
+  const total = 7
+  setLoading(++step, total, '创建 Viewer')
 
   // 1) Viewer：按需渲染 + 冻结时钟 + 降后处理
   const viewer = new Cesium.Viewer('cesiumContainer', {
@@ -750,13 +797,22 @@ onMounted(async () => {
   viewer.resolutionScale = 0.75 // 视效与负载的折中
 
   const poke = () => viewer.scene.requestRender()
-  viewer.camera.changed.addEventListener(poke)
+  // 摄像机变动节流，减少 requestRender 调用频率
+  let lastCam = 0
+  viewer.camera.changed.addEventListener(() => {
+    const now = performance.now()
+    if (now - lastCam > 150) {
+      lastCam = now
+      poke()
+    }
+  })
   window.addEventListener('resize', poke)
   // 存下全局引用用于其他顶层方法
   viewerRef.value = viewer
 
-  // 2) 创建数据源管理器并加载所有数据
+  // 2) 数据源管理器
   dataSourceManager = new DataSourceManager(viewer)
+  setLoading(++step, total, '初始化数据源管理器')
   
   // 管线地形透明度设置
   viewer.scene.screenSpaceCameraController.enableCollisionDetection = false
@@ -767,7 +823,15 @@ onMounted(async () => {
   
   // 批量加载所有预定义数据源
   console.log('开始加载数据源...')
-  const loadedSources = await dataSourceManager.loadPredefinedDataSources()
+  setLoading(++step, total, '加载关键 3D Tiles / GeoJSON')
+  let loadedSources = new Map()
+  try {
+    loadedSources = await dataSourceManager.loadPredefinedDataSources()
+  } catch (e) {
+    loading.hints.push('部分关键数据加载失败')
+    console.error(e)
+  }
+  setLoading(++step, total, '初始化可视范围')
   
   // 获取主要建筑数据用于缩放
   const osgb = dataSourceManager.getDataSource('osgb')
@@ -790,6 +854,9 @@ onMounted(async () => {
   
   console.log(`数据源加载完成: ${loadedSources.size} 个数据源`)
   poke()
+  setLoading(++step, total, '启动交互/事件绑定')
+  setLoading(++step, total, '最终整理')
+  finishLoading()
 
   // 4) 点击高亮 + 红点跳转（共用一个 handler）
   let lastSelected = null
@@ -1613,6 +1680,18 @@ const redPoints = [
 * { box-sizing: border-box; padding: 0; margin: 0; }
 #app { margin: 0; padding: 0; }
 #cesiumContainer { width: 100vw; height: 100vh; }
+
+/* 加载遮罩 */
+.loading-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(6px); background: rgba(0,0,0,.45); }
+.loading-overlay .panel { width: 380px; max-width: 90%; background: rgba(30,30,30,.85); padding: 22px 24px 28px; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; box-shadow: 0 6px 32px rgba(0,0,0,.4); color: #e8edf2; font-size: 13px; }
+.loading-overlay h3 { margin: 0 0 14px; font-size: 18px; font-weight: 600; letter-spacing: .5px; color: #fff; }
+.loading-overlay .bar { height: 8px; width: 100%; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.loading-overlay .bar-inner { height: 100%; background: linear-gradient(90deg,#2f7cf6,#4cb7ff); width: 0; transition: width .35s cubic-bezier(.4,0,.2,1); }
+.loading-overlay .msg { margin: 4px 0 10px; font-variant-numeric: tabular-nums; opacity: .9; }
+.loading-overlay .hints { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; max-height: 120px; overflow: auto; }
+.loading-overlay .hint { opacity: .75; line-height: 1.3; }
+.loading-overlay .cancel-btn { background: #ff9f1c; border: none; color: #1e1e1e; font-weight: 600; padding: 8px 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.loading-overlay .cancel-btn:hover { background: #ffb243; }
 
 /* Fluent 设计风格图层面板（右上角） */
 .layer-panel {
