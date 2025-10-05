@@ -76,7 +76,7 @@ function rowClass(centerKey: string, hub: any) {
 </script>
 
 <style scoped>
-.center-logistics-view { font:14px/1.5 system-ui; }
+.center-logistics-view { font:14px/1.5 system-ui; color:#111; }
 .toolbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin-bottom:1rem; }
 .toolbar input { padding:.45rem .6rem; border:1px solid #ccc; border-radius:4px; min-width:240px; }
 .toolbar button { padding:.45rem .9rem; border:none; background:#2563eb; color:#fff; border-radius:4px; cursor:pointer; }
@@ -95,15 +95,15 @@ button.mini { background:#64748b; padding:.25rem .6rem; font-size:12px; }
 button.mini:hover { background:#475569; }
 .hub-table { width:100%; border-collapse:collapse; font-size:13px; }
 .hub-table th, .hub-table td { border:1px solid #e2e8f0; padding:.35rem .45rem; text-align:left; vertical-align:top; }
-.hub-table th { background:#1f2937; color:#f1f5f9; font-weight:600; letter-spacing:.5px; }
-.hub-table tbody tr:nth-child(odd) { background:#ffffff; }
-.hub-table tbody tr:nth-child(even) { background:#f8fafc; }
-.hub-table tbody tr:hover { background:#ffeab6; }
-.hub-table tbody tr.hit { background:#fde68a !important; box-shadow:inset 0 0 0 1px #d97706; }
-.code-cell { font-weight:600; color:#111827; }
+.hub-table th { background:#e5e7eb; color:#111; font-weight:600; letter-spacing:.5px; }
+.hub-table tbody tr:nth-child(odd) { background:#ffffff; color:#111; }
+.hub-table tbody tr:nth-child(even) { background:#f8fafc; color:#111; }
+.hub-table tbody tr:hover { background:#fff4d6; }
+.hub-table tbody tr.hit { background:#fde68a !important; box-shadow:inset 0 0 0 1px #d97706; color:#111; }
+.code-cell { font-weight:600; color:#111; }
 .center-block { box-shadow:0 1px 2px rgba(0,0,0,.04); }
-.center-block header { background:linear-gradient(90deg,#1e3a8a,#1d4ed8); color:#fff; }
-.center-block h2 small { color:#e2e8f0; }
+.center-block header { background:#f1f5f9; color:#111; }
+.center-block h2 small { color:#555; }
 button.mini { background:#334155; }
 button.mini:hover { background:#1e293b; }
 .toolbar button { background:#0f62fe; }

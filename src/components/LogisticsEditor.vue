@@ -192,9 +192,9 @@ loadCenters();
 </script>
 
 <style scoped>
-.logistics-editor { border:1px solid #e5e7eb; padding:1rem; border-radius:8px; background:#fff; font:14px/1.5 system-ui; }
+.logistics-editor { border:1px solid #e5e7eb; padding:1rem; border-radius:8px; background:#fff; font:14px/1.5 system-ui; color:#111; }
 .row { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; flex-wrap:wrap; }
-.row label { width:90px; font-weight:600; }
+.row label { width:90px; font-weight:600; color:#111; }
 .row input, .row select, .row textarea { flex:1; min-width:220px; padding:.45rem .6rem; border:1px solid #cbd5e1; border-radius:4px; font:inherit; }
 .row textarea { resize:vertical; }
 .actions button { min-width:90px; }
