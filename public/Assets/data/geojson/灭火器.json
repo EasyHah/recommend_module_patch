@@ -1,0 +1,950 @@
+{
+  "type" : "FeatureCollection",
+  "features" : [
+    {
+      "type" : "Feature",
+      "id" : 0,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22645154529999,
+          35.106473270999999
+        ]
+      },
+      "properties" : {
+        "FID" : 0,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 1,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22645154529999,
+          35.106172308600001
+        ]
+      },
+      "properties" : {
+        "FID" : 1,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 2,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281683194,
+          35.106473270999999
+        ]
+      },
+      "properties" : {
+        "FID" : 2,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 3,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281683194,
+          35.106172308600001
+        ]
+      },
+      "properties" : {
+        "FID" : 3,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 4,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2264337452,
+          35.105578112700002
+        ]
+      },
+      "properties" : {
+        "FID" : 4,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 5,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2264337452,
+          35.105277150200003
+        ]
+      },
+      "properties" : {
+        "FID" : 5,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 6,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281505193,
+          35.105578112700002
+        ]
+      },
+      "properties" : {
+        "FID" : 6,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 7,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281505193,
+          35.105277150200003
+        ]
+      },
+      "properties" : {
+        "FID" : 7,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 8,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22641524239999,
+          35.104706141299999
+        ]
+      },
+      "properties" : {
+        "FID" : 8,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 9,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22641524239999,
+          35.1044051788
+        ]
+      },
+      "properties" : {
+        "FID" : 9,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 10,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281320165,
+          35.104706141299999
+        ]
+      },
+      "properties" : {
+        "FID" : 10,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 11,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281320165,
+          35.1044051788
+        ]
+      },
+      "properties" : {
+        "FID" : 11,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 12,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22640060419999,
+          35.103871760899999
+        ]
+      },
+      "properties" : {
+        "FID" : 12,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 13,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22640060419999,
+          35.103570798500002
+        ]
+      },
+      "properties" : {
+        "FID" : 13,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 14,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281173783,
+          35.103871760899999
+        ]
+      },
+      "properties" : {
+        "FID" : 14,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 15,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2281173783,
+          35.103570798500002
+        ]
+      },
+      "properties" : {
+        "FID" : 15,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 16,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22638678760001,
+          35.103003428999997
+        ]
+      },
+      "properties" : {
+        "FID" : 16,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 17,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22638678760001,
+          35.102599047200002
+        ]
+      },
+      "properties" : {
+        "FID" : 17,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 18,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2276969112,
+          35.103003428999997
+        ]
+      },
+      "properties" : {
+        "FID" : 18,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 19,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2276969112,
+          35.102599047200002
+        ]
+      },
+      "properties" : {
+        "FID" : 19,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 20,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22637004800001,
+          35.101985861300001
+        ]
+      },
+      "properties" : {
+        "FID" : 20,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 21,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2276801715,
+          35.101985861300001
+        ]
+      },
+      "properties" : {
+        "FID" : 21,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 22,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22637004800001,
+          35.101495479900002
+        ]
+      },
+      "properties" : {
+        "FID" : 22,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 23,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2276801715,
+          35.101495479900002
+        ]
+      },
+      "properties" : {
+        "FID" : 23,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 24,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22613709399999,
+          35.100915381900002
+        ]
+      },
+      "properties" : {
+        "FID" : 24,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 25,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2261260009,
+          35.1004852688
+        ]
+      },
+      "properties" : {
+        "FID" : 25,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 26,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2261260009,
+          35.100232759000001
+        ]
+      },
+      "properties" : {
+        "FID" : 26,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 27,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2273336567,
+          35.1004852688
+        ]
+      },
+      "properties" : {
+        "FID" : 27,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 28,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2273336567,
+          35.100232759000001
+        ]
+      },
+      "properties" : {
+        "FID" : 28,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 29,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2262049932,
+          35.099906284399999
+        ]
+      },
+      "properties" : {
+        "FID" : 29,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 30,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.227311645,
+          35.099774540200002
+        ]
+      },
+      "properties" : {
+        "FID" : 30,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 31,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2275077976,
+          35.099754046599998
+        ]
+      },
+      "properties" : {
+        "FID" : 31,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 32,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22862679249999,
+          35.099875055600002
+        ]
+      },
+      "properties" : {
+        "FID" : 32,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 33,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2292494861,
+          35.099875055600002
+        ]
+      },
+      "properties" : {
+        "FID" : 33,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 34,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2291297159,
+          35.100588426999998
+        ]
+      },
+      "properties" : {
+        "FID" : 34,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 35,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2291297159,
+          35.100081943500001
+        ]
+      },
+      "properties" : {
+        "FID" : 35,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 36,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2275341464,
+          35.100461806200002
+        ]
+      },
+      "properties" : {
+        "FID" : 36,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 37,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2275341464,
+          35.100208564399999
+        ]
+      },
+      "properties" : {
+        "FID" : 37,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 38,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2290061913,
+          35.100915381900002
+        ]
+      },
+      "properties" : {
+        "FID" : 38,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 39,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2290570821,
+          35.101962989
+        ]
+      },
+      "properties" : {
+        "FID" : 39,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 40,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2290570821,
+          35.101472607600002
+        ]
+      },
+      "properties" : {
+        "FID" : 40,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 41,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22774695859999,
+          35.101472607600002
+        ]
+      },
+      "properties" : {
+        "FID" : 41,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 42,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22774695859999,
+          35.101962989
+        ]
+      },
+      "properties" : {
+        "FID" : 42,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 43,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2277847407,
+          35.102985131099999
+        ]
+      },
+      "properties" : {
+        "FID" : 43,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 44,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2277847407,
+          35.102580749399998
+        ]
+      },
+      "properties" : {
+        "FID" : 44,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 45,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2295000511,
+          35.102583091600003
+        ]
+      },
+      "properties" : {
+        "FID" : 45,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 46,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2295000511,
+          35.102987473299997
+        ]
+      },
+      "properties" : {
+        "FID" : 46,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 47,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2285541225,
+          35.103843296400001
+        ]
+      },
+      "properties" : {
+        "FID" : 47,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 48,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2285541225,
+          35.103543212300004
+        ]
+      },
+      "properties" : {
+        "FID" : 48,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 49,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2301423728,
+          35.103543212300004
+        ]
+      },
+      "properties" : {
+        "FID" : 49,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 50,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2301423728,
+          35.103843296400001
+        ]
+      },
+      "properties" : {
+        "FID" : 50,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 51,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.23046146990001,
+          35.104669476700003
+        ]
+      },
+      "properties" : {
+        "FID" : 51,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 52,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.23046146990001,
+          35.104368514299999
+        ]
+      },
+      "properties" : {
+        "FID" : 52,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 53,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2285784052,
+          35.104368514299999
+        ]
+      },
+      "properties" : {
+        "FID" : 53,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 54,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2285784052,
+          35.104669476700003
+        ]
+      },
+      "properties" : {
+        "FID" : 54,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 55,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22858279259999,
+          35.105241644700001
+        ]
+      },
+      "properties" : {
+        "FID" : 55,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 56,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22858279259999,
+          35.105558196899999
+        ]
+      },
+      "properties" : {
+        "FID" : 56,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 57,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.23065044569999,
+          35.105558196899999
+        ]
+      },
+      "properties" : {
+        "FID" : 57,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 58,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.23065044569999,
+          35.105241644700001
+        ]
+      },
+      "properties" : {
+        "FID" : 58,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 59,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2306687435,
+          35.106458449400002
+        ]
+      },
+      "properties" : {
+        "FID" : 59,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 60,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.2306687435,
+          35.106141897199997
+        ]
+      },
+      "properties" : {
+        "FID" : 60,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 61,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22860109040001,
+          35.106458449400002
+        ]
+      },
+      "properties" : {
+        "FID" : 61,
+        "SmUserID" : 0
+      }
+    },
+    {
+      "type" : "Feature",
+      "id" : 62,
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [
+          118.22860109040001,
+          35.106141897199997
+        ]
+      },
+      "properties" : {
+        "FID" : 62,
+        "SmUserID" : 0
+      }
+    }
+  ]
+}

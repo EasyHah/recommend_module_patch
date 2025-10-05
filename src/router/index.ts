@@ -7,6 +7,7 @@ import FireEvacuation from '@/views/FireEvacuation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import LKETest from '@/views/LKETest.vue'
+import Logistics from '@/views/Logistics.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,7 +19,8 @@ const router = createRouter({
     { path:'/video-recognition', name:'video-recognition', component: VideoRecognition },
     { path:'/fire-evacuation', name:'fire-evacuation', component: FireEvacuation },
     { path:'/', name:'dashboard', component: Dashboard },
-    { path:'/lke-test', name:'lke-test', component: LKETest }
+  { path:'/lke-test', name:'lke-test', component: LKETest },
+  { path:'/logistics', name:'logistics', component: Logistics }
   ]
 })
 

@@ -22,8 +22,8 @@
           </div>
 
           <div class="btn-row">
-            <BaseButton variant="primary" @click="calcRoute">规划路线</BaseButton>
-            <BaseButton variant="outline" :disabled="!routeReady" @click="pushToRecommend">用此路线做推荐</BaseButton>
+            <button class="btn primary" @click="calcRoute">规划路线</button>
+            <button class="btn" :disabled="!routeReady" @click="pushToRecommend">用此路线做推荐</button>
           </div>
 
           <p v-if="error" class="error">{{ error }}</p>
@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/base/BaseButton.vue'
 import { onMounted, ref } from 'vue'
 import { publishBridge } from '@/bridge/routeBridge'
 import type { LatLng } from '@/types/recommend'
@@ -184,7 +183,9 @@ onMounted(async () => {
 .form-col{ display:flex; flex-direction:column; gap:10px; }
 .row{ display:grid; grid-template-columns: 100px 1fr; gap:10px; align-items:center; }
 .btn-row{ display:flex; gap:8px; }
-/* 旧按钮样式已统一迁移为 BaseButton 组件 */
+.btn{ padding:8px 12px; border-radius:8px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+.btn.primary{ background:#2f7cf6; color:#fff; border-color:#2f7cf6; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
 .error{ color:#d33; margin-top:6px; }
 .metrics{ margin-top:8px; opacity:.85; }
 .map{ width: 100%; height: 560px; border-radius: 12px; border: 1px solid rgba(0,0,0,.08); overflow:hidden; }

@@ -6,19 +6,43 @@
         <button class="close-btn" @click="closeModal">×</button>
       </div>
       <div class="panorama-container" ref="panoContainer">
+        <!-- 加载状态 -->
         <div class="loading-indicator" v-if="loading">
-          <div class="spinner"></div>
-          <p>正在加载全景图像...</p>
+            <div class="spinner"></div>
+            <p>正在加载全景图像...</p>
         </div>
-        <div class="error-message" v-if="error">
-          <p>{{ error }}</p>
-          <button @click="retryLoad">重试</button>
+        <!-- 错误提示 -->
+        <div class="error-message" v-else-if="error">
+            <p>{{ error }}</p>
+            <button @click="retryLoad">重试</button>
+        </div>
+        <!-- 外部 iframe 模式 -->
+        <div v-else-if="mode==='external'" class="external-panorama">
+          <div class="external-info">
+            <h4>外部全景链接</h4>
+            <p>下方为嵌入预览，可点击按钮新窗口打开</p>
+            <a class="external-btn" :href="externalUrl" target="_blank" rel="noopener">🌐 打开全景查看器</a>
+            <div class="preview-frame">
+              <iframe :src="externalUrl" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+        <!-- Marzipano / 图片模式容器（Marzipano 会往里插入 DOM） -->
+        <div v-else-if="mode==='marzi' || mode==='image'" class="marzipano-wrapper" />
+        <!-- 初始/空状态 -->
+        <div v-else class="marzipano-placeholder">
+          <div class="placeholder-content">
+            <div class="panorama-icon">🛰️</div>
+            <h4>全景查看器</h4>
+            <p>请选择地图中的全景点</p>
+            <small>支持本地立方体全景与外部 URL</small>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <div class="controls">
-          <button @click="resetView" title="重置视角">重置视角</button>
-          <button @click="toggleFullscreen" title="全屏">{{ fullscreen ? '退出全屏' : '全屏' }}</button>
+          <button @click="resetView" :disabled="!viewer" title="重置视角">重置视角</button>
+          <button @click="toggleFullscreen" title="全屏" :disabled="!panoContainer">{{ fullscreen ? '退出全屏' : '全屏' }}</button>
         </div>
         <div class="info">
           <p v-if="currentPanoInfo">{{ currentPanoInfo.name || '全景点位' }}</p>
@@ -48,85 +72,88 @@ const loading = ref(false)
 const error = ref('')
 const fullscreen = ref(false)
 const currentPanoInfo = ref(null)
+// 渲染模式：'' | external | marzi | image
+const mode = ref('')
+const externalUrl = ref('')
+let loadCounter = 0
+let isAlive = true
 
 // Marzipano viewer 实例
 let viewer = null
 
 // 关闭弹窗
 function closeModal() {
+  // 先通知父组件关闭modal（这会触发v-if=false）
   emit('close')
-  if (viewer) {
-    viewer.destroy()
-    viewer = null
-  }
+  // 延迟清理内部状态，确保DOM销毁前完成清理
+  requestAnimationFrame(() => {
+    if (viewer) {
+      try { viewer.destroy() } catch { /* ignore */ }
+      viewer = null
+    }
+    mode.value = ''
+    externalUrl.value = ''
+    error.value = ''
+    loading.value = false
+    loadCounter++ // 取消所有pending的加载
+  })
 }
 
 // 加载全景图像
 async function loadPanorama(panoUrl, info = null) {
-  if (!panoContainer.value) return
-  
+  loadCounter++
+  const token = loadCounter
+  if (!panoContainer.value || !isAlive) return
   loading.value = true
   error.value = ''
   currentPanoInfo.value = info
-  
+  mode.value = ''
+  externalUrl.value = ''
+
   try {
-    // 如果已有 viewer，先销毁
-    if (viewer) {
-      viewer.destroy()
-      viewer = null
-    }
-    
-    // 等待 DOM 更新
+    // 销毁旧 viewer
+    if (viewer) { try { viewer.destroy() } catch {} viewer = null }
+
     await nextTick()
-    
-    // 检查是否是外部全景 URL（如现有的 HTTP 链接）
+    if (token !== loadCounter || !isAlive) return
+
     if (panoUrl.startsWith('http')) {
-      // 对于外部链接，我们创建一个简单的 iframe 展示
-      // 或者显示提示信息引导用户到外部链接
-      createExternalLinkView(panoUrl)
+      // 外部链接模式
+      externalUrl.value = panoUrl
+      mode.value = 'external'
     } else {
-      // 对于本地全景资源，使用 Marzipano
-      await createMarzipanoViewer(panoUrl)
+      // 本地全景或图片
+      await createMarzipanoViewer(panoUrl, token)
     }
-    
   } catch (err) {
-    console.error('加载全景失败:', err)
-    error.value = '加载全景图像失败，请检查资源是否存在'
+    if (token === loadCounter) {
+      console.error('加载全景失败:', err)
+      error.value = '加载全景图像失败，请检查资源是否存在'
+    }
   } finally {
-    loading.value = false
+    if (token === loadCounter) loading.value = false
   }
 }
 
-// 创建外部链接视图
-function createExternalLinkView(url) {
-  const container = panoContainer.value
-  container.innerHTML = `
-    <div class="external-panorama">
-      <div class="external-info">
-        <h4>外部全景链接</h4>
-        <p>点击下方按钮在新窗口中查看全景</p>
-        <button class="external-btn" onclick="window.open('${url}', '_blank')">
-          🌐 打开全景查看器
-        </button>
-        <div class="preview-frame">
-          <iframe src="${url}" frameborder="0" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  `
-}
+// 已弃用的直接 DOM 注入被移除，改为模板分支渲染 external 模式
 
 // 创建 Marzipano 查看器
-async function createMarzipanoViewer(imagePath) {
+async function createMarzipanoViewer(imagePath, token) {
   try {
     // 动态加载 Marzipano 库
     await loadMarzipanoScript()
     
+    if (token !== loadCounter || !isAlive) return
     const container = panoContainer.value
-    container.innerHTML = '' // 清空容器
+    if (!container) return
+    // 找到模板里为 Marzipano 预留的 wrapper
+    const wrapper = container.querySelector('.marzipano-wrapper')
+    if (!wrapper) return
+    // 清空 wrapper
+    while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild)
     
     // 创建 Marzipano viewer
-    viewer = new window.Marzipano.Viewer(container)
+    viewer = new window.Marzipano.Viewer(wrapper)
     
     // 检查是否是本地全景资源路径
     if (imagePath.includes('project-title')) {
@@ -136,6 +163,7 @@ async function createMarzipanoViewer(imagePath) {
       // 尝试作为单张全景图片加载
       await loadImagePanorama(imagePath)
     }
+    mode.value = imagePath.includes('project-title') ? 'marzi' : 'image'
   } catch (error) {
     console.error('Marzipano 初始化失败:', error)
     throw new Error('全景查看器初始化失败')
@@ -263,6 +291,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  isAlive = false
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
   if (viewer) {
     viewer.destroy()
@@ -272,7 +301,8 @@ onUnmounted(() => {
 
 // 暴露方法供父组件调用
 defineExpose({
-  loadPanorama
+  loadPanorama,
+  closeModal
 })
 </script>
 

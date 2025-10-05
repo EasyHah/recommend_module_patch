@@ -1,18 +1,6 @@
 <template>
+  <div class="map-root" v-bind="$attrs">
   <div id="cesiumContainer" ref="cesiumContainer"></div>
-
-  <!-- 全局加载遮罩：主建筑/管线等初始化阶段显示 -->
-  <div v-if="loading.show" class="loading-overlay">
-    <div class="panel">
-      <h3>场景加载中</h3>
-      <div class="bar"><div class="bar-inner" :style="{ width: loading.progress + '%' }" /></div>
-      <p class="msg">{{ loading.message }} · {{ loading.progress.toFixed(0) }}%</p>
-      <div class="hints">
-        <div v-for="h in loading.hints" :key="h" class="hint">• {{ h }}</div>
-      </div>
-      <button v-if="loading.canCancel" class="cancel-btn" @click="cancelHeavyLoads">跳过次要资源</button>
-    </div>
-  </div>
 
   <!-- 图层面板（右上角） -->
   <div class="layer-panel">
@@ -20,6 +8,9 @@
     <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
     <label class="row"><input type="checkbox" v-model="ui.ck"> 分类 CK</label>
     <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
+    <label class="row"><input type="checkbox" v-model="ui.floors"> 楼层抽屉</label>
+    <label class="row"><input type="checkbox" v-model="ui.facilities"> 设施标注</label>
+    <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
     <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
 
     <div class="row sep"></div>
@@ -160,7 +151,8 @@
   <PanoramaViewer 
     ref="panoramaViewer"
     :visible="panoramaModal.show" 
-    @close="closePanorama" />
+    @close="onPanoramaClosed" />
+  </div>
 </template>
 
 <script setup>
@@ -185,6 +177,9 @@ const ui = reactive({
   osgb: true,
   ck: true,
   geo: true,
+  floors: true,          // 楼层抽屉开关
+  facilities: true,      // 设施标注开关
+  fireExtinguishers: true, // 灭火器开关
   pano: true,
   pipelines: true,     // 管线图层开关
   terrainAlpha: 0.35,  // 地形透明度
@@ -201,31 +196,6 @@ const ui = reactive({
   // 剖面分析缓冲距离（米）
   sectionBuffer: 50
 })
-
-// 加载状态（不引入外部 store，局部即可）
-const loading = reactive({
-  show: true,
-  progress: 0,
-  message: '初始化...',
-  hints: ['启用 requestRenderMode 节能', '按需加载 3D Tiles'],
-  canCancel: false,
-  aborted: false
-})
-
-function setLoading(step, total, message) {
-  loading.message = message
-  loading.progress = Math.min(99, (step / total) * 100)
-}
-function finishLoading() {
-  loading.progress = 100
-  loading.message = '完成'
-  setTimeout(() => (loading.show = false), 500)
-}
-function cancelHeavyLoads() {
-  loading.aborted = true
-  loading.canCancel = false
-  loading.hints.push('已跳过：管线/次要扩展资源')
-}
 
 // 管线分析状态
 const sectionMode = ref(false)
@@ -285,6 +255,44 @@ let highlightedPipelines = []
 let sectionTempEntities = []
 let excavationTempEntities = []
 let dataSourceManager = null
+
+// 楼层抽屉相关变量
+let floor1 = null
+let floor2 = null
+let floorHandler = null
+let facilitiesDS = null
+let fireExtinguishersDS = null
+// 楼层抽屉内部状态
+let floorInfos = []
+
+// 全景查看器控制（移出 onMounted，避免模板引用未定义）
+function openPanorama(url, info = null) {
+  panoramaModal.show = true
+  nextTick(() => {
+    if (panoramaViewer.value) {
+      panoramaViewer.value.loadPanorama(url, info)
+    }
+  })
+}
+function closePanorama() {
+  if (panoramaViewer.value && panoramaViewer.value.closeModal) {
+    try { panoramaViewer.value.closeModal() } catch (e) {
+      console.warn('全景查看器清理失败:', e)
+      panoramaModal.show = false
+    }
+  } else {
+    panoramaModal.show = false
+  }
+}
+function onPanoramaClosed() {
+  panoramaModal.show = false
+}
+// 显式引用防 tree-shaking
+const _exposeClose = closePanorama
+
+// 分析事件处理器与天气更新定时器需要在清理阶段访问，故提前声明
+let analysisHandler = null
+let weatherUpdateInterval = null
 
 // —— 剖面/挖方分析：顶层实现，以便模板按钮可调用 ——
 function startSectionAnalysis() {
@@ -752,18 +760,82 @@ function formatLength(l) {
   return `${(l / 1000).toFixed(3)} km`
 }
 
-onMounted(async () => {
-  // 1) 注入 Cesium Ion Token（来自 .env.local）
-  const token = import.meta.env.VITE_CESIUM_ION_TOKEN
-  if (token) {
-    Cesium.Ion.defaultAccessToken = token
-  } else {
-    console.warn('[Cesium] 未配置 VITE_CESIUM_ION_TOKEN，某些在线服务可能不可用')
-    loading.hints.push('未配置 Token：在线地形/影像可能降级')
+// 生成模型矩阵的工具函数
+function generateModelMatrix(position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1]) {
+  const rotationX = Cesium.Matrix4.fromRotationTranslation(
+    Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(rotation[0])))
+
+  const rotationY = Cesium.Matrix4.fromRotationTranslation(
+    Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(rotation[1])))
+
+  const rotationZ = Cesium.Matrix4.fromRotationTranslation(
+    Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(rotation[2])))
+    
+  if (!(position instanceof Cesium.Cartesian3)) {
+    position = Cesium.Cartesian3.fromDegrees(...position)
   }
-  let step = 0
-  const total = 7
-  setLoading(++step, total, '创建 Viewer')
+  
+  const enuMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position)
+  Cesium.Matrix4.multiply(enuMatrix, rotationX, enuMatrix)
+  Cesium.Matrix4.multiply(enuMatrix, rotationY, enuMatrix)
+  Cesium.Matrix4.multiply(enuMatrix, rotationZ, enuMatrix)
+  
+  const scaleMatrix = Cesium.Matrix4.fromScale(new Cesium.Cartesian3(...scale))
+  const modelMatrix = Cesium.Matrix4.multiply(enuMatrix, scaleMatrix, new Cesium.Matrix4())
+
+  return modelMatrix
+}
+
+// 初始化楼层抽屉（不再单独注册事件，改为融入主点击逻辑）
+function initFloorDrawer(viewer, floors, distance = 35.0) {
+  floorInfos = floors.map(floor => {
+    const initialMatrix = floor.root?.transform?.clone() || floor.modelMatrix?.clone()
+    const center = floor.boundingSphere.center
+    const enuTransform = Cesium.Transforms.eastNorthUpToFixedFrame(center)
+    return { floor, initialMatrix, center, enuTransform }
+  })
+
+  function translateNorth(info) {
+    const { initialMatrix, center, enuTransform } = info
+    const translationENU = new Cesium.Cartesian3(0, distance, 0)
+    const translationWorld = Cesium.Matrix4.multiplyByPoint(enuTransform, translationENU, new Cesium.Cartesian3())
+    const offset = Cesium.Cartesian3.subtract(translationWorld, center, new Cesium.Cartesian3())
+    const translationMatrix = Cesium.Matrix4.fromTranslation(offset)
+    return Cesium.Matrix4.multiply(translationMatrix, initialMatrix, new Cesium.Matrix4())
+  }
+
+  function expandFloor(target) {
+    floorInfos.forEach(info => {
+      if (info === target) {
+        const newMatrix = translateNorth(info)
+        if (info.floor.root) info.floor.root.transform = newMatrix
+        else info.floor.modelMatrix = newMatrix
+        info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 1.0)" })
+      } else {
+        if (info.floor.root) info.floor.root.transform = info.initialMatrix.clone()
+        else info.floor.modelMatrix = info.initialMatrix.clone()
+        info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 0.01)" })
+      }
+    })
+    requestRender()
+  }
+
+  function resetFloors() {
+    floorInfos.forEach(info => {
+      if (info.floor.root) info.floor.root.transform = info.initialMatrix.clone()
+      else info.floor.modelMatrix = info.initialMatrix.clone()
+      info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 0.01)" })
+    })
+    requestRender()
+  }
+
+  return { expandFloor, resetFloors }
+}
+
+onMounted(async () => {
+  // 注意：在第一个 await 之前不要调用生命周期注册之外的异步副作用，防止生命周期警告
+  Cesium.Ion.defaultAccessToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZTFmMDI1YS05MTRkLTRhMzYtYTNiZi0wYmM2YTdlYjU5ODMiLCJpZCI6MjIwNDYzLCJpYXQiOjE3MTc2NTIwMDF9.U1PZjG0GiZdXjIvHRyAGsHRMveUVQdINghXIfF6xJDE'
 
   // 1) Viewer：按需渲染 + 冻结时钟 + 降后处理
   const viewer = new Cesium.Viewer('cesiumContainer', {
@@ -797,22 +869,13 @@ onMounted(async () => {
   viewer.resolutionScale = 0.75 // 视效与负载的折中
 
   const poke = () => viewer.scene.requestRender()
-  // 摄像机变动节流，减少 requestRender 调用频率
-  let lastCam = 0
-  viewer.camera.changed.addEventListener(() => {
-    const now = performance.now()
-    if (now - lastCam > 150) {
-      lastCam = now
-      poke()
-    }
-  })
+  viewer.camera.changed.addEventListener(poke)
   window.addEventListener('resize', poke)
   // 存下全局引用用于其他顶层方法
   viewerRef.value = viewer
 
-  // 2) 数据源管理器
+  // 2) 创建数据源管理器并加载所有数据
   dataSourceManager = new DataSourceManager(viewer)
-  setLoading(++step, total, '初始化数据源管理器')
   
   // 管线地形透明度设置
   viewer.scene.screenSpaceCameraController.enableCollisionDetection = false
@@ -823,15 +886,7 @@ onMounted(async () => {
   
   // 批量加载所有预定义数据源
   console.log('开始加载数据源...')
-  setLoading(++step, total, '加载关键 3D Tiles / GeoJSON')
-  let loadedSources = new Map()
-  try {
-    loadedSources = await dataSourceManager.loadPredefinedDataSources()
-  } catch (e) {
-    loading.hints.push('部分关键数据加载失败')
-    console.error(e)
-  }
-  setLoading(++step, total, '初始化可视范围')
+  const loadedSources = await dataSourceManager.loadPredefinedDataSources()
   
   // 获取主要建筑数据用于缩放
   const osgb = dataSourceManager.getDataSource('osgb')
@@ -853,10 +908,117 @@ onMounted(async () => {
   pipelineGroups.value = groups
   
   console.log(`数据源加载完成: ${loadedSources.size} 个数据源`)
+  
+  // ================= 加载楼层抽屉功能 =================
+  try {
+    console.log('开始加载楼层数据...')
+    floor1 = await Cesium.Cesium3DTileset.fromUrl("/Assets/data/floor1/tileset.json")
+    if (!viewer.isDestroyed()) viewer.scene.primitives.add(floor1)
+    floor1.root.transform = generateModelMatrix([118.22839686268975, 35.10694503147065, -318], [0, 0, -1], [1, 1.5, 1])
+    floor1.style = new Cesium.Cesium3DTileStyle({
+      color: "color('white', 0.01)"
+    })
+    
+    floor2 = await Cesium.Cesium3DTileset.fromUrl("/Assets/data/floor2/tileset.json")
+    if (!viewer.isDestroyed()) viewer.scene.primitives.add(floor2)
+    floor2.root.transform = generateModelMatrix([118.22839686268975, 35.10694503147065, -318], [0, 0, -1], [1, 1.5, 1])
+    floor2.style = new Cesium.Cesium3DTileStyle({
+      color: "color('white', 0.01)"
+    })
+    
+  // 初始化楼层抽屉（事件逻辑融入主 handler）
+  initFloorDrawer(viewer, [floor1, floor2], 35.0)
+    console.log('楼层数据加载完成')
+  } catch (error) {
+    console.warn('楼层数据加载失败:', error)
+  }
+  
+  // ================= 加载设施标注功能 =================
+  try {
+    facilitiesDS = await Cesium.GeoJsonDataSource.load('/Assets/data/geojson/设施.json', {
+      clampToGround: true
+    })
+    if (!viewer.isDestroyed()) viewer.dataSources.add(facilitiesDS)
+    
+    facilitiesDS.entities.values.forEach(entity => {
+      if (Cesium.defined(entity.position)) {
+        // 获取当前坐标（世界坐标转经纬高）
+        let carto = Cesium.Cartographic.fromCartesian(entity.position.getValue(Cesium.JulianDate.now()))
+        let lon = Cesium.Math.toDegrees(carto.longitude)
+        let lat = Cesium.Math.toDegrees(carto.latitude)
+        let height = 20  // 在地面基础上抬高20米
+
+        let newPosition = Cesium.Cartesian3.fromDegrees(lon, lat, height)
+        let imageUrl = `/Assets/Images/qipao1.png`
+
+        // 获取 GeoJSON 属性中的"名称字段"
+        let name = entity.properties?.名称?.getValue ? entity.properties.名称.getValue() : '未知设施'
+
+        entity.position = newPosition
+        // 添加文字标签（显示名称字段）
+        entity.label = new Cesium.LabelGraphics({
+          text: name,
+          font: "18px sans-serif",
+          fillColor: Cesium.Color.WHITE,
+          outlineColor: Cesium.Color.BLACK, 
+          outlineWidth: 3,
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+          pixelOffset: new Cesium.Cartesian2(0, -30)
+        })
+        
+        entity.billboard = new Cesium.BillboardGraphics({
+          image: imageUrl,
+          width: 120,
+          height: 56, 
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+          disableDepthTestDistance: 0
+        })
+      }
+    })
+    console.log('设施标注加载完成')
+  } catch (error) {
+    console.warn('设施标注加载失败:', error)
+  }
+  
+  // ================= 加载灭火器功能 =================
+  try {
+    fireExtinguishersDS = await Cesium.GeoJsonDataSource.load('/Assets/data/geojson/灭火器.json', {
+      clampToGround: true
+    })
+    if (!viewer.isDestroyed()) viewer.dataSources.add(fireExtinguishersDS)
+    
+    fireExtinguishersDS.entities.values.forEach(entity => {
+      if (Cesium.defined(entity.position)) {
+        // 获取当前坐标（世界坐标转经纬高）
+        let carto = Cesium.Cartographic.fromCartesian(entity.position.getValue(Cesium.JulianDate.now()))
+        let lon = Cesium.Math.toDegrees(carto.longitude)
+        let lat = Cesium.Math.toDegrees(carto.latitude)
+        let height = 8  // 在地面基础上抬高8米
+        
+        // 重新生成位置（相对地面8m高）
+        let newPosition = Cesium.Cartesian3.fromDegrees(lon, lat, height)
+        let imageUrl = `/Assets/Images/灭火器.png`
+        
+        entity.position = newPosition
+        entity.billboard = new Cesium.BillboardGraphics({
+          image: imageUrl,
+          scale: 0.15,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+          disableDepthTestDistance: 0
+        })
+        entity.point = undefined  // 移除默认点样式
+      }
+    })
+    console.log('灭火器标注加载完成')
+  } catch (error) {
+    console.warn('灭火器标注加载失败:', error)
+  }
+  
   poke()
-  setLoading(++step, total, '启动交互/事件绑定')
-  setLoading(++step, total, '最终整理')
-  finishLoading()
 
   // 4) 点击高亮 + 红点跳转（共用一个 handler）
   let lastSelected = null
@@ -875,6 +1037,52 @@ onMounted(async () => {
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
   handler.setInputAction((movement) => {
     const picked = viewer.scene.pick(movement.position)
+
+    // ========= 楼层抽屉逻辑（优先处理） =========
+    if (ui.floors && floorInfos.length) {
+      // 兼容 Cesium 不同版本 pick 结果：primitive 或 tileset
+      const clickedTileset = picked && (
+        (picked.primitive instanceof Cesium.Cesium3DTileset && picked.primitive) ||
+        (picked.tileset instanceof Cesium.Cesium3DTileset && picked.tileset) ||
+        null
+      )
+      const target = clickedTileset && floorInfos.find(f => f.floor === clickedTileset)
+      if (target) {
+        // 判断是否已展开（通过比较 transform 是否不同于 initialMatrix）
+        // 简单做法：再点同一楼层也保持展开，只切换目标
+        initFloorDrawer // 引用避免 tree-shaking（无实际调用）
+        // 展开目标楼层
+        const { expandFloor } = { expandFloor: (t)=>{
+          floorInfos.forEach(info => {
+            if (info === t) {
+              const translationENU = new Cesium.Cartesian3(0, 35.0, 0)
+              const translationWorld = Cesium.Matrix4.multiplyByPoint(info.enuTransform, translationENU, new Cesium.Cartesian3())
+              const offset = Cesium.Cartesian3.subtract(translationWorld, info.center, new Cesium.Cartesian3())
+              const translationMatrix = Cesium.Matrix4.fromTranslation(offset)
+              const newMatrix = Cesium.Matrix4.multiply(translationMatrix, info.initialMatrix, new Cesium.Matrix4())
+              if (info.floor.root) info.floor.root.transform = newMatrix
+              else info.floor.modelMatrix = newMatrix
+              info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 1.0)" })
+            } else {
+              if (info.floor.root) info.floor.root.transform = info.initialMatrix.clone()
+              else info.floor.modelMatrix = info.initialMatrix.clone()
+              info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 0.01)" })
+            }
+          })
+          requestRender()
+        }}
+        expandFloor(target)
+        return // 阻止后续高亮/全景逻辑
+      } else if (!picked) {
+        // 点击空白复位
+        floorInfos.forEach(info => {
+          if (info.floor.root) info.floor.root.transform = info.initialMatrix.clone()
+          else info.floor.modelMatrix = info.initialMatrix.clone()
+          info.floor.style = new Cesium.Cesium3DTileStyle({ color: "color('white', 0.01)" })
+        })
+        requestRender()
+      }
+    }
 
     // 红点 / 任何带 url 的目标：根据类型处理
     if (picked && picked.id) {
@@ -1447,7 +1655,7 @@ const redPoints = [
   }
 
   // 管线分析鼠标事件
-  const analysisHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  analysisHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
   
   // 鼠标移动
   analysisHandler.setInputAction((movement) => {
@@ -1536,8 +1744,27 @@ const redPoints = [
   }
 
   function closePanorama() {
+    // 让子组件控制关闭流程，子组件会emit('close')来通知父组件
+    if (panoramaViewer.value && panoramaViewer.value.closeModal) {
+      try { 
+        panoramaViewer.value.closeModal() 
+      } catch (e) {
+        console.warn('全景查看器清理失败:', e)
+        // 如果子组件清理失败，强制关闭
+        panoramaModal.show = false
+      }
+    } else {
+      // 如果子组件不存在，直接关闭
+      panoramaModal.show = false
+    }
+  }
+  // 处理子组件的关闭通知
+  function onPanoramaClosed() {
     panoramaModal.show = false
   }
+
+  // 暴露给模板 (script setup 自动暴露，但为防 IDE 提示，再显式引用一次)
+  const _exposeClose = closePanorama
 
   // ================= 图层面板联动（只改 show/参数，不破坏你的交互） =================
   const applyToggles = () => {
@@ -1573,6 +1800,12 @@ const redPoints = [
     
     panoDS.show = ui.pano
     
+    // 楼层和设施图层显示控制
+    if (floor1) floor1.show = ui.floors
+    if (floor2) floor2.show = ui.floors
+    if (facilitiesDS) facilitiesDS.show = ui.facilities
+    if (fireExtinguishersDS) fireExtinguishersDS.show = ui.fireExtinguishers
+    
     // 天气图层显示控制
     weatherDS.show = ui.weather
     temperatureDS.show = ui.weather && ui.temperature
@@ -1593,7 +1826,7 @@ const redPoints = [
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.ck, ui.geo, ui.pano, ui.pipelines], applyToggles)
+  watch(() => [ui.osgb, ui.ck, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
 
   // 地形透明度监听
   watch(() => ui.terrainAlpha, (alpha) => {
@@ -1653,45 +1886,41 @@ const redPoints = [
   })
 
   // 定期更新天气数据（每30分钟）
-  const weatherUpdateInterval = setInterval(async () => {
+  weatherUpdateInterval = setInterval(async () => {
     if (ui.weather) {
       await updateWeatherLayers()
     }
   }, 30 * 60 * 1000)
-
-  // 组件清理
-  onUnmounted(() => {
-    if (weatherUpdateInterval) {
-      clearInterval(weatherUpdateInterval)
-    }
-    if (analysisHandler) {
-      analysisHandler.destroy()
-    }
-    if (dataSourceManager) {
-      dataSourceManager.destroy()
-    }
-    window.removeEventListener('keydown', onKeydown)
-  })
   window.addEventListener('keydown', onKeydown)
+})
+
+// 统一清理（必须在 setup 同步阶段注册，避免生命周期警告）
+onUnmounted(() => {
+  if (weatherUpdateInterval) {
+    clearInterval(weatherUpdateInterval)
+    weatherUpdateInterval = null
+  }
+  if (analysisHandler) {
+    try { analysisHandler.destroy() } catch {}
+    analysisHandler = null
+  }
+  if (floorHandler && floorHandler.destroy) {
+    try { floorHandler.destroy() } catch {}
+    floorHandler = null
+  }
+  if (dataSourceManager) {
+    try { dataSourceManager.destroy() } catch {}
+    dataSourceManager = null
+  }
+  window.removeEventListener('keydown', onKeydown)
 })
 </script>
 
 <style>
 * { box-sizing: border-box; padding: 0; margin: 0; }
 #app { margin: 0; padding: 0; }
-#cesiumContainer { width: 100vw; height: 100vh; }
-
-/* 加载遮罩 */
-.loading-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(6px); background: rgba(0,0,0,.45); }
-.loading-overlay .panel { width: 380px; max-width: 90%; background: rgba(30,30,30,.85); padding: 22px 24px 28px; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; box-shadow: 0 6px 32px rgba(0,0,0,.4); color: #e8edf2; font-size: 13px; }
-.loading-overlay h3 { margin: 0 0 14px; font-size: 18px; font-weight: 600; letter-spacing: .5px; color: #fff; }
-.loading-overlay .bar { height: 8px; width: 100%; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
-.loading-overlay .bar-inner { height: 100%; background: linear-gradient(90deg,#2f7cf6,#4cb7ff); width: 0; transition: width .35s cubic-bezier(.4,0,.2,1); }
-.loading-overlay .msg { margin: 4px 0 10px; font-variant-numeric: tabular-nums; opacity: .9; }
-.loading-overlay .hints { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; max-height: 120px; overflow: auto; }
-.loading-overlay .hint { opacity: .75; line-height: 1.3; }
-.loading-overlay .cancel-btn { background: #ff9f1c; border: none; color: #1e1e1e; font-weight: 600; padding: 8px 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
-.loading-overlay .cancel-btn:hover { background: #ffb243; }
+.map-root { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+#cesiumContainer { width: 100%; height: 100%; }
 
 /* Fluent 设计风格图层面板（右上角） */
 .layer-panel {

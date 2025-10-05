@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "test": "vitest run",
-    "lke:server": "node server/lke-token-server.mjs"
+    "lke:server": "node server/lke-token-server.mjs",
+    "logistics:server": "node server/logistics-server.mjs",
+    "parse:logistics": "node scripts/parse-logistics.mjs ./副本仓库名.csv ./src/data/logistics.json",
+    "parse:centers": "node scripts/parse-logistics-by-center.mjs ./副本仓库名.csv ./src/data/logistics-by-center.json"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
