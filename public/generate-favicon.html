@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Favicon</title>
+</head>
+<body>
+    <canvas id="canvas" width="16" height="16"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 创建一个16x16的麦克风图标
+        // 背景 - 蓝色圆形
+        ctx.fillStyle = '#1E88E5';
+        ctx.beginPath();
+        ctx.arc(8, 8, 7, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // 麦克风 - 白色
+        ctx.fillStyle = 'white';
+        // 麦克风主体 (简化的矩形)
+        ctx.fillRect(6, 4, 4, 6);
+        // 麦克风底部弧线
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(8, 10, 3, 0, Math.PI, false);
+        ctx.stroke();
+        // 支架
+        ctx.beginPath();
+        ctx.moveTo(8, 13);
+        ctx.lineTo(8, 14);
+        ctx.stroke();
+        // 底座
+        ctx.beginPath();
+        ctx.moveTo(6, 14);
+        ctx.lineTo(10, 14);
+        ctx.stroke();
+        
+        // 将canvas转换为blob并下载
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'favicon.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    </script>
+</body>
+</html>

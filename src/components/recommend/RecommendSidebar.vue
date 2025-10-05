@@ -26,7 +26,7 @@
       </header>
 
       <section class="rec-body">
-        <RecQueryForm v-model="query" @submit="handleSubmit" />
+  <RecQueryForm ref="recFormRef" v-model="query" @submit="handleSubmit" />
         
         <!-- 天气建议面板 -->
         <div v-if="useEnhancedRecommend && weatherRecommendations.summary" class="weather-panel">
@@ -84,9 +84,10 @@ import type { Query, Vendor, MatchItem } from '@/types/recommend'
 import type { EnhancedQuery, EnhancedMatchItem } from '@/types/weather'
 import { matchVendors } from '@/utils/recommendScore'
 import { enhancedMatchVendors, getWeatherRecommendations } from '@/utils/enhancedRecommendScore'
-import { recommendSidebarOpen, closeRecommend } from '@/bridge/recommendUI'
+import { recommendSidebarOpen, closeRecommend, openRecommend } from '@/bridge/recommendUI'
 import { getBridge, subscribeBridge, publishBridge } from '@/bridge/routeBridge'
 import { onVoiceCommand } from '@/bridge/voiceBus'
+import { parseCommand, ParsedCommand } from '@/utils/voiceCommands'
 
 const router = useRouter()
 
@@ -235,6 +236,7 @@ onMounted(async () => {
 })
 
 const asideRef = ref<HTMLElement | null>(null)
+const recFormRef = ref<any>(null)
 function startResize(e: MouseEvent) {
   e.preventDefault()
   const el = asideRef.value
@@ -260,24 +262,125 @@ function startResize(e: MouseEvent) {
   window.addEventListener('mouseup', onUp)
 }
 
-// === 语音命令处理 ===
-function handleVoiceCommand(e: { transcript: string; isFinal: boolean }) {
-  const text = (e.transcript || '').trim()
-  if (!text) return
-  const t = text.replace(/，/g, ',').toLowerCase()
-  // 基础指令
-  if (/关闭|收起|隐藏/.test(t)) { closeRecommend(); return }
-  if (/打开|展开|显示/.test(t)) { /* 侧栏由外部控制，这里无显式打开 */ }
-  if (/天气|分析|天气分析/.test(t)) { goToWeatherAnalysis(); return }
-  if (/查询|搜索|开始|执行/.test(t)) { runQuery(); return }
-  // 解析起终点（示例：“起点 北京，终点 上海”）
-  const m = t.match(/起点\s*([\u4e00-\u9fa5a-z]+)[,，]\s*终点\s*([\u4e00-\u9fa5a-z]+)/)
-  if (m) {
-    ;(query.value as any).originName = m[1]
-    ;(query.value as any).destinationName = m[2]
+// === 撤销栈（保存最近一次变更前的 query 快照，用于单步回退） ===
+const undoStack: EnhancedQuery[] = []
+
+function pushUndoSnapshot() {
+  // 最多保留 10 份快照
+  if (undoStack.length > 9) undoStack.shift()
+  undoStack.push(JSON.parse(JSON.stringify(query.value)))
+}
+
+// 更新字段高亮映射（临时 CSS 动态添加类）
+const recentlyChanged = new Set<string>()
+function markChanged(fields: string[]) {
+  fields.forEach(f => recentlyChanged.add(f))
+  // 3 秒后移除
+  setTimeout(() => { fields.forEach(f => recentlyChanged.delete(f)) }, 3000)
+}
+
+function applyParsedCommand(pc: ParsedCommand, isFinal: boolean) {
+  if (pc.isClose) { closeRecommend(); return }
+  if (pc.isWeather) { goToWeatherAnalysis(); return }
+  if (pc.isUndo && undoStack.length) {
+    const prev = undoStack.pop()!
+    query.value = JSON.parse(JSON.stringify(prev))
+    console.log('[Voice] 撤销 -> 恢复上一快照')
     runQuery()
     return
   }
+
+  let updated = false
+  const changedFields: string[] = []
+
+  // 如果此次解析包含业务字段，先入栈
+  if (pc.changed.length) pushUndoSnapshot()
+
+  // 将结构化字段委托给表单，保持 UI 与数据一致
+  const voicePayload: any = {}
+  if (typeof pc.weightKg === 'number') { voicePayload.weightKg = pc.weightKg; updated = true; changedFields.push('weight') }
+  if (pc.demandType) { voicePayload.demandType = pc.demandType; updated = true; changedFields.push('demandType') }
+  if (pc.temperatureRange) { voicePayload.temperatureRange = pc.temperatureRange; updated = true; changedFields.push('temperatureRange') }
+  if (pc.timeWindow) { voicePayload.timeWindow = pc.timeWindow; updated = true; changedFields.push('timeWindow') }
+  if (pc.cities) { voicePayload.fromCityName = pc.cities.from; voicePayload.toCityName = pc.cities.to; updated = true; changedFields.push('cities') }
+  if (pc.location) { voicePayload.fromDetail = pc.location.from; voicePayload.toDetail = pc.location.to; updated = true; changedFields.push('locationDetail') }
+  if (Object.keys(voicePayload).length) {
+    try { recFormRef.value?.applyVoiceCommand?.(voicePayload) } catch {}
+  }
+  // 同步坐标：城市级时直接地理编码
+  if (pc.cities) {
+    voiceGeocodeCities(pc.cities.from, pc.cities.to)
+  }
+
+  // 有任何更新或直接查询时，自动打开侧栏
+  if (updated || pc.isQuery) openRecommend()
+
+  if (pc.isQuery) { runQuery(); return }
+
+  if (updated) {
+    markChanged(changedFields)
+    if (isFinal) runQuery()
+  }
+}
+
+// === 语音命令处理（统一解析） ===
+function handleVoiceCommand(e: { transcript: string; isFinal: boolean }) {
+  const text = (e.transcript || '').trim()
+  if (!text) return
+  const parsed = parseCommand(text)
+  applyParsedCommand(parsed, e.isFinal)
+}
+
+// === 语音地理编码（城市级） ===
+let geocodeLock = false
+async function voiceGeocodeCities(fromCity: string, toCity: string) {
+  if (geocodeLock) return
+  geocodeLock = true
+  try {
+    const AMap = await loadAmapLite()
+    const [oLng, oLat] = await geocodeCity(AMap, fromCity)
+    const [dLng, dLat] = await geocodeCity(AMap, toCity)
+    query.value.origin = { lat: oLat, lng: oLng }
+    query.value.destination = { lat: dLat, lng: dLng }
+    console.log('[Voice] 城市坐标设定 ->', query.value.origin, query.value.destination)
+  } catch (err) {
+    console.warn('[Voice] 城市地理编码失败', err)
+  } finally {
+    geocodeLock = false
+  }
+}
+
+async function loadAmapLite(): Promise<any> {
+  if ((window as any).AMap) return (window as any).AMap
+  const key = (import.meta as any).env.VITE_AMAP_KEY
+  const sec = (import.meta as any).env.VITE_AMAP_SECURITY
+  if (!key) throw new Error('缺少 VITE_AMAP_KEY 用于语音地理编码')
+  if (sec) (window as any)._AMapSecurityConfig = { securityJsCode: sec }
+  await new Promise<void>((resolve, reject) => {
+    const s = document.createElement('script')
+    s.src = `https://webapi.amap.com/maps?v=2.0&key=${key}`
+    s.async = true
+    s.onload = () => resolve()
+    s.onerror = () => reject(new Error('AMap 脚本加载失败'))
+    document.head.appendChild(s)
+  })
+  return (window as any).AMap
+}
+
+async function geocodeCity(AMap: any, city: string): Promise<[number, number]> {
+  return new Promise((resolve, reject) => {
+    AMap.plugin('AMap.Geocoder', () => {
+      const geocoder = new AMap.Geocoder({ city: '全国' })
+      geocoder.getLocation(city, (status: string, result: any) => {
+        if (status === 'complete' && result?.geocodes?.length) {
+          const { lng, lat } = result.geocodes[0].location
+          resolve([lng, lat])
+        } else {
+          reject(new Error('城市解析失败: ' + city))
+        }
+      })
+    })
+  })
 }
 </script>
 
@@ -396,5 +499,15 @@ function handleVoiceCommand(e: { transcript: string; isFinal: boolean }) {
   position: absolute;
   left: -16px;
   font-size: 10px;
+}
+
+/* 字段变更高亮（通过动态 class 绑定到对应输入组件外层，当前示例中可用于后续扩展） */
+.field-changed {
+  animation: flash-bg 1.2s ease-in-out 0s 2;
+}
+@keyframes flash-bg {
+  0% { background: rgba(255, 235, 59, 0.2); }
+  50% { background: rgba(255, 235, 59, 0.55); }
+  100% { background: rgba(255, 235, 59, 0); }
 }
 </style>

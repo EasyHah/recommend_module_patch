@@ -1,6 +1,6 @@
 <template>
   <!-- 给 FluentCard 加上 blue-card 类，整体底色变蓝 -->
-  <FluentCard title="运输需求（地址输入）" class="mb-4 blue-card">
+  <FluentCard title="运输需求（地址输入）" class="mb-4 blue-card" data-rec-form>
     <form @submit.prevent="onSubmit" class="grid gap-3">
       <!-- 出发地 -->
       <div class="section">
@@ -275,6 +275,94 @@ function onReset() {
 }
 
 onMounted(()=>{ loadLocations(); initWindow() })
+
+// ===== 语音桥接：接受 VoiceAssistant 的字段填充与可选提交 =====
+type VoiceRecommendPayload = {
+  fromText?: string
+  toText?: string
+  fromCityName?: string
+  toCityName?: string
+  timeWindow?: [string, string]
+  weightKg?: number
+  demandType?: 'normal' | 'cold' | 'hazmat' | 'fragile'
+  temperatureRange?: [number, number]
+  isQuery?: boolean
+  fromDetail?: string
+  toDetail?: string
+}
+
+async function applyVoiceCommand(payload: VoiceRecommendPayload) {
+  try {
+    if (payload.fromText) {
+      from.province = from.city = from.district = ''
+      from.detail = payload.fromText
+    }
+    if (payload.toText) {
+      to.province = to.city = to.district = ''
+      to.detail = payload.toText
+    }
+    // 允许直接指定城市名称（如 “北京/上海” ）并自动匹配省/市
+    const tryFillCity = (name: string|undefined, which:'from'|'to') => {
+      if (!name) return
+      const provs = Object.keys(root.value || {})
+      for (const p of provs) {
+        const citiesOfP = Object.keys((root.value as any)[p] || {})
+        const foundCity = citiesOfP.find(c => c.includes(name) || name.includes(c))
+        if (foundCity) {
+          if (which==='from') {
+            from.province = p
+            cities.from = citiesOfP
+            from.city = foundCity
+            districts.from = ((root.value as any)[p] || {})[foundCity] || []
+          } else {
+            to.province = p
+            cities.to = citiesOfP
+            to.city = foundCity
+            districts.to = ((root.value as any)[p] || {})[foundCity] || []
+          }
+          break
+        }
+      }
+    }
+    tryFillCity(payload.fromCityName, 'from')
+    tryFillCity(payload.toCityName, 'to')
+
+    if (payload.fromDetail) from.detail = payload.fromDetail
+    if (payload.toDetail) to.detail = payload.toDetail
+    if (payload.timeWindow) {
+      const [s, e] = payload.timeWindow
+      if (s) winStart.value = new Date(s).toISOString().slice(0,16)
+      if (e) winEnd.value   = new Date(e).toISOString().slice(0,16)
+    }
+    if (typeof payload.weightKg === 'number' && payload.weightKg > 0) {
+      local.demand.weightKg = Math.round(payload.weightKg)
+    }
+    if (payload.demandType) {
+      local.demand.type = payload.demandType
+    }
+    if (payload.temperatureRange && payload.demandType === 'cold') {
+      const [a,b] = payload.temperatureRange
+      tempMin.value = a; tempMax.value = b
+      local.demand.temperature = [a,b]
+    } else if (payload.demandType && payload.demandType !== 'cold') {
+      tempMin.value = tempMax.value = null
+      local.demand.temperature = null
+    }
+
+    // 可选：自动提交
+    if (payload.isQuery) {
+      await onSubmit()
+    } else {
+      // 同步 v-model（不提交）
+      const payloadQ = JSON.parse(JSON.stringify(local)) as Query
+      emit('update:modelValue', payloadQ)
+    }
+  } catch (e) {
+    console.warn('[RecQueryForm] applyVoiceCommand error', e)
+  }
+}
+
+defineExpose({ applyVoiceCommand })
 </script>
 
 <style scoped>

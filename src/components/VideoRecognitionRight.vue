@@ -64,7 +64,7 @@ import FluentCard from '@/components/FluentCard.vue'
 import * as echarts from 'echarts'
 
 interface Detection {
-  id: number
+  id: string
   label: string
   confidence: number
   x: number
