@@ -91,13 +91,28 @@ export function useAppflowChat() {
 
   // 从环境变量读取配置（按官方最小化要求）
   const APPFLOW_INTEGRATE_ID = import.meta.env.VITE_APPFLOW_INTEGRATE_ID || 'cit-44fd57644e264fecabe0'
-  const APPFLOW_REQUEST_DOMAIN = import.meta.env.VITE_APPFLOW_REQUEST_DOMAIN || 'https://1677039950952251.appflow.aliyunnest.com'
+  // 统一域名来源与规范化，防止末尾斜杠或协议缺失导致请求异常
+  const rawRequestDomain = (import.meta.env.VITE_APPFLOW_REQUEST_DOMAIN || 'https://1677039950952251.appflow.aliyunnest.com') as string
+  const normalizeUrl = (url: string) => {
+    if (!url) return ''
+    let u = url.trim()
+    if (!/^https?:\/\//.test(u)) u = `https://${u}`
+    // 去掉末尾斜杠，避免双斜杠请求
+    if (u.endsWith('/')) u = u.slice(0, -1)
+    return u
+  }
+  const APPFLOW_REQUEST_DOMAIN = normalizeUrl(rawRequestDomain)
+  // 绑定源站域名：Appflow 官方要求需在控制台绑定或通过 sourceDomain 传入
+  const APPFLOW_SOURCE_DOMAIN = (import.meta.env.VITE_APPFLOW_SOURCE_DOMAIN || (typeof window !== 'undefined' ? window.location.origin : '')) as string
+  const APPFLOW_EMBED_IFRAME_URL = (import.meta.env.VITE_APPFLOW_EMBED_IFRAME_URL || '') as string
 
   const config = {
     integrateConfig: {
       integrateId: APPFLOW_INTEGRATE_ID,
       domain: {
-        requestDomain: APPFLOW_REQUEST_DOMAIN
+        requestDomain: APPFLOW_REQUEST_DOMAIN,
+        // 可选：如果使用 trial 或未完成白名单绑定，sourceDomain 有助于后端校验来源
+        sourceDomain: APPFLOW_SOURCE_DOMAIN
       }
     }
   }
@@ -349,50 +364,123 @@ export function useAppflowChat() {
   // 降级聊天方案
   const showFallbackChat = () => {
     console.log('📢 显示降级聊天界面')
-    
-    // 创建一个简单的提示框
-    const fallbackMessage = `
-      <div style="
-        position: fixed; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%);
-        background: white; 
-        border: 2px solid #007bff; 
-        border-radius: 8px; 
-        padding: 20px; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        max-width: 400px;
-        text-align: center;
-      ">
-        <h3 style="margin-top: 0; color: #007bff;">AI 助手暂时不可用</h3>
-        <p>聊天服务正在维护中，请稍后再试。</p>
-        <button onclick="this.parentElement.remove()" style="
-          background: #007bff; 
-          color: white; 
-          border: none; 
-          padding: 8px 16px; 
-          border-radius: 4px; 
-          cursor: pointer;
-        ">确定</button>
-      </div>
-    `
-    
-    // 显示降级界面
-    const fallbackElement = document.createElement('div')
-    fallbackElement.innerHTML = fallbackMessage
-    document.body.appendChild(fallbackElement)
-    
-    isChatVisible.value = true
-    
-    // 5秒后自动关闭
-    setTimeout(() => {
-      if (fallbackElement.parentNode) {
-        fallbackElement.remove()
+
+    // 如果已有轻量提示，直接闪烁提示而不是再创建
+    const existingTip = document.getElementById('appflow-fallback-tip')
+    if (existingTip) {
+      existingTip.classList.add('flash-tip')
+      setTimeout(()=> existingTip.classList.remove('flash-tip'), 600)
+      isChatVisible.value = true
+      return
+    }
+
+    // 如果提供了完整的嵌入 URL，优先使用 iframe 作为降级方案
+    const embedUrl = APPFLOW_EMBED_IFRAME_URL && APPFLOW_EMBED_IFRAME_URL.trim().length > 0 ? APPFLOW_EMBED_IFRAME_URL.trim() : ''
+    if (embedUrl) {
+      const overlayId = 'appflow-fallback-overlay'
+      if (document.getElementById(overlayId)) {
+        // 已存在则直接显示
+        const el = document.getElementById(overlayId)!
+        el.style.display = 'block'
+        isChatVisible.value = true
+        return
+      }
+
+      const overlay = document.createElement('div')
+      overlay.id = overlayId
+      overlay.style.position = 'fixed'
+      overlay.style.right = '20px'
+      overlay.style.bottom = '100px'
+      overlay.style.width = '420px'
+      overlay.style.height = '600px'
+      overlay.style.background = 'white'
+      overlay.style.border = '1px solid rgba(0,0,0,0.12)'
+      overlay.style.borderRadius = '12px'
+      overlay.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)'
+      overlay.style.overflow = 'hidden'
+      overlay.style.zIndex = '10000'
+
+      const header = document.createElement('div')
+      header.style.height = '40px'
+      header.style.background = '#1E88E5'
+      header.style.color = 'white'
+      header.style.display = 'flex'
+      header.style.alignItems = 'center'
+      header.style.justifyContent = 'space-between'
+      header.style.padding = '0 12px'
+      header.style.fontSize = '14px'
+      header.innerHTML = `<span>AI 聊天</span>`
+
+      const closeBtn = document.createElement('button')
+      closeBtn.textContent = '×'
+      closeBtn.style.background = 'transparent'
+      closeBtn.style.color = 'white'
+      closeBtn.style.border = 'none'
+      closeBtn.style.cursor = 'pointer'
+      closeBtn.style.fontSize = '18px'
+      closeBtn.onclick = () => {
+        overlay.style.display = 'none'
         isChatVisible.value = false
       }
-    }, 5000)
+      header.appendChild(closeBtn)
+
+      const iframe = document.createElement('iframe')
+      iframe.src = embedUrl
+      iframe.style.width = '100%'
+      iframe.style.height = 'calc(100% - 40px)'
+      iframe.style.border = '0'
+      iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade')
+      iframe.setAttribute('allow', 'microphone; clipboard-read; clipboard-write')
+
+      overlay.appendChild(header)
+      overlay.appendChild(iframe)
+      document.body.appendChild(overlay)
+
+      isChatVisible.value = true
+      return
+    }
+
+    // 否则回退为轻量提示
+  const tip = document.createElement('div')
+  tip.id = 'appflow-fallback-tip'
+    tip.style.position = 'fixed'
+    tip.style.top = '50%'
+    tip.style.left = '50%'
+    tip.style.transform = 'translate(-50%, -50%)'
+    tip.style.background = 'white'
+    tip.style.border = '2px solid #007bff'
+    tip.style.borderRadius = '8px'
+    tip.style.padding = '20px'
+    tip.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'
+    tip.style.zIndex = '10000'
+    tip.style.maxWidth = '400px'
+    tip.style.textAlign = 'center'
+    tip.innerHTML = `
+      <h3 style="margin-top: 0; color: #007bff;">AI 助手暂时不可用</h3>
+      <p>当前处于试用或未绑定域名状态，已启用降级模式。</p>
+      <button id="appflow-fallback-close" style="background:#007bff;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">确定</button>
+    `
+    // 动画 class
+    const styleId = 'appflow-fallback-style'
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style')
+      style.id = styleId
+      style.textContent = `#appflow-fallback-tip.flash-tip{animation: appflow-flash .6s;}@keyframes appflow-flash{0%{box-shadow:0 0 0 0 rgba(0,123,255,.7);}100%{box-shadow:0 0 0 12px rgba(0,123,255,0);}}`
+      document.head.appendChild(style)
+    }
+
+    document.body.appendChild(tip)
+    isChatVisible.value = true
+    const btn = document.getElementById('appflow-fallback-close')
+    const close = () => {
+      try { tip.remove() } catch {}
+      isChatVisible.value = false
+    }
+    btn?.addEventListener('click', close)
+    // 允许 ESC 关闭
+    const keyHandler = (ev: KeyboardEvent) => { if (ev.key === 'Escape') { close(); window.removeEventListener('keydown', keyHandler) } }
+    window.addEventListener('keydown', keyHandler)
+    ;(window as any).closeAppflowFallback = close
   }
   
   // 隐藏聊天窗口
@@ -457,10 +545,18 @@ export function useAppflowChat() {
         }
       }
       
-      // 如果是 400 错误，可能是配置问题
-      if (err.status === 400 || (err.message && err.message.includes('400'))) {
-        console.error('🚨 API 配置错误，请检查 integrateId 和域名配置')
-        error.value = 'API 配置错误，请联系管理员'
+      // 如果是 400 错误，可能是来源域未绑定或 integrateId/域名不匹配
+      const msg = (err && (err.message || err.toString())) || ''
+      const status400 = (err && (err.status === 400 || err.statusCode === 400)) || msg.includes('400')
+      if (status400) {
+        console.error('🚨 400 错误：可能未绑定域名或配置不匹配。', {
+          integrateId: APPFLOW_INTEGRATE_ID,
+          requestDomain: APPFLOW_REQUEST_DOMAIN,
+          sourceDomain: APPFLOW_SOURCE_DOMAIN
+        })
+        error.value = 'AI 聊天配置异常（400）。将尝试使用降级聊天…'
+        // 使用降级方案保障可用
+        showFallbackChat()
       }
       
       return false
@@ -552,7 +648,8 @@ export function useAppflowChat() {
     console.log('🔍 跳过 API 健康检查（避免 CORS 问题）')
     console.log('📋 使用配置:', {
       integrateId: config.integrateConfig.integrateId,
-      domain: config.integrateConfig.domain.requestDomain
+      domain: config.integrateConfig.domain.requestDomain,
+      sourceDomain: config.integrateConfig.domain.sourceDomain
     })
   }
 

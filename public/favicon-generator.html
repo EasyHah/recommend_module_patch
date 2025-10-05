@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+</head>
+<body>
+    <canvas id="canvas" width="32" height="32" style="border: 1px solid #ccc;"></canvas>
+    <br>
+    <button onclick="downloadFavicon()">下载 favicon.ico</button>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 绘制favicon
+        function drawFavicon() {
+            // 清除画布
+            ctx.clearRect(0, 0, 32, 32);
+            
+            // 背景圆形
+            ctx.fillStyle = '#1E88E5';
+            ctx.beginPath();
+            ctx.arc(16, 16, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 边框
+            ctx.strokeStyle = '#1565C0';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 麦克风图标
+            ctx.fillStyle = 'white';
+            
+            // 麦克风主体
+            ctx.fillRect(13, 8, 6, 10);
+            ctx.beginPath();
+            ctx.arc(13, 11, 3, 0, Math.PI, true);
+            ctx.arc(19, 11, 3, 0, Math.PI, false);
+            ctx.fill();
+            
+            // 麦克风底座弧线
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(16, 18, 6, 0, Math.PI, false);
+            ctx.stroke();
+            
+            // 麦克风支架
+            ctx.beginPath();
+            ctx.moveTo(16, 24);
+            ctx.lineTo(16, 27);
+            ctx.stroke();
+            
+            // 底座
+            ctx.beginPath();
+            ctx.moveTo(12, 27);
+            ctx.lineTo(20, 27);
+            ctx.stroke();
+        }
+        
+        function downloadFavicon() {
+            // 创建一个新的canvas用于生成ICO格式
+            const link = document.createElement('a');
+            link.download = 'favicon.ico';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 绘制favicon
+        drawFavicon();
+    </script>
+</body>
+</html>

@@ -11,6 +11,12 @@ export default defineConfig({
   server: { 
     port: 5173, 
     open: true,
+    proxy: {
+      '/getDemoToken': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
+    },
     fs: {
       allow: ['..'] // 允许访问上级目录
     }
