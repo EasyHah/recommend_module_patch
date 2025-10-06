@@ -214,6 +214,70 @@ onMounted(async () => {
   // 创建从青岛到北京的抛物线
   const twoPoints = [118.22951002492071, 35.10534526147898, 116.391389, 39.905556];
   animatedParabola(twoPoints);
+  // === Demo: 加载物流点位（若已维护）===
+  try {
+    const mod = await import('../composables/useLogisticsPositions')
+    const { useLogisticsPositions } = mod
+    const posApi = useLogisticsPositions();
+    await posApi.load();
+    // 假设我们要显示 1号分拣中心 的前三个 hub
+    const centerId = '1号分拣中心';
+    // 临时加载 merged 数据（静态 JSON）
+    const logisticsData = await fetch('/src/data/logistics-by-center.json').then(r=>r.json()).catch(()=>null);
+  const center = logisticsData?.centers?.find(c=>c.key===centerId);
+    if (center) {
+  center.hubs.slice(0,3).forEach(h=>{
+        const entityConf = posApi.toEntity(h, centerId);
+        if (entityConf) viewer.entities.add(entityConf);
+      })
+    }
+  } catch (e) { console.warn('Logistics positions demo skipped', e); }
+
+  // ================== 拾取调试 (输出属性) ==================
+  function installPickDebug() {
+    // 避免重复安装
+    if (window.__pickDebugHandler) {
+      console.log('[PickDebug] 已存在');
+      return;
+    }
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction((movement) => {
+      const picked = viewer.scene.pick(movement.position);
+      if (!Cesium.defined(picked)) {
+        console.log('[Pick] nothing');
+        return;
+      }
+      const info = {};
+      if (picked.getPropertyIds) {
+        try {
+          const ids = picked.getPropertyIds();
+            ids.forEach(id => {
+              try { info[id] = picked.getProperty(id); } catch(_) {}
+            });
+        } catch(_) {}
+      }
+      // batchId (可能存在于 Cesium3DTileFeature / ModelFeature)
+      const batchId = picked._batchId !== undefined ? picked._batchId : picked.batchId;
+      console.log('[Pick]', {
+        type: picked.constructor?.name,
+        batchId,
+        propertyCount: Object.keys(info).length,
+        info
+      }, picked);
+      // 临时高亮（仅对支持 color 属性的 feature 生效）
+      try {
+        if (picked.color) {
+          const prev = picked.color.clone();
+          picked.color = Cesium.Color.RED;
+          setTimeout(()=>{ try { picked.color = prev; } catch(_){} }, 1000);
+        }
+      } catch(_) {}
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    window.__pickDebugHandler = handler;
+    console.log('[PickDebug] 已启用: 点击模型查看属性 (F12 打开控制台)。');
+  }
+  installPickDebug();
+  // ========================================================
   
     // 允许相机入地、开启地形半透明并绑定透明度滑块
     viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
