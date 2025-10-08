@@ -15,10 +15,12 @@ const __dirname = path.dirname(__filename)
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') })
 
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3000
-const SECRET_ID = process.env.SECRET_ID || ''
-const SECRET_KEY = process.env.SECRET_KEY || ''
+// 优先读取通用名称，其次兼容曾使用过的 VITE_* / TENCENT_* 前缀（不再推荐把云密钥以 VITE_ 暴露）
+const SECRET_ID = process.env.SECRET_ID || process.env.TENCENT_SECRET_ID || process.env.VITE_TENCENT_SECRET_ID || ''
+const SECRET_KEY = process.env.SECRET_KEY || process.env.TENCENT_SECRET_KEY || process.env.VITE_TENCENT_SECRET_KEY || ''
 const DEFAULT_REGION = process.env.LKE_REGION || 'ap-guangzhou'
 const LKE_HOST = 'lke.tencentcloudapi.com'
+const LKE_DEBUG = process.env.LKE_DEBUG === '1' || process.env.LKE_DEBUG === 'true'
 
 function sha256Hex(data) {
   return crypto.createHash('sha256').update(data).digest('hex')
@@ -328,6 +330,20 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { ok: true, time: Date.now() })
   }
 
+  if (parsed.pathname === '/debug/lke') {
+    // 仅用于本地调试，请勿在生产暴露
+    if (!LKE_DEBUG) return sendJson(res, 403, { code: 403, message: 'Enable by setting LKE_DEBUG=1 in .env.local' })
+    return sendJson(res, 200, {
+      code: 0,
+      region: DEFAULT_REGION,
+      hasSecretId: !!SECRET_ID,
+      hasSecretKey: !!SECRET_KEY,
+      secretIdPrefix: SECRET_ID ? SECRET_ID.slice(0, 6) : null,
+      appKeyFromEnv: (process.env.VITE_LKE_APP_KEY || '').slice(0, 12) || null,
+      note: 'Values truncated / boolean masked for safety'
+    })
+  }
+
   // Logistics API dispatch
   if (parsed.pathname.startsWith('/api/logistics')) {
     const handled = handleLogistics(req,res,parsed)
@@ -336,9 +352,18 @@ const server = http.createServer(async (req, res) => {
 
   if (parsed.pathname === '/getDemoToken') {
     try {
-      // Basic validation
+      // Basic validation + 友好提示
       if (!SECRET_ID || !SECRET_KEY) {
-        return sendJson(res, 500, { code: 500, message: 'SECRET_ID/SECRET_KEY not set on server' })
+        return sendJson(res, 500, {
+          code: 500,
+            message: 'SECRET_ID/SECRET_KEY 未配置。请在项目根目录 .env.local 中添加:\nSECRET_ID=你的SecretId\nSECRET_KEY=你的SecretKey\n(不要使用 VITE_ 前缀，也不要提交到 Git)。',
+            hint: {
+              required: ['SECRET_ID','SECRET_KEY'],
+              optional: ['LKE_REGION'],
+              example: 'SECRET_ID=AKIDxxxxxxxxxxxxxxxxx\nSECRET_KEY=xxxxxxxxxxxxxxxxxxxxxxx',
+              regionDefault: DEFAULT_REGION
+            }
+        })
       }
 
       // appKey can come from query, body, or env (.env.local)
@@ -363,13 +388,19 @@ const server = http.createServer(async (req, res) => {
         appKey = process.env.VITE_LKE_APP_KEY || ''
       }
       if (!appKey) {
-        return sendJson(res, 400, { code: 400, message: 'Missing appKey' })
+        return sendJson(res, 400, { code: 400, message: 'Missing appKey (传参 ?appKey= 或 body.appKey，或在 .env.local 中添加 VITE_LKE_APP_KEY=)' })
       }
 
       const { token, requestId } = await callGetWsToken({ appKey, visitorBizId })
+      if (LKE_DEBUG) {
+        console.log('[LKE DEBUG] GetWsToken OK appKey(first8)=', String(appKey).slice(0,8), 'reqId=', requestId)
+      }
       return sendJson(res, 200, { code: 0, token, requestId })
     } catch (e) {
       console.error('getDemoToken error:', e)
+      if (LKE_DEBUG) {
+        console.error('[LKE DEBUG] SECRET_ID set?', !!SECRET_ID, 'SECRET_KEY set?', !!SECRET_KEY, 'region=', DEFAULT_REGION)
+      }
       return sendJson(res, 500, { code: 500, message: e.message || 'internal error' })
     }
   }
