@@ -121,26 +121,37 @@ const query = ref<EnhancedQuery>({
 })
 
 async function loadVendors() {
-  try {
-    const res = await fetch('/data/vendors.json')
-    vendors.value = await res.json()
-  } catch { vendors.value = [] }
+  const sources = ['/data/vendors-with-warehouse.json','/data/vendors.json']
+  for(const url of sources){
+    try {
+      const res = await fetch(url)
+      if(!res.ok) throw new Error(res.status+'')
+      vendors.value = await res.json()
+      console.info('[RecommendSidebar] 使用数据源:', url, '共', vendors.value.length, '条')
+      return
+    } catch(e) { /* try next */ }
+  }
+  vendors.value = []
+  console.warn('[RecommendSidebar] 未能加载 vendors 数据')
 }
 
 async function runQuery() {
-  if (!vendors.value.length) return
+  if (!vendors.value.length) { console.warn('[RecommendSidebar] 无 vendors 数据，跳过匹配'); return }
+  console.debug('[RecommendSidebar] 开始匹配 vendors, 数量=', vendors.value.length)
   
   try {
     if (useEnhancedRecommend.value && query.value.weatherConsideration?.enabled) {
       // 使用增强推荐算法
       matches.value = await enhancedMatchVendors(query.value, vendors.value)
+      console.debug('[RecommendSidebar] 增强算法返回', matches.value.length, '条')
       
       // 获取天气建议
       weatherRecommendations.value = getWeatherRecommendations(query.value, matches.value)
     } else {
       // 使用基础推荐算法
       const basicMatches = matchVendors(query.value as Query, vendors.value)
-      matches.value = basicMatches.map(m => ({ ...m, weatherScore: undefined, weatherFactors: [], weatherRisk: 'low' as const }))
+  matches.value = basicMatches.map(m => ({ ...m, weatherScore: undefined, weatherFactors: [], weatherRisk: 'low' as const }))
+  console.debug('[RecommendSidebar] 基础算法返回', matches.value.length, '条')
       weatherRecommendations.value = { summary: '未启用天气分析', recommendations: [], riskAlerts: [] }
     }
   } catch (error) {
