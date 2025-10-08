@@ -2480,7 +2480,7 @@ watch(selectedVendor, (v)=>{
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo }
+  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover }
 }
 })
 </script>
