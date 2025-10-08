@@ -13,7 +13,8 @@
     "logistics:server": "node server/logistics-server.mjs",
     "parse:logistics": "node scripts/parse-logistics.mjs ./副本仓库名.csv ./src/data/logistics.json",
     "parse:centers": "node scripts/parse-logistics-by-center.mjs ./副本仓库名.csv ./src/data/logistics-by-center.json"
-  ,"gen:vendors": "node scripts/create-vendors-from-csv.mjs"
+  ,"gen:vendors": "node scripts/create-vendors-from-csv.mjs",
+  "merge:warehouse-vendors": "node scripts/merge-warehouse-vendors.mjs"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
