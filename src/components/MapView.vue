@@ -403,6 +403,52 @@ async function loadVendorsForCenters(){
     }
   })
   vendorsByCenter.forEach((list,key)=> aggregatedCenterMetrics.set(key, aggregateCenterMetrics(list)))
+  return rows
+}
+
+// 将 vendors 详情注入仓库实体的 InfoBox 描述
+function enrichWarehouseDescriptions(){
+  if(!warehousesMeta.list.length) return
+  warehousesMeta.list.forEach(w=>{
+    const ent = w.entity
+    if(!ent) return
+    const centerName = w.groupName
+    const csvRows = w.routes || []
+    const vendors = (function(){
+      if(Number.isFinite(w.fid) && vendorsByWarehouseFid.has(w.fid)) return vendorsByWarehouseFid.get(w.fid)
+      return vendorsByCenter.get(centerName)||[]
+    })()
+    // 构建 CSV 表格（保持原逻辑）
+    let html = `<div style="font-family:Arial;font-size:13px;">\n<h3 style=\"margin:4px 0 8px;\">${centerName}</h3>`
+    if(csvRows.length){
+      const trs = csvRows.map(r=>`<tr><td>${r['序号']||''}</td><td>${r['物流']||''}</td><td>${r['线路/目的地']||r['线路']||''}</td><td>${r['电话']||''}</td></tr>`).join('')
+      html += `<table style=\"border-collapse:collapse;width:100%;margin-bottom:6px;\">\n<thead><tr style=\"background:#2c3e50;color:#fff;\"><th style=\"border:1px solid #ccc;padding:4px;\">序号</th><th style=\"border:1px solid #ccc;padding:4px;\">物流</th><th style=\"border:1px solid #ccc;padding:4px;\">线路/目的地</th><th style=\"border:1px solid #ccc;padding:4px;\">电话</th></tr></thead><tbody>${trs}</tbody></table>`
+      html += `<p style=\"margin:2px 0 8px;color:#666;\">CSV 线路: ${csvRows.length} 条</p>`
+    } else {
+      html += `<p style=\"color:#999;margin:4px 0;\">暂无 CSV 线路数据</p>`
+    }
+    // Vendors 详情表格
+    if(vendors.length){
+      const vendorRows = vendors.map((v,i)=>{
+        const types = (v.capabilities?.types||[]).join('/')
+        const onTime = v.metrics?.onTimeRate!=null ? (v.metrics.onTimeRate*100).toFixed(1)+'%' : ''
+        const util = v.metrics?.capacityUtilization!=null ? (v.metrics.capacityUtilization*100).toFixed(0)+'%' : ''
+        return `<tr><td>${i+1}</td><td>${v.sequence||''}</td><td>${v.logisticsName||''}</td><td>${v.route||''}</td><td>${v.phone||''}</td><td>${types}</td><td>${v.capabilities?.maxWeightKg||''}</td><td>${v.serviceRadiusKm||''}</td><td>${v.metrics?.rating||''}</td><td>${onTime}</td><td>${v.metrics?.priceIndex||''}</td><td>${util}</td></tr>`
+      }).join('')
+      html += `<h4 style=\"margin:6px 0 4px;\">Vendors 线路 (${vendors.length})</h4>`
+      html += `<div style=\"max-height:220px;overflow:auto;border:1px solid #ccc;\"><table style=\"border-collapse:collapse;width:100%;font-size:12px;\">`+
+        `<thead><tr style=\"background:#3d5872;color:#fff;\"><th style=\"padding:2px;border:1px solid #444;\">#</th><th style=\"padding:2px;border:1px solid #444;\">序号</th><th style=\"padding:2px;border:1px solid #444;\">物流</th><th style=\"padding:2px;border:1px solid #444;\">线路</th><th style=\"padding:2px;border:1px solid #444;\">电话</th><th style=\"padding:2px;border:1px solid #444;\">类型</th><th style=\"padding:2px;border:1px solid #444;\">载重</th><th style=\"padding:2px;border:1px solid #444;\">半径</th><th style=\"padding:2px;border:1px solid #444;\">评级</th><th style=\"padding:2px;border:1px solid #444;\">准时</th><th style=\"padding:2px;border:1px solid #444;\">价格</th><th style=\"padding:2px;border:1px solid #444;\">利用</th></tr></thead>`+
+        `<tbody>${vendorRows}</tbody></table></div>`
+      const agg = aggregatedCenterMetrics.get(centerName)
+      if(agg){
+        html += `<p style=\"margin:6px 0 0;color:#555;\">聚合: 线路数 ${agg.lineCount}; 评级均值 ${agg.metrics.rating}; 准时率均值 ${(agg.metrics.onTimeRate*100).toFixed(1)}%; 利用率均值 ${(agg.metrics.capacityUtilization*100).toFixed(0)}%</p>`
+      }
+    } else {
+      html += `<p style=\"color:#999;margin:6px 0;\">暂无 Vendors 线路数据</p>`
+    }
+    html += '</div>'
+    ent.description = html
+  })
 }
 
 // 管线分析状态
@@ -1177,8 +1223,8 @@ onMounted(async () => {
 
   // ===== 仓库 CSV 装饰与调试标签 =====
   try {
-    // 并行加载 vendors
-    loadVendorsForCenters()
+    // 先加载 vendors（包含增强 FID 信息），再装饰仓库并注入说明
+    await loadVendorsForCenters()
     const meta = await dataSourceManager.decorateWarehousesFromCSV({
       id: 'warehouse',
       csvUrl: '/data/warehouse-centers.csv',
@@ -1191,6 +1237,8 @@ onMounted(async () => {
   // 建立仓库实体集合
   warehouseEntities.clear()
   meta.forEach(w => { if (w.entity) warehouseEntities.add(w.entity) })
+    // 注入 vendor 描述
+    enrichWarehouseDescriptions()
     // 创建调试标签数据源
     if (warehouseDebugDS) {
       try { viewer.dataSources.remove(warehouseDebugDS) } catch {}
@@ -2344,6 +2392,7 @@ function highlightWarehouseEntity(ent) {
       })
   warehousesMeta.list = meta
   warehousesMeta.missFids = meta.filter(m => m.rowCount === 0).map(m => m.fid)
+      enrichWarehouseDescriptions()
       // 重建标签
       if (warehouseDebugDS) {
         try { viewer.dataSources.remove(warehouseDebugDS) } catch {}
