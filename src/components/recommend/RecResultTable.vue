@@ -31,7 +31,7 @@
               <div v-if="!m.weatherScore" class="no-weather">-</div>
             </td>
             <td><div class="tags"><span v-for="t in m.buckets" :key="t" class="tag" :class="getTagClass(t)">{{ t }}</span></div></td>
-            <td><button class="btn small" :disabled="!m.feasible" @click="$emit('add-compare', m.vendor)">加入对比</button></td>
+            <td><button class="btn small" :disabled="!m.feasible" @click.stop="$emit('add-compare', m.vendor)">加入对比</button></td>
           </tr>
         </tbody>
       </table>

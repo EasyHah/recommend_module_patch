@@ -128,6 +128,15 @@ async function loadVendors() {
       if(!res.ok) throw new Error(res.status+'')
       vendors.value = await res.json()
       console.info('[RecommendSidebar] 使用数据源:', url, '共', vendors.value.length, '条')
+      // 挂载调试函数：window.testFlyVendor('vl0007')
+      try {
+        ;(window as any).testFlyVendor = (id:string)=>{
+          const v = vendors.value.find(x=> x.id === id)
+          if(!v){ console.warn('[testFlyVendor] 未找到 id', id); return }
+          focusVendor(v)
+          console.info('[testFlyVendor] 已选择并飞行到仓库:', id)
+        }
+      } catch {}
       return
     } catch(e) { /* try next */ }
   }
@@ -177,7 +186,9 @@ function addCompare(v: Vendor) {
   if (!compareList.value.find(x => x.id === v.id)) compareList.value.push(v)
 }
 function focusVendor(v: Vendor){
+  // 通知地图高亮并关闭侧栏
   selectVendorForMap(v)
+  closeRecommend()
 }
 function removeCompare(id: string) {
   compareList.value = compareList.value.filter(v => v.id !== id)
