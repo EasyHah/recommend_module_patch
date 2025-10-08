@@ -337,12 +337,18 @@ const warehousesMeta = reactive({
   missFids: []
 })
 const currentWarehouseDetail = computed(() => warehousesMeta.list.find(w => w.fid === warehousesMeta.selectedFid) || null)
-// 当前中心对应线路 vendors（按序号数字排序）
+// 当前中心对应线路 vendors（按序号数字排序，支持合并后文件的 FID 精确匹配）
 const currentCenterVendors = computed(()=>{
   if(!currentWarehouseDetail.value) return []
   const key = currentWarehouseDetail.value.groupName
   if(!key) return []
-  const list = vendorsByCenter.get(key) || []
+  let list = []
+  const fid = currentWarehouseDetail.value.fid
+  if(Number.isFinite(fid) && vendorsByWarehouseFid.has(fid)) {
+    list = vendorsByWarehouseFid.get(fid)
+  } else {
+    list = vendorsByCenter.get(key) || []
+  }
   const parseSeq = (s)=>{ if(!s) return Number.MAX_SAFE_INTEGER; const m = String(s).match(/\d+/); return m? parseInt(m[0]): Number.MAX_SAFE_INTEGER }
   return [...list].sort((a,b)=> parseSeq(a.sequence)-parseSeq(b.sequence))
 })
@@ -361,17 +367,35 @@ function aggregateCenterMetrics(list){
   const tags = Array.from(new Set(list.flatMap(v=>v.tags||[]))).slice(0,12)
   return { serviceRadiusKm, capabilities:{types, maxWeightKg, cold:null}, metrics:{rating,onTimeRate,priceIndex,capacityUtilization}, tags, lineCount:list.length }
 }
+// 额外 FID -> vendor 列表索引 (来自 vendors-with-warehouse.json)
+const vendorsByWarehouseFid = reactive(new Map())
 async function loadVendorsForCenters(){
-  try{
-    const res = await fetch('/data/vendors.json')
-    const rows = await res.json()
-    rows.forEach(v=>{
-      const key = v.centerName || '未知中心'
-      if(!vendorsByCenter.has(key)) vendorsByCenter.set(key, [])
-      vendorsByCenter.get(key).push(v)
-    })
-    vendorsByCenter.forEach((list,key)=> aggregatedCenterMetrics.set(key, aggregateCenterMetrics(list)))
-  }catch(e){ console.warn('加载 vendors.json 失败', e) }
+  const sources = ['/data/vendors-with-warehouse.json','/data/vendors.json']
+  let rows = []
+  let used = ''
+  for(const u of sources){
+    try{
+      const r = await fetch(u)
+      if(!r.ok) throw new Error(r.status+'')
+      rows = await r.json()
+      used = u
+      break
+    }catch(e){ /* 尝试下一个 */ }
+  }
+  if(!rows.length){ console.warn('[loadVendorsForCenters] 未能加载 vendors 数据'); return }
+  console.info('[loadVendorsForCenters] 使用数据源:', used, '数量:', rows.length)
+  vendorsByCenter.clear(); vendorsByWarehouseFid.clear(); aggregatedCenterMetrics.clear()
+  rows.forEach(v=>{
+    const key = v.centerName || '未知中心'
+    if(!vendorsByCenter.has(key)) vendorsByCenter.set(key, [])
+    vendorsByCenter.get(key).push(v)
+    const fid = v.warehouse?.fid
+    if(Number.isFinite(fid)){
+      if(!vendorsByWarehouseFid.has(fid)) vendorsByWarehouseFid.set(fid, [])
+      vendorsByWarehouseFid.get(fid).push(v)
+    }
+  })
+  vendorsByCenter.forEach((list,key)=> aggregatedCenterMetrics.set(key, aggregateCenterMetrics(list)))
 }
 
 // 管线分析状态
