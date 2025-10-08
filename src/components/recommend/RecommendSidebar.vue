@@ -54,7 +54,7 @@
           </div>
         </div>
         
-        <RecResultTable :items="matches" @add-compare="addCompare" />
+  <RecResultTable :items="matches" @add-compare="addCompare" @focus-vendor="focusVendor" />
       </section>
 
       <footer class="rec-footer">
@@ -83,6 +83,7 @@ import RecResultTable from '@/components/recommend/RecResultTable.vue'
 import type { Query, Vendor, MatchItem } from '@/types/recommend'
 import type { EnhancedQuery, EnhancedMatchItem } from '@/types/weather'
 import { matchVendors } from '@/utils/recommendScore'
+import { selectVendorForMap } from '@/bridge/recommendMapBus'
 import { enhancedMatchVendors, getWeatherRecommendations } from '@/utils/enhancedRecommendScore'
 import { recommendSidebarOpen, closeRecommend, openRecommend } from '@/bridge/recommendUI'
 import { getBridge, subscribeBridge, publishBridge } from '@/bridge/routeBridge'
@@ -163,6 +164,9 @@ function handleSubmit(q: EnhancedQuery) {
 }
 function addCompare(v: Vendor) {
   if (!compareList.value.find(x => x.id === v.id)) compareList.value.push(v)
+}
+function focusVendor(v: Vendor){
+  selectVendorForMap(v)
 }
 function removeCompare(id: string) {
   compareList.value = compareList.value.filter(v => v.id !== id)

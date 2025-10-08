@@ -279,6 +279,21 @@
       <div class="sub" v-else>单击加点，双击或“完成挖方”结束（Esc 取消 / Backspace 撤销）</div>
     </div>
   </div>
+  <!-- 推荐商家高亮悬浮窗 -->
+  <div v-if="vendorHover.visible" class="vendor-float" :style="{ left: vendorHover.x + 'px', top: vendorHover.y + 'px' }">
+    <div class="vh-name">{{ vendorHover.vendor?.name }}</div>
+    <div class="vh-line">中心: {{ vendorHover.vendor?.centerName || vendorHover.vendor?.warehouse?.centerName || '未知' }}</div>
+    <div class="vh-line" v-if="vendorHover.vendor?.route">线路: {{ vendorHover.vendor?.route }}</div>
+    <div class="vh-metrics">
+      <span v-if="vendorHover.vendor?.metrics">评分 {{ vendorHover.vendor.metrics.rating?.toFixed?.(1) }}</span>
+      <span v-if="vendorHover.vendor?.metrics">准时 {{ (vendorHover.vendor.metrics.onTimeRate*100).toFixed(0) }}%</span>
+      <span v-if="vendorHover.vendor?.capabilities">载重 {{ vendorHover.vendor.capabilities.maxWeightKg }}kg</span>
+    </div>
+    <div class="vh-tags" v-if="vendorHover.vendor?.tags?.length">
+      <span v-for="t in vendorHover.vendor.tags.slice(0,6)" :key="t" class="vh-tag">{{ t }}</span>
+    </div>
+    <div class="vh-close" @click="vendorHover.visible=false" title="关闭">×</div>
+  </div>
   </div>
 </template>
 
@@ -290,6 +305,7 @@ import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import PanoramaViewer from './PanoramaViewer.vue'
 import { DataSourceManager } from '@/utils/DataSourceManager.js'
+import { selectedVendor } from '@/bridge/recommendMapBus'
 
 export default defineComponent({
   name: 'MapView',
@@ -343,6 +359,8 @@ const warehousesMeta = reactive({
 const dataSourcesInfo = reactive({
   warehouseSource: ''
 })
+// 推荐选中商家悬浮窗状态
+const vendorHover = reactive({ visible:false, x:20, y:120, vendor:null })
 const currentWarehouseDetail = computed(() => warehousesMeta.list.find(w => w.fid === warehousesMeta.selectedFid) || null)
 // 当前中心对应线路 vendors（按序号数字排序，支持合并后文件的 FID 精确匹配）
 const currentCenterVendors = computed(()=>{
@@ -2353,6 +2371,17 @@ function highlightWarehouseEntity(ent) {
    lastWarehouseHighlight = ent
   requestRender()
 }
+// 监听推荐侧栏选中的商家
+watch(selectedVendor, (v)=>{
+  if(!v){ vendorHover.visible=false; vendorHover.vendor=null; return }
+  vendorHover.vendor = v
+  vendorHover.visible = true
+  // 按 FID 或 centerName 定位仓库
+  let target = null
+  if(Number.isFinite(v.warehouse?.fid)) target = warehousesMeta.list.find(w=> w.fid === v.warehouse.fid)
+  if(!target && v.centerName) target = warehousesMeta.list.find(w=> w.groupName === v.centerName)
+  if(target) selectWarehouse(target, true)
+})
   // 重新计算仓库质心（防止多边形层级或层次变化导致失准）
   function recomputeWarehouseCentroid(w) {
     try {
@@ -2951,6 +2980,15 @@ function highlightWarehouseEntity(ent) {
   opacity: 0.9;
   line-height: 1.4;
 }
+
+/* 推荐商家悬浮窗 */
+.vendor-float { position:absolute;z-index:120;min-width:220px;max-width:300px;background:rgba(15,32,54,0.93);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.4);backdrop-filter:blur(8px);font-size:12px;line-height:1.4; }
+.vendor-float .vh-name { font-weight:600;font-size:15px;margin-bottom:4px; }
+.vendor-float .vh-metrics { display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;color:#ffd88a; }
+.vendor-float .vh-tags { margin-top:6px;display:flex;flex-wrap:wrap;gap:4px; }
+.vendor-float .vh-tag { background:#244b7a;padding:2px 6px;border-radius:6px;font-size:11px; }
+.vendor-float .vh-close { position:absolute;right:6px;top:4px;cursor:pointer;font-size:14px;opacity:0.7; }
+.vendor-float .vh-close:hover { opacity:1; }
 
 @keyframes analysisSlideDown {
   from {

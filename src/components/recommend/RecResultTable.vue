@@ -14,7 +14,7 @@
       <table class="tab">
         <thead><tr><th style="width:26%">商家</th><th>距离(km)</th><th>能力</th><th>评分</th><th>准点率</th><th>价格指数</th><th>天气适应性</th><th>标签</th><th>操作</th></tr></thead>
         <tbody>
-          <tr v-for="m in sorted" :key="m.vendor.id" :class="{unfeasible: !m.feasible}">
+          <tr v-for="m in sorted" :key="m.vendor.id" :class="{unfeasible: !m.feasible}" @click="$emit('focus-vendor', m.vendor)" title="点击在地图高亮仓库">
             <td><div class="name">{{ m.vendor.name }}</div><div class="tips" v-if="!m.feasible">{{ m.reasons.join('；') }}</div><div class="tips" v-else>综合分：{{ m.score }}</div></td>
             <td class="num">{{ m.distanceKm.toFixed(1) }}</td>
             <td class="cap"><span>载重≤{{ m.vendor.capabilities.maxWeightKg }}kg</span><span v-if="m.vendor.capabilities.types.includes('cold')">/ 冷链</span><span v-if="m.vendor.capabilities.types.includes('hazmat')">/ 危化</span><span v-if="m.vendor.capabilities.cold">/ {{ m.vendor.capabilities.cold!.min }}~{{ m.vendor.capabilities.cold!.max }}℃</span></td>
@@ -42,7 +42,7 @@
 import { computed, ref } from 'vue'; import FluentCard from '@/components/FluentCard.vue'; import type { MatchItem, Vendor } from '@/types/recommend'
 import type { EnhancedMatchItem } from '@/types/weather'
 const props = defineProps<{ items: EnhancedMatchItem[] }>();
-defineEmits<{ (e:'add-compare', v: Vendor):void; (e:'open-compare'):void }>();
+defineEmits<{ (e:'add-compare', v: Vendor):void; (e:'open-compare'):void; (e:'focus-vendor', v: Vendor):void }>();
 const sortKey = ref<'score'|'distance'|'rating'|'price'|'onTime'|'weather'>('score');
 const feasibleCount = computed(()=> props.items.filter(i=>i.feasible).length);
 
