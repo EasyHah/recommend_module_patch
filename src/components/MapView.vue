@@ -280,7 +280,7 @@
     </div>
   </div>
   <!-- 推荐商家高亮悬浮窗 -->
-  <div v-if="vendorHover.visible" class="vendor-float" :style="{ left: vendorHover.x + 'px', top: vendorHover.y + 'px' }">
+  <div v-if="vendorHover.visible" class="vendor-float" :class="{ dragging: vendorHover.dragging }" :style="{ left: vendorHover.x + 'px', top: vendorHover.y + 'px' }" @mousedown="onVendorFloatMouseDown">
     <div class="vh-name">{{ vendorHover.vendor?.name }}</div>
     <div class="vh-line">中心: {{ vendorHover.vendor?.centerName || vendorHover.vendor?.warehouse?.centerName || '未知' }}</div>
     <div class="vh-line" v-if="vendorHover.vendor?.route">线路: {{ vendorHover.vendor?.route }}</div>
@@ -301,10 +301,10 @@
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import { defineComponent, onMounted, onUnmounted, reactive, watch, ref, nextTick, computed } from 'vue'
-import { weatherService } from '@/services/weather'
-import { disasterService } from '@/services/disaster'
 import PanoramaViewer from './PanoramaViewer.vue'
 import { DataSourceManager } from '@/utils/DataSourceManager.js'
+import { weatherService } from '@/services/weather'
+import { disasterService } from '@/services/disaster'
 import { selectedVendor } from '@/bridge/recommendMapBus'
 
 export default defineComponent({
@@ -314,23 +314,32 @@ export default defineComponent({
 
 window.CESIUM_BASE_URL = '/'
 
-// 全局 Viewer 引用与重绘方法（requestRender）
+// 全局 Viewer 引用与安全重绘辅助（requestRender）
 const viewerRef = ref(null)
+/**
+ * 触发一次场景重绘；若后续需要支持对某个仓库 w 的中心飞行，可再提供参数。
+ * 目前仅在 requestRenderMode 下，用于保证状态更新后场景刷新。
+ */
 const requestRender = () => {
   const v = viewerRef.value
-  if (v && v.scene) v.scene.requestRender()
+  if (!v) return
+  // 仅执行一次 requestRender，不做 camera.flyTo（避免误用未定义 w 导致报错）
+  if (v.scene && typeof v.scene.requestRender === 'function') {
+    v.scene.requestRender()
+  }
 }
 
+// UI 控制面板状态
 const ui = reactive({
   osgb: true,
   ck: true,
   geo: true,
-  floors: true,          // 楼层抽屉开关
-  facilities: true,      // 设施标注开关
-  fireExtinguishers: true, // 灭火器开关
-  pano: true,            // 全景红点开关
-  demoParabola: true,    // 抛物线演示开关
-  pipelines: true,     // 管线图层开关
+  floors: true,
+  facilities: true,
+  fireExtinguishers: true,
+  pano: true,
+  demoParabola: true,
+  pipelines: true,
   terrainAlpha: 0.35,  // 地形透明度
   cluster: true,
   clusterRange: 45, // 像素范围
@@ -360,7 +369,7 @@ const dataSourcesInfo = reactive({
   warehouseSource: ''
 })
 // 推荐选中商家悬浮窗状态
-const vendorHover = reactive({ visible:false, x:20, y:120, vendor:null })
+const vendorHover = reactive({ visible:false, x:20, y:120, vendor:null, dragging:false, offsetX:0, offsetY:0, width:320, height:0 })
 const currentWarehouseDetail = computed(() => warehousesMeta.list.find(w => w.fid === warehousesMeta.selectedFid) || null)
 // 当前中心对应线路 vendors（按序号数字排序，支持合并后文件的 FID 精确匹配）
 const currentCenterVendors = computed(()=>{
@@ -2332,21 +2341,109 @@ onUnmounted(() => {
 })
 
 // 飞行到仓库实体（供调试面板调用）
-function flyToWarehouse(w) {
+let __currentFlightToken = 0
+function flyToWarehouse(w, opts={}) {
+  /* opts 可选参数：
+     forceTwoStep: 强制两段动画
+     topDown: 是否最终垂直俯视（默认 true）
+     keepHeading: 是否保持当前 heading（默认 true）
+     heading: 指定最终 heading（度，优先级高于 keepHeading=false 情况）
+     finalPitchDeg: 自定义最终 pitch（默认 topDown:-88，否则 -35）
+     debug: 输出调试信息
+  */
   const viewer = viewerRef.value
-  if (!viewer || !w?.entity) return
-  // 优先使用 entity 本身的 boundingSphere
-  try {
-    viewer.flyTo(w.entity, { duration: 0.8 })
-  } catch {
-    // 退化：用计算质心点飞
-    if (w.lon != null && w.lat != null) {
-      viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 180),
-        duration: 0.8
-      })
-    }
+  if (!viewer || !w) { console.warn('[flyToWarehouse] 缺少 viewer 或 w'); return Promise.resolve(false) }
+  const cam = viewer.camera
+  let centerCart = null, radius = 200
+  if (w.entity) {
+    try {
+      const bs = viewer.dataSourceDisplay.getBoundingSphere(w.entity)
+      if (bs && bs.radius > 1 && Number.isFinite(bs.radius)) { centerCart = bs.center; radius = bs.radius }
+    } catch {}
   }
+  if (!centerCart && w.lon != null && w.lat != null) {
+    centerCart = Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 0)
+  }
+  if (!centerCart) { console.warn('[flyToWarehouse] 无中心可飞，放弃'); return Promise.resolve(false) }
+
+  const dist = Cesium.Cartesian3.distance(cam.positionWC, centerCart)
+  const topDown = opts.topDown !== false // 默认开启顶视
+  // 高度策略：顶视模式提高基础高度，避免贴得太近导致透视畸变
+  const baseClose = topDown ? radius * 3 : radius * 2
+  const closeHeight = Math.min(Math.max(baseClose, topDown ? 200 : 120), topDown ? 2500 : 1500)
+  const farHeight = Math.min(Math.max(closeHeight + Math.max(400, closeHeight * 0.8), radius * 6), topDown ? 6000 : 4500)
+
+  const centerCarto = Cesium.Cartographic.fromCartesian(centerCart)
+  const lon = Cesium.Math.toDegrees(centerCarto.longitude)
+  const lat = Cesium.Math.toDegrees(centerCarto.latitude)
+  const token = ++__currentFlightToken
+  const twoStep = opts.forceTwoStep || dist < radius * 3
+  const finalPitchDeg = typeof opts.finalPitchDeg === 'number' ? opts.finalPitchDeg : (topDown ? -88 : -35)
+  const midPitchDeg = topDown ? -55 : -50
+  const approachPitchDeg = topDown ? -70 : -35
+  const keepHeading = opts.keepHeading !== false
+  const targetHeadingRad = (keepHeading ? cam.heading : Cesium.Math.toRadians(typeof opts.heading === 'number' ? opts.heading : 0))
+
+  if (opts.debug) {
+    console.debug('[flyToWarehouse] cfg', { fid: w.fid, dist: dist.toFixed(1), radius: radius.toFixed(1), twoStep, closeHeight, farHeight, finalPitchDeg })
+  }
+
+  const doFly = (destinationHeight, pitchDeg, duration)=> new Promise(res=>{
+    let done = false
+    const finish = (ok)=>{ if(done) return; done=true; res(ok); viewer.scene.requestRender?.() }
+    try {
+      cam.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(lon, lat, destinationHeight),
+        orientation: { pitch: Cesium.Math.toRadians(pitchDeg), heading: targetHeadingRad, roll: 0 },
+        duration,
+        complete: ()=> finish(true),
+        cancel: ()=> finish(false)
+      })
+    } catch(e){
+      console.warn('[flyToWarehouse] camera.flyTo 异常 fallback', e)
+      cam.setView({ destination: Cesium.Cartesian3.fromDegrees(lon, lat, destinationHeight), orientation:{ heading: targetHeadingRad, pitch: Cesium.Math.toRadians(pitchDeg), roll:0 } })
+      finish(false)
+    }
+    viewer.scene.requestRender?.()
+  })
+
+  const run = async ()=>{
+    if (twoStep) {
+      await doFly(farHeight, midPitchDeg, 0.7)
+      if (token !== __currentFlightToken) return false
+      await doFly(closeHeight, approachPitchDeg, 0.9)
+    } else {
+      const dynDur = Math.min(1.6, Math.max(0.85, dist / 4000))
+      await doFly(closeHeight, approachPitchDeg, dynDur)
+    }
+    // 若位移极小执行兜底再靠近一次
+    const newDist = Cesium.Cartesian3.distance(cam.positionWC, centerCart)
+    if (newDist < 5) {
+      if (opts.debug) console.debug('[flyToWarehouse] 位移极小，兜底再飞')
+      await doFly(closeHeight + 800, approachPitchDeg - 5, 0.5)
+      if (token === __currentFlightToken) await doFly(closeHeight, approachPitchDeg, 0.6)
+    }
+    // 最终强制顶视垂直矫正（flyTo 有时不会完全到 -90）
+    if (token === __currentFlightToken && topDown) {
+      try {
+        cam.setView({
+          destination: Cesium.Cartesian3.fromDegrees(lon, lat, closeHeight),
+          orientation: { heading: targetHeadingRad, pitch: Cesium.Math.toRadians(finalPitchDeg), roll: 0 }
+        })
+      } catch(e){ console.warn('[flyToWarehouse] setView 垂直矫正失败', e) }
+    }
+    // 高亮闪烁（可选）
+    try {
+      if (w.entity?.polygon) {
+        const orig = w.entity.polygon.material
+        w.entity.polygon.material = Cesium.Color.ORANGE.withAlpha(0.85)
+        setTimeout(()=>{ if(token===__currentFlightToken) w.entity.polygon.material = orig }, 900)
+      }
+    } catch {}
+    viewer.scene.requestRender?.()
+    return true
+  }
+  return run()
 }
 function selectWarehouse(w, fly = false) {
   if (!w) return
@@ -2376,12 +2473,44 @@ watch(selectedVendor, (v)=>{
   if(!v){ vendorHover.visible=false; vendorHover.vendor=null; return }
   vendorHover.vendor = v
   vendorHover.visible = true
+  // 进入时将弹窗放到屏幕中心稍偏左上的位置（例如中心点向左 180px、向上 140px）
+  try {
+    const w = window.innerWidth
+    const h = window.innerHeight
+    const offsetX = 180
+    const offsetY = 140
+    vendorHover.x = Math.max(12, Math.round(w/2 - offsetX))
+    vendorHover.y = Math.max(60, Math.round(h/2 - offsetY))
+  } catch {}
   // 按 FID 或 centerName 定位仓库
   let target = null
   if(Number.isFinite(v.warehouse?.fid)) target = warehousesMeta.list.find(w=> w.fid === v.warehouse.fid)
   if(!target && v.centerName) target = warehousesMeta.list.find(w=> w.groupName === v.centerName)
   if(target) selectWarehouse(target, true)
 })
+
+function onVendorFloatMouseDown(e){
+  if(e.button!==0) return
+  const target = e.currentTarget
+  vendorHover.dragging = true
+  vendorHover.offsetX = e.clientX - vendorHover.x
+  vendorHover.offsetY = e.clientY - vendorHover.y
+  vendorHover.width = target.offsetWidth
+  vendorHover.height = target.offsetHeight
+  window.addEventListener('mousemove', onVendorFloatMove)
+  window.addEventListener('mouseup', onVendorFloatUp, { once: true })
+}
+function onVendorFloatMove(e){
+  if(!vendorHover.dragging) return
+  const maxX = (window.innerWidth - vendorHover.width - 8)
+  const maxY = (window.innerHeight - vendorHover.height - 8)
+  vendorHover.x = Math.min(Math.max(4, e.clientX - vendorHover.offsetX), maxX)
+  vendorHover.y = Math.min(Math.max(4, e.clientY - vendorHover.offsetY), maxY)
+}
+function onVendorFloatUp(){
+  vendorHover.dragging = false
+  window.removeEventListener('mousemove', onVendorFloatMove)
+}
   // 重新计算仓库质心（防止多边形层级或层次变化导致失准）
   function recomputeWarehouseCentroid(w) {
     try {

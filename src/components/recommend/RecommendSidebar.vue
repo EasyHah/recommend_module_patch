@@ -124,24 +124,70 @@ async function loadVendors() {
   const sources = ['/data/vendors-with-warehouse.json','/data/vendors.json']
   for(const url of sources){
     try {
-      const res = await fetch(url)
+      // 尝试使用本地缓存（一天过期）
+      const cacheKey = 'vendorsCache:'+url
+      const cacheMetaKey = cacheKey+':meta'
+      const metaRaw = localStorage.getItem(cacheMetaKey)
+      let meta: any = null
+      if(metaRaw){
+        try { meta = JSON.parse(metaRaw) } catch {}
+      }
+      const now = Date.now()
+      const cacheValid = meta && meta.expire > now
+      if(cacheValid){
+        const cached = localStorage.getItem(cacheKey)
+        if(cached){
+          try {
+            vendors.value = JSON.parse(cached)
+            console.info('[RecommendSidebar] 使用本地缓存 vendors, 数量=', vendors.value.length)
+            // 异步后台刷新
+            refreshVendorsInBackground(url, cacheKey, cacheMetaKey)
+            attachTestHelper()
+            return
+          } catch {}
+        }
+      }
+      const res = await fetch(url, { cache:'no-store' })
       if(!res.ok) throw new Error(res.status+'')
       vendors.value = await res.json()
       console.info('[RecommendSidebar] 使用数据源:', url, '共', vendors.value.length, '条')
-      // 挂载调试函数：window.testFlyVendor('vl0007')
       try {
-        ;(window as any).testFlyVendor = (id:string)=>{
-          const v = vendors.value.find(x=> x.id === id)
-          if(!v){ console.warn('[testFlyVendor] 未找到 id', id); return }
-          focusVendor(v)
-          console.info('[testFlyVendor] 已选择并飞行到仓库:', id)
-        }
+        localStorage.setItem(cacheKey, JSON.stringify(vendors.value))
+        localStorage.setItem(cacheMetaKey, JSON.stringify({ expire: now + 24*60*60*1000, ver: vendors.value.length }))
       } catch {}
+      attachTestHelper()
+      // 挂载调试函数：window.testFlyVendor('vl0007')
       return
     } catch(e) { /* try next */ }
   }
   vendors.value = []
   console.warn('[RecommendSidebar] 未能加载 vendors 数据')
+}
+
+async function refreshVendorsInBackground(url:string, cacheKey:string, cacheMetaKey:string){
+  try {
+    const r = await fetch(url, { cache:'no-store' })
+    if(!r.ok) return
+    const fresh = await r.json()
+    const oldLen = vendors.value.length
+    if(fresh.length !== oldLen){
+      console.info('[RecommendSidebar] 后台刷新 vendors，新长度=', fresh.length)
+      vendors.value = fresh
+      localStorage.setItem(cacheKey, JSON.stringify(fresh))
+      localStorage.setItem(cacheMetaKey, JSON.stringify({ expire: Date.now()+24*60*60*1000, ver:fresh.length }))
+    }
+  } catch {}
+}
+
+function attachTestHelper(){
+  try {
+    ;(window as any).testFlyVendor = (id:string)=>{
+      const v = vendors.value.find(x=> x.id === id)
+      if(!v){ console.warn('[testFlyVendor] 未找到 id', id); return }
+      focusVendor(v)
+      console.info('[testFlyVendor] 已选择并飞行到仓库:', id)
+    }
+  } catch {}
 }
 
 async function runQuery() {

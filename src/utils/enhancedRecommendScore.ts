@@ -117,90 +117,113 @@ export function enhancedBucketize(q: EnhancedQuery, v: Vendor, d: number, weathe
 
 // 增强的供应商匹配算法
 export async function enhancedMatchVendors(q: EnhancedQuery, vs: Vendor[]): Promise<EnhancedMatchItem[]> {
+  const t0 = (typeof performance!=='undefined'? performance.now(): Date.now())
   const results: EnhancedMatchItem[] = []
-  
-  // 获取路径天气数据（如果需要）
+
+  // 1. 路径天气（一次性）
   let routeWeatherData = q.routeWeather
   if (q.weatherConsideration?.enabled && !routeWeatherData) {
     try {
-      const originWeather = await weatherService.getWeather(q.origin)
-      const destinationWeather = await weatherService.getWeather(q.destination)
-      
+      const [originWeather, destinationWeather] = await Promise.all([
+        weatherService.getWeather(q.origin),
+        weatherService.getWeather(q.destination)
+      ])
       routeWeatherData = {
         origin: {
           temperature: originWeather.current.temp,
-          humidity: originWeather.current.humidity,
-          windSpeed: originWeather.current.windSpeed,
-          windDirection: originWeather.current.windDir,
-          weather: originWeather.current.weather,
-          visibility: originWeather.current.visibility,
-          pressure: originWeather.current.pressure,
-          icon: originWeather.current.icon
+            humidity: originWeather.current.humidity,
+            windSpeed: originWeather.current.windSpeed,
+            windDirection: originWeather.current.windDir,
+            weather: originWeather.current.weather,
+            visibility: originWeather.current.visibility,
+            pressure: originWeather.current.pressure,
+            icon: originWeather.current.icon
         },
         destination: {
           temperature: destinationWeather.current.temp,
-          humidity: destinationWeather.current.humidity,
-          windSpeed: destinationWeather.current.windSpeed,
-          windDirection: destinationWeather.current.windDir,
-          weather: destinationWeather.current.weather,
-          visibility: destinationWeather.current.visibility,
-          pressure: destinationWeather.current.pressure,
-          icon: destinationWeather.current.icon
+            humidity: destinationWeather.current.humidity,
+            windSpeed: destinationWeather.current.windSpeed,
+            windDirection: destinationWeather.current.windDir,
+            weather: destinationWeather.current.weather,
+            visibility: destinationWeather.current.visibility,
+            pressure: destinationWeather.current.pressure,
+            icon: destinationWeather.current.icon
         },
         risks: []
       }
-      
-      // 评估路径风险
       const riskAssessment = await disasterService.assessRouteRisk([q.origin, q.destination])
       routeWeatherData.risks = riskAssessment.factors.map(factor => ({
         type: factor.type,
         level: factor.severity as 'low' | 'medium' | 'high' | 'extreme',
         description: factor.impact
       }))
-      
-      // 更新查询对象
       q.routeWeather = routeWeatherData
-    } catch (error) {
-      console.warn('获取天气数据失败，使用基础推荐算法:', error)
+    } catch (err) {
+      console.warn('[enhancedMatchVendors] 路径天气获取失败: ', err)
     }
   }
-  
-  // 处理每个供应商
-  for (const vendor of vs) {
-    const distance = haversine(q.origin, vendor.location)
-    
-    // 获取供应商位置的天气数据
-    let vendorWeatherData
-    let weatherScore = 1.0
-    let weatherFactors: string[] = []
-    let weatherRisk: 'low' | 'medium' | 'high' | 'extreme' = 'low'
-    
-    if (q.weatherConsideration?.enabled) {
-      try {
-        vendorWeatherData = await weatherService.getWeather(vendor.location)
-        const impact = weatherService.getWeatherImpact(vendorWeatherData)
-        weatherScore = impact.score
-        weatherFactors = impact.factors
-        weatherRisk = impact.level
-      } catch (error) {
-        console.warn(`获取供应商 ${vendor.name} 位置天气失败:`, error)
+
+  // 2. 分组获取供应商天气 (核心性能优化)
+  const useWeather = !!q.weatherConsideration?.enabled
+  interface Group { key:string; vendors: Vendor[]; rep: Vendor }
+  const groupsMap = new Map<string, Group>()
+  const mkKey = (v:Vendor)=> v.centerName || (v.location.lat.toFixed(2)+','+v.location.lng.toFixed(2))
+  vs.forEach(v=>{
+    const k = mkKey(v)
+    let g = groupsMap.get(k)
+    if(!g){ g = { key:k, vendors:[], rep:v }; groupsMap.set(k, g) }
+    g.vendors.push(v)
+  })
+
+  const weatherCache: Map<string, any> = new Map()
+  if(useWeather){
+    const groupList = [...groupsMap.values()]
+    const CONCURRENCY = 6
+    let idx = 0
+    async function worker(){
+      while(idx < groupList.length){
+        const my = groupList[idx++]
+        if(weatherCache.has(my.key)) continue
+        try {
+          const data = await weatherService.getWeather(my.rep.location)
+          weatherCache.set(my.key, data)
+        } catch(e){
+          console.warn('[enhancedMatchVendors] 组天气获取失败 key=', my.key, e)
+          weatherCache.set(my.key, null)
+        }
       }
     }
-    
-    // 执行增强的硬性检查
+    const workers = Array(Math.min(CONCURRENCY, groupList.length)).fill(0).map(()=>worker())
+    await Promise.all(workers)
+  }
+
+  // 3. 构建结果
+  for(const vendor of vs){
+    const distance = haversine(q.origin, vendor.location)
+    let vendorWeatherData: any = undefined
+    let weatherScore = 1.0
+    let weatherFactors: string[] = []
+    let weatherRisk: 'low'|'medium'|'high'|'extreme' = 'low'
+    if(useWeather){
+      const k = mkKey(vendor)
+      vendorWeatherData = weatherCache.get(k)
+      if(vendorWeatherData){
+        try {
+          const impact = weatherService.getWeatherImpact(vendorWeatherData)
+          weatherScore = impact.score
+          weatherFactors = impact.factors
+          weatherRisk = impact.level
+        } catch(e){
+          console.warn('[enhancedMatchVendors] impact 计算失败', e)
+        }
+      }
+    }
     const hardCheckResult = enhancedHardCheck(q, vendor, distance, weatherScore)
-    
-    // 计算增强的软性评分
-    const score = hardCheckResult.ok ? 
-      enhancedSoftScore(q, vendor, distance, vendorWeatherData) : 0
-    
-    // 获取增强的分类标签
+    const score = hardCheckResult.ok ? enhancedSoftScore(q, vendor, distance, vendorWeatherData) : 0
     const buckets = enhancedBucketize(q, vendor, distance, vendorWeatherData)
-    
-    // 构建增强的匹配结果
-    const matchItem: EnhancedMatchItem = {
+    results.push({
       vendor,
-      distanceKm: Math.round(distance * 10) / 10,
+      distanceKm: Math.round(distance*10)/10,
       feasible: hardCheckResult.ok,
       reasons: hardCheckResult.reasons,
       buckets,
@@ -208,13 +231,12 @@ export async function enhancedMatchVendors(q: EnhancedQuery, vs: Vendor[]): Prom
       weatherScore,
       weatherFactors,
       weatherRisk
-    }
-    
-    results.push(matchItem)
+    })
   }
-  
-  // 按评分排序
-  return results.sort((a, b) => b.score - a.score)
+
+  const t1 = (typeof performance!=='undefined'? performance.now(): Date.now())
+  if(useWeather) console.debug(`[enhancedMatchVendors] 供应商: ${vs.length} 组: ${groupsMap.size} 总耗时: ${(t1-t0).toFixed(0)}ms`)
+  return results.sort((a,b)=> b.score - a.score)
 }
 
 // 获取天气建议
