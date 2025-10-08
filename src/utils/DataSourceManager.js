@@ -233,6 +233,19 @@ export class DataSourceManager {
    * 批量加载预定义数据源
    */
   async loadPredefinedDataSources() {
+    // 优先尝试使用增强后的仓库 GeoJSON (包含 vendors ID 列表)
+    let warehouseUrl = '/Assets/data/geojson/仓库.json'
+    try {
+      // 运行时探测 public/data/warehouse-with-vendors.geojson 是否存在
+      const resp = await fetch('/data/warehouse-with-vendors.geojson', { method: 'HEAD' })
+      if (resp.ok) {
+        warehouseUrl = '/data/warehouse-with-vendors.geojson'
+        console.info('[DataSourceManager] 使用增强仓库数据源:', warehouseUrl)
+      } else {
+        console.info('[DataSourceManager] 增强仓库数据不存在，使用默认:', warehouseUrl)
+      }
+    } catch { /* 忽略，使用默认 */ }
+
     const configs = [
       // 基础 3D Tileset
       {
@@ -257,7 +270,7 @@ export class DataSourceManager {
       {
         type: 'geojson',
         id: 'warehouse',
-        url: '/Assets/data/geojson/仓库.json',
+        url: warehouseUrl,
         options: {
           styleFunction: (entity) => {
             if (entity.polygon) {

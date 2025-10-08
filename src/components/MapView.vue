@@ -162,6 +162,9 @@
         <button class="close" @click="warehousesMeta.showPanel=false" title="关闭面板">×</button>
       </div>
     </div>
+    <div class="wd-source" v-if="dataSourcesInfo.warehouseSource">
+      <small>数据源: {{ dataSourcesInfo.warehouseSource }}</small>
+    </div>
     <div class="wd-grouping">
       <label>分组跨度: <strong>{{ warehousesMeta.fidGroupSize }}</strong></label>
       <input type="range" min="40" max="300" step="10" v-model.number="warehousesMeta.fidGroupSize" />
@@ -335,6 +338,10 @@ const warehousesMeta = reactive({
   selectedFid: null,
   fidGroupSize: 120,
   missFids: []
+})
+// 数据源信息（用于 UI 显示使用了增强还是原始仓库 geojson）
+const dataSourcesInfo = reactive({
+  warehouseSource: ''
 })
 const currentWarehouseDetail = computed(() => warehousesMeta.list.find(w => w.fid === warehousesMeta.selectedFid) || null)
 // 当前中心对应线路 vendors（按序号数字排序，支持合并后文件的 FID 精确匹配）
@@ -1140,6 +1147,12 @@ onMounted(async () => {
   // 批量加载所有预定义数据源
   console.log('开始加载数据源...')
   const loadedSources = await dataSourceManager.loadPredefinedDataSources()
+  // 记录仓库数据源使用路径（DataSourceManager 内部在 console 输出，前端再尝试探测）
+  try {
+    // 通过尝试 HEAD 增强文件判断
+    const resp = await fetch('/data/warehouse-with-vendors.geojson', { method: 'HEAD' })
+    dataSourcesInfo.warehouseSource = resp.ok ? 'warehouse-with-vendors.geojson' : '仓库.json'
+  } catch { dataSourcesInfo.warehouseSource = '仓库.json' }
   
   // 获取主要建筑数据用于缩放
   const osgb = dataSourceManager.getDataSource('osgb')
@@ -2389,7 +2402,7 @@ function highlightWarehouseEntity(ent) {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV }
+  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo }
 }
 })
 </script>
