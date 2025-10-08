@@ -152,17 +152,146 @@
     ref="panoramaViewer"
     :visible="panoramaModal.show" 
     @close="onPanoramaClosed" />
+  
+  <!-- 仓库调试面板（右下角） -->
+  <div class="warehouse-debug-panel" v-if="warehousesMeta.showPanel">
+    <div class="wd-header">
+      <h3>仓库调试</h3>
+      <div class="wd-actions">
+        <label class="chk"><input type="checkbox" v-model="warehousesMeta.showLabels" /> 标签</label>
+        <button class="close" @click="warehousesMeta.showPanel=false" title="关闭面板">×</button>
+      </div>
+    </div>
+    <div class="wd-grouping">
+      <label>分组跨度: <strong>{{ warehousesMeta.fidGroupSize }}</strong></label>
+      <input type="range" min="40" max="300" step="10" v-model.number="warehousesMeta.fidGroupSize" />
+      <small>调整后自动重新分组 (默认120)</small>
+    </div>
+    <div class="wd-stats">共 {{ warehousesMeta.list.length }} 个多边形</div>
+    <div class="wd-export" v-if="warehousesMeta.list.length">
+      <button @click="exportWarehouseMetaCSV" class="btn-small">导出全部CSV</button>
+      <button @click="exportWarehouseMissCSV" class="btn-small" :disabled="!warehousesMeta.missFids.length">导出未匹配FID({{ warehousesMeta.missFids.length }})</button>
+      <small v-if="warehousesMeta.missFids.length" style="display:block;margin-top:2px;">未匹配示例: {{ warehousesMeta.missFids.slice(0,8).join(',') }}</small>
+    </div>
+    <div class="wd-table-wrapper" v-if="warehousesMeta.list.length">
+      <table class="wd-table">
+        <thead>
+          <tr>
+            <th>FID</th><th>分组名</th><th>线路数</th><th>经度</th><th>纬度</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr v-for="w in warehousesMeta.list" :key="w.fid" :id="'wh-row-'+w.fid"
+        :class="{ selected: w.fid === warehousesMeta.selectedFid }"
+        @click="selectWarehouse(w, true)"
+              :title="'点击飞到并高亮 FID '+w.fid">
+            <td>{{ w.fid }}</td>
+            <td>{{ w.groupName }}</td>
+            <td>{{ w.rowCount }}</td>
+            <td>{{ w.lon?.toFixed(5) }}</td>
+            <td>{{ w.lat?.toFixed(5) }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="currentWarehouseDetail" class="wd-detail">
+        <h4>中心线路：{{ currentWarehouseDetail.groupName }} (FID {{ currentWarehouseDetail.fid }})</h4>
+        <div v-if="!currentWarehouseDetail.routes.length" class="wd-empty-routes">暂无线路数据</div>
+        <table v-else class="wd-routes">
+          <thead>
+            <tr><th>#</th><th>物流</th><th>线路/目的地</th><th>电话</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="(r,i) in currentWarehouseDetail.routes" :key="i">
+              <td>{{ r['序号'] || i+1 }}</td>
+              <td>{{ r['物流'] || '' }}</td>
+              <td>{{ r['线路/目的地'] || r['线路'] || '' }}</td>
+              <td>{{ r['电话'] || '' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="wd-vendor" v-if="aggregatedCenterMetrics.get(currentWarehouseDetail.groupName)">
+          <h5>中心聚合指标</h5>
+          <div class="vendor-metrics">
+            <div class="rows">
+              <div class="row"><span class="label">线路数</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).lineCount }}</span></div>
+              <div class="row"><span class="label">服务半径(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).serviceRadiusKm }} km</span></div>
+              <div class="row"><span class="label">能力类型合集</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).capabilities.types.join(' / ') }}</span></div>
+              <div class="row"><span class="label">最大载重(最大)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).capabilities.maxWeightKg }} kg</span></div>
+              <div class="row"><span class="label">评级(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.rating }}</span></div>
+              <div class="row"><span class="label">准时率(均值)</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.onTimeRate*100).toFixed(1) }}%</span></div>
+              <div class="row"><span class="label">价格指数(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.priceIndex }}</span></div>
+              <div class="row"><span class="label">利用率(均值)</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.capacityUtilization*100).toFixed(0) }}%</span></div>
+              <div class="row"><span class="label">标签合集</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).tags||[]).join(', ') }}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="wd-vendor-lines" v-if="currentCenterVendors.length">
+          <h5>线路明细 (vendors.json)</h5>
+          <div class="wd-vendor-table-wrapper">
+            <table class="wd-vendor-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>序号</th>
+                  <th>物流</th>
+                  <th>线路/目的地</th>
+                  <th>电话</th>
+                  <th>类型</th>
+                  <th>载重</th>
+                  <th>服务半径</th>
+                  <th>评级</th>
+                  <th>准时率</th>
+                  <th>价格</th>
+                  <th>利用率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(v,i) in currentCenterVendors" :key="v.id" :title="v.tags?.join(', ')">
+                  <td>{{ i+1 }}</td>
+                  <td>{{ v.sequence }}</td>
+                  <td>{{ v.logisticsName }}</td>
+                  <td class="route">{{ v.route }}</td>
+                  <td>{{ v.phone }}</td>
+                  <td>{{ (v.capabilities?.types||[]).join('/') }}</td>
+                  <td>{{ v.capabilities?.maxWeightKg }}</td>
+                  <td>{{ v.serviceRadiusKm }}</td>
+                  <td>{{ v.metrics?.rating }}</td>
+                  <td>{{ (v.metrics?.onTimeRate*100).toFixed(1) }}%</td>
+                  <td>{{ v.metrics?.priceIndex }}</td>
+                  <td>{{ (v.metrics?.capacityUtilization*100).toFixed(0) }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="wd-empty">暂无仓库实体（等待 GeoJSON 加载）</div>
+  </div>
+  <!-- 分析模式提示覆盖层（不拦截鼠标，pointer-events:none） -->
+  <div class="analysis-overlay" v-if="sectionMode || excavationMode">
+    <div class="msg">
+      <strong>{{ sectionMode ? '剖面分析进行中' : '挖方分析进行中' }}</strong>
+      <div class="sub" v-if="sectionMode">依次点击两点确定剖面（Esc 取消）</div>
+      <div class="sub" v-else>单击加点，双击或“完成挖方”结束（Esc 取消 / Backspace 撤销）</div>
+    </div>
+  </div>
   </div>
 </template>
 
-<script setup>
+<script lang="js">
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
-import { onMounted, onUnmounted, reactive, watch, ref, nextTick, computed } from 'vue'
+import { defineComponent, onMounted, onUnmounted, reactive, watch, ref, nextTick, computed } from 'vue'
 import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import PanoramaViewer from './PanoramaViewer.vue'
 import { DataSourceManager } from '@/utils/DataSourceManager.js'
+
+export default defineComponent({
+  name: 'MapView',
+  components: { PanoramaViewer },
+  setup() {
 
 window.CESIUM_BASE_URL = '/'
 
@@ -180,7 +309,8 @@ const ui = reactive({
   floors: true,          // 楼层抽屉开关
   facilities: true,      // 设施标注开关
   fireExtinguishers: true, // 灭火器开关
-  pano: true,
+  pano: true,            // 全景红点开关
+  demoParabola: true,    // 抛物线演示开关
   pipelines: true,     // 管线图层开关
   terrainAlpha: 0.35,  // 地形透明度
   cluster: true,
@@ -196,6 +326,53 @@ const ui = reactive({
   // 剖面分析缓冲距离（米）
   sectionBuffer: 50
 })
+
+// 仓库调试状态（用于展示 FID 与分组规则推断结果）
+const warehousesMeta = reactive({
+  list: [],        // { fid, groupName, rowCount, lon, lat, entity }
+  showPanel: true,
+  showLabels: true,
+  selectedFid: null,
+  fidGroupSize: 120,
+  missFids: []
+})
+const currentWarehouseDetail = computed(() => warehousesMeta.list.find(w => w.fid === warehousesMeta.selectedFid) || null)
+// 当前中心对应线路 vendors（按序号数字排序）
+const currentCenterVendors = computed(()=>{
+  if(!currentWarehouseDetail.value) return []
+  const key = currentWarehouseDetail.value.groupName
+  if(!key) return []
+  const list = vendorsByCenter.get(key) || []
+  const parseSeq = (s)=>{ if(!s) return Number.MAX_SAFE_INTEGER; const m = String(s).match(/\d+/); return m? parseInt(m[0]): Number.MAX_SAFE_INTEGER }
+  return [...list].sort((a,b)=> parseSeq(a.sequence)-parseSeq(b.sequence))
+})
+// 按 centerName 聚合的线路单位 vendors
+const vendorsByCenter = reactive(new Map()) // centerName -> Vendor[]
+const aggregatedCenterMetrics = reactive(new Map()) // centerName -> 聚合指标
+function aggregateCenterMetrics(list){
+  if(!list.length) return null
+  const serviceRadiusKm = Math.round(list.reduce((a,v)=>a+(v.serviceRadiusKm||0),0)/list.length)
+  const types = Array.from(new Set(list.flatMap(v=>v.capabilities?.types||[])))
+  const maxWeightKg = Math.max(...list.map(v=>v.capabilities?.maxWeightKg||0))
+  const rating = +(list.reduce((a,v)=>a+(v.metrics?.rating||0),0)/list.length).toFixed(2)
+  const onTimeRate = +(list.reduce((a,v)=>a+(v.metrics?.onTimeRate||0),0)/list.length).toFixed(3)
+  const priceIndex = +(list.reduce((a,v)=>a+(v.metrics?.priceIndex||0),0)/list.length).toFixed(2)
+  const capacityUtilization = +(list.reduce((a,v)=>a+(v.metrics?.capacityUtilization||0),0)/list.length).toFixed(2)
+  const tags = Array.from(new Set(list.flatMap(v=>v.tags||[]))).slice(0,12)
+  return { serviceRadiusKm, capabilities:{types, maxWeightKg, cold:null}, metrics:{rating,onTimeRate,priceIndex,capacityUtilization}, tags, lineCount:list.length }
+}
+async function loadVendorsForCenters(){
+  try{
+    const res = await fetch('/data/vendors.json')
+    const rows = await res.json()
+    rows.forEach(v=>{
+      const key = v.centerName || '未知中心'
+      if(!vendorsByCenter.has(key)) vendorsByCenter.set(key, [])
+      vendorsByCenter.get(key).push(v)
+    })
+    vendorsByCenter.forEach((list,key)=> aggregatedCenterMetrics.set(key, aggregateCenterMetrics(list)))
+  }catch(e){ console.warn('加载 vendors.json 失败', e) }
+}
 
 // 管线分析状态
 const sectionMode = ref(false)
@@ -255,6 +432,11 @@ let highlightedPipelines = []
 let sectionTempEntities = []
 let excavationTempEntities = []
 let dataSourceManager = null
+let warehouseDebugDS = null
+let lastWarehouseHighlight = null
+let redecorateTimer = null
+// 仓库实体集合，用于区分与普通 polygon 高亮
+const warehouseEntities = new Set()
 
 // 楼层抽屉相关变量
 let floor1 = null
@@ -274,21 +456,9 @@ function openPanorama(url, info = null) {
     }
   })
 }
-function closePanorama() {
-  if (panoramaViewer.value && panoramaViewer.value.closeModal) {
-    try { panoramaViewer.value.closeModal() } catch (e) {
-      console.warn('全景查看器清理失败:', e)
-      panoramaModal.show = false
-    }
-  } else {
-    panoramaModal.show = false
-  }
-}
 function onPanoramaClosed() {
   panoramaModal.show = false
 }
-// 显式引用防 tree-shaking
-const _exposeClose = closePanorama
 
 // 分析事件处理器与天气更新定时器需要在清理阶段访问，故提前声明
 let analysisHandler = null
@@ -876,6 +1046,65 @@ onMounted(async () => {
 
   // 2) 创建数据源管理器并加载所有数据
   dataSourceManager = new DataSourceManager(viewer)
+  // ===== 抛物线演示 (可选) =====
+  function animatedParabola(twoPoints) {
+    if(!ui.demoParabola) return
+    const start = [twoPoints[0], twoPoints[1], 0]
+    const step = 80
+    const heightProportion = 0.125
+    const dLon = (twoPoints[2] - start[0]) / step
+    const dLat = (twoPoints[3] - start[1]) / step
+    const deltaLon = dLon * Math.abs(111000 * Math.cos(start[1]))
+    const deltaLat = dLat * 111000
+    const end = [0,0,0]
+    const heigh = Math.floor(step * Math.sqrt(deltaLon ** 2 + deltaLat ** 2) * heightProportion)
+    const x2 = 10000 * Math.sqrt(dLon ** 2 + dLat ** 2)
+    const a = heigh / (x2 * x2)
+    const y = x => Math.floor(heigh - a * x * x)
+    for (let i=1;i<=step;i++){
+      end[0] = start[0] + dLon
+      end[1] = start[1] + dLat
+      const x = x2 * ((2 * i) / step - 1)
+      end[2] = y(x)
+      const positions = Cesium.Cartesian3.fromDegreesArrayHeights([...start, ...end])
+      viewer.entities.add({
+        polyline: {
+          positions,
+          width: 3,
+          material: new Cesium.PolylineOutlineMaterialProperty({
+            color: Cesium.Color.GOLD,
+            outlineWidth: 0.3
+          })
+        }
+      })
+      start[0] = end[0]; start[1] = end[1]; start[2] = end[2]
+    }
+  }
+  if(ui.demoParabola){
+    const twoPoints = [118.22951002492071, 35.10534526147898, 116.391389, 39.905556]
+    animatedParabola(twoPoints)
+  }
+
+  // ===== 全景红点 (pano) =====
+  const redEntities = []
+  function createScaledRedDot(){
+    const canvas = document.createElement('canvas')
+    canvas.width = 16; canvas.height = 16
+    const ctx = canvas.getContext('2d')
+    ctx.beginPath(); ctx.arc(8,8,6,0,Math.PI*2)
+    ctx.fillStyle='red'; ctx.fill(); ctx.strokeStyle='white'; ctx.lineWidth=0.5; ctx.stroke()
+    return canvas
+  }
+  // 利用后面已存在的 redPoints 数组：这里只做 ui.pano 初始隐藏控制
+  const panoInitialHide = () => {
+    // 延迟到主 redPoints 创建完成后再处理（微任务）
+    Promise.resolve().then(()=>{
+      if(!ui.pano){
+        viewer.entities.values.forEach(ent=>{ if(ent.__pano) ent.show = false })
+      }
+    })
+  }
+  panoInitialHide()
   
   // 管线地形透明度设置
   viewer.scene.screenSpaceCameraController.enableCollisionDetection = false
@@ -908,6 +1137,58 @@ onMounted(async () => {
   pipelineGroups.value = groups
   
   console.log(`数据源加载完成: ${loadedSources.size} 个数据源`)
+
+  // ===== 仓库 CSV 装饰与调试标签 =====
+  try {
+    // 并行加载 vendors
+    loadVendorsForCenters()
+    const meta = await dataSourceManager.decorateWarehousesFromCSV({
+      id: 'warehouse',
+      csvUrl: '/data/warehouse-centers.csv',
+      fidGroupSize: warehousesMeta.fidGroupSize,
+      forceReload: true
+    })
+    warehousesMeta.list = meta
+    // 初始化未匹配 FID 列表，避免后续模板访问 undefined
+    warehousesMeta.missFids = meta.filter(m => m.rowCount === 0).map(m => m.fid)
+  // 建立仓库实体集合
+  warehouseEntities.clear()
+  meta.forEach(w => { if (w.entity) warehouseEntities.add(w.entity) })
+    // 创建调试标签数据源
+    if (warehouseDebugDS) {
+      try { viewer.dataSources.remove(warehouseDebugDS) } catch {}
+    }
+    warehouseDebugDS = new Cesium.CustomDataSource('warehouse-debug-labels')
+    meta.forEach(w => {
+      if (w.lon != null && w.lat != null) {
+        warehouseDebugDS.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 12),
+          label: {
+            text: `${w.fid}\n${w.groupName}`,
+            font: '12px sans-serif',
+            fillColor: Cesium.Color.YELLOW,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            pixelOffset: new Cesium.Cartesian2(0, -4),
+            scaleByDistance: new Cesium.NearFarScalar(50, 1.0, 5000, 0.3)
+          },
+          properties: {
+            type: 'warehouse-debug',
+            fid: w.fid,
+            group: w.groupName
+          }
+        })
+      }
+    })
+    await viewer.dataSources.add(warehouseDebugDS)
+    warehouseDebugDS.show = warehousesMeta.showLabels
+    console.log('[仓库调试] 标签已建立:', warehouseDebugDS.entities.values.length)
+    // （已合并至主点击 handler 中，这里不再单独注册仓库拾取）
+  } catch (e) {
+    console.warn('装饰仓库 CSV 失败:', e)
+  }
   
   // ================= 加载楼层抽屉功能 =================
   try {
@@ -1036,6 +1317,8 @@ onMounted(async () => {
 
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
   handler.setInputAction((movement) => {
+    // 分析模式：主点击逻辑短路，不影响剖面/挖方采点
+    if (sectionMode.value || excavationMode.value) return
     const picked = viewer.scene.pick(movement.position)
 
     // ========= 楼层抽屉逻辑（优先处理） =========
@@ -1094,6 +1377,7 @@ onMounted(async () => {
         ent.type ||
         (ent.properties && ent.properties.type && ent.properties.type.getValue && ent.properties.type.getValue())
       
+      // 分析模式下禁用全景打开（已在上方 return，这里逻辑冗余保护）
       if (url) {
         if (type === 'marzipano') {
           // 本地全景：使用全景查看器
@@ -1123,11 +1407,59 @@ onMounted(async () => {
       lastSelected = null
     }
     if (picked && picked.id && picked.id.polygon) {
-      if (lastSelected !== picked.id) {
-        clearHighlight(lastSelected)
-        highlightEntity(picked.id)
-        lastSelected = picked.id
+      const ent = picked.id
+      // 检测是否仓库：1) 直接在集合中 2) 通过 fid 属性兜底匹配
+      let isWarehouse = warehouseEntities.has(ent)
+      let found = null
+      if (isWarehouse) {
+        found = warehousesMeta.list.find(w => w.entity === ent) || null
+      } else {
+        // 兜底：尝试读取 fid/FID 属性（可能是 ConstantProperty 或普通值）
+        let fidProp = null
+        try {
+          const props = ent.properties
+          if (props) {
+            fidProp = props.fid || props.FID || (props.getValue && props.getValue(Cesium.JulianDate.now())?.fid)
+            if (fidProp && fidProp.getValue) fidProp = fidProp.getValue(Cesium.JulianDate.now())
+          }
+        } catch {}
+        if (fidProp != null) {
+          found = warehousesMeta.list.find(w => Number(w.fid) === Number(fidProp)) || null
+          if (found) {
+            isWarehouse = true
+            // 缺失引用一致性：把该实体加入集合，后续可直接命中
+            warehouseEntities.add(ent)
+            if (!found.entity) found.entity = ent
+          }
+        }
       }
+
+      if (isWarehouse && found) {
+        // 仓库高亮：对齐原通用逻辑，先清除上一通用高亮
+        if (lastSelected && lastSelected !== ent) {
+          clearHighlight(lastSelected)
+          lastSelected = null
+        }
+        if (!warehousesMeta.showPanel) warehousesMeta.showPanel = true
+        // 避免重复点击重复飞行：如果是同一个仓库且已经选中则不重复飞行
+        const already = warehousesMeta.selectedFid === found.fid
+        selectWarehouse(found, !already) // 已经选中则不再飞行
+        poke()
+        return
+      }
+
+      // 通用多边形高亮（保持原有“再次点击同一实体不处理”的行为）
+      if (lastSelected === ent) {
+        // 再次点击同一多边形：不做任何操作（保持与原实现一致）
+        poke()
+        return
+      }
+      if (lastSelected && lastSelected !== ent) {
+        clearHighlight(lastSelected)
+        lastSelected = null
+      }
+      highlightEntity(ent)
+      lastSelected = ent
     }
     poke()
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
@@ -1731,40 +2063,7 @@ const redPoints = [
 
   // 管线图例控制交互在顶层 togglePipelineGroup 中实现，这里仅触发重绘
 
-  // 全景查看器控制
-  function openPanorama(url, info = null) {
-    panoramaModal.show = true
-    
-    // 等待组件挂载后再加载全景
-    nextTick(() => {
-      if (panoramaViewer.value) {
-        panoramaViewer.value.loadPanorama(url, info)
-      }
-    })
-  }
-
-  function closePanorama() {
-    // 让子组件控制关闭流程，子组件会emit('close')来通知父组件
-    if (panoramaViewer.value && panoramaViewer.value.closeModal) {
-      try { 
-        panoramaViewer.value.closeModal() 
-      } catch (e) {
-        console.warn('全景查看器清理失败:', e)
-        // 如果子组件清理失败，强制关闭
-        panoramaModal.show = false
-      }
-    } else {
-      // 如果子组件不存在，直接关闭
-      panoramaModal.show = false
-    }
-  }
-  // 处理子组件的关闭通知
-  function onPanoramaClosed() {
-    panoramaModal.show = false
-  }
-
-  // 暴露给模板 (script setup 自动暴露，但为防 IDE 提示，再显式引用一次)
-  const _exposeClose = closePanorama
+  // （移除局部重复的 openPanorama/closePanorama 定义，保留顶层版本）
 
   // ================= 图层面板联动（只改 show/参数，不破坏你的交互） =================
   const applyToggles = () => {
@@ -1878,6 +2177,20 @@ const redPoints = [
   
   watch(() => ui.weatherOpacity, applyToggles)
 
+  // 仓库标签显示切换
+  watch(() => warehousesMeta.showLabels, (v) => {
+    if (warehouseDebugDS) warehouseDebugDS.show = v
+    poke()
+  })
+
+  // 分组跨度变化 -> 防抖重建
+  watch(() => warehousesMeta.fidGroupSize, (val) => {
+    clearTimeout(redecorateTimer)
+    redecorateTimer = setTimeout(() => {
+      redecorateWarehouses()
+    }, 400)
+  })
+
   // 天气图层内容更新监听
   watch(() => [ui.temperature, ui.warnings], async () => {
     if (ui.weather) {
@@ -1913,6 +2226,147 @@ onUnmounted(() => {
     dataSourceManager = null
   }
   window.removeEventListener('keydown', onKeydown)
+})
+
+// 飞行到仓库实体（供调试面板调用）
+function flyToWarehouse(w) {
+  const viewer = viewerRef.value
+  if (!viewer || !w?.entity) return
+  // 优先使用 entity 本身的 boundingSphere
+  try {
+    viewer.flyTo(w.entity, { duration: 0.8 })
+  } catch {
+    // 退化：用计算质心点飞
+    if (w.lon != null && w.lat != null) {
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 180),
+        duration: 0.8
+      })
+    }
+  }
+}
+function selectWarehouse(w, fly = false) {
+  if (!w) return
+  warehousesMeta.selectedFid = w.fid
+  recomputeWarehouseCentroid(w)
+  if (fly) flyToWarehouse(w)
+  highlightWarehouseEntity(w.entity)
+  scrollSelectedRowLater()
+}
+function highlightWarehouseEntity(ent) {
+  if (!ent || !ent.polygon) return
+  // 还原上一个
+  if (lastWarehouseHighlight && lastWarehouseHighlight !== ent) {
+    try {
+      lastWarehouseHighlight.polygon.material = Cesium.Color.fromCssColorString('rgba(0,255,255,0.01)')
+      lastWarehouseHighlight.polygon.outline = false
+    } catch {}
+  }
+  ent.polygon.material = Cesium.Color.ORANGE.withAlpha(0.55)
+  ent.polygon.outline = true
+  ent.polygon.outlineColor = Cesium.Color.WHITE
+   lastWarehouseHighlight = ent
+  requestRender()
+}
+  // 重新计算仓库质心（防止多边形层级或层次变化导致失准）
+  function recomputeWarehouseCentroid(w) {
+    try {
+      const ent = w.entity
+      if (!ent?.polygon?.hierarchy) return
+      const h = ent.polygon.hierarchy.getValue?.(Cesium.JulianDate.now()) || ent.polygon.hierarchy
+      const positions = h.positions || h
+      if (!positions || positions.length === 0) return
+      let sx=0, sy=0, sz=0
+      positions.forEach(p => { sx+=p.x; sy+=p.y; sz+=p.z })
+      const c = new Cesium.Cartesian3(sx/positions.length, sy/positions.length, sz/positions.length)
+      const carto = Cesium.Cartographic.fromCartesian(c)
+      w.lon = Cesium.Math.toDegrees(carto.longitude)
+      w.lat = Cesium.Math.toDegrees(carto.latitude)
+    } catch {}
+  }
+  function scrollSelectedRowLater() {
+    nextTick(() => {
+      const id = 'wh-row-' + warehousesMeta.selectedFid
+      const el = document.getElementById(id)
+      if (el) {
+        try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }) } catch {}
+      }
+    })
+  }
+  async function redecorateWarehouses() {
+    if (!dataSourceManager) return
+    const viewer = viewerRef.value
+    if (!viewer) return
+    const prevSelected = warehousesMeta.selectedFid
+    try {
+      const meta = await dataSourceManager.decorateWarehousesFromCSV({
+        id: 'warehouse',
+        csvUrl: '/data/warehouse-centers.csv',
+        fidGroupSize: warehousesMeta.fidGroupSize,
+        forceReload: true
+      })
+  warehousesMeta.list = meta
+  warehousesMeta.missFids = meta.filter(m => m.rowCount === 0).map(m => m.fid)
+      // 重建标签
+      if (warehouseDebugDS) {
+        try { viewer.dataSources.remove(warehouseDebugDS) } catch {}
+      }
+      warehouseDebugDS = new Cesium.CustomDataSource('warehouse-debug-labels')
+      meta.forEach(w => {
+        if (w.lon != null && w.lat != null) {
+          warehouseDebugDS.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 12),
+            label: {
+              text: `${w.fid}\n${w.groupName}`,
+              font: '12px sans-serif',
+              fillColor: Cesium.Color.YELLOW,
+              outlineColor: Cesium.Color.BLACK,
+              outlineWidth: 2,
+              style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+              pixelOffset: new Cesium.Cartesian2(0, -4),
+              scaleByDistance: new Cesium.NearFarScalar(50, 1.0, 5000, 0.3)
+            }
+          })
+        }
+      })
+      await viewer.dataSources.add(warehouseDebugDS)
+      warehouseDebugDS.show = warehousesMeta.showLabels
+      // 恢复选中
+      if (prevSelected != null) {
+        const found = warehousesMeta.list.find(m => m.fid === prevSelected)
+        if (found) selectWarehouse(found, false)
+      }
+    } catch (e) {
+      console.warn('重新分组失败', e)
+    }
+    poke()
+  }
+  function exportWarehouseMetaCSV() {
+    if (!warehousesMeta.list.length) return
+    const header = ['FID','中心名','线路数','经度','纬度']
+    const rows = warehousesMeta.list.map(w => [w.fid,w.groupName,w.rowCount,w.lon??'',w.lat??''])
+    const csv = [header.join(','), ...rows.map(r=>r.join(','))].join('\r\n')
+    downloadText(csv, 'warehouses-meta.csv')
+  }
+  function exportWarehouseMissCSV() {
+    if (!warehousesMeta.missFids.length) return
+    const csv = '未匹配FID\r\n' + warehousesMeta.missFids.join('\r\n')
+    downloadText(csv, 'warehouses-miss.csv')
+  }
+  function downloadText(text, filename) {
+    const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV }
+}
 })
 </script>
 
@@ -2369,5 +2823,99 @@ onUnmounted(() => {
   border-bottom: 1px solid rgba(255,255,255,0.2);
   padding-bottom: 6px;
 }
+
+/* 分析模式覆盖层样式 */
+.analysis-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.analysis-overlay .msg {
+  background: rgba(0, 120, 212, 0.95);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 120, 212, 0.4);
+  text-align: center;
+  max-width: 400px;
+  animation: analysisSlideDown 0.3s ease-out;
+}
+
+.analysis-overlay .msg strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.analysis-overlay .msg .sub {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+@keyframes analysisSlideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+</style>
+
+<style>
+/* 仓库调试面板样式 */
+.warehouse-debug-panel {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 420px;
+  max-height: 42vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(30,30,30,0.92);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: #eee;
+  font-size: 12px;
+  backdrop-filter: blur(18px);
+  z-index: 12;
+  box-shadow: 0 4px 22px rgba(0,0,0,0.35);
+}
+.warehouse-debug-panel .wd-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px 6px;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+}
+.warehouse-debug-panel h3 {margin:0;font-size:14px;font-weight:600;color:#4cc2ff;}
+.warehouse-debug-panel .wd-actions {display:flex;align-items:center;gap:10px;}
+.warehouse-debug-panel .wd-actions .chk {display:flex;align-items:center;gap:4px;cursor:pointer;}
+.warehouse-debug-panel button.close {background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;line-height:1;padding:0 4px;border-radius:4px;}
+.warehouse-debug-panel button.close:hover {background:rgba(255,255,255,0.1);color:#fff;}
+.warehouse-debug-panel .wd-stats {padding:4px 12px 6px;color:#aaa;}
+.warehouse-debug-panel .wd-empty {padding:12px;color:#888;font-style:italic;}
+.warehouse-debug-panel .wd-table-wrapper {flex:1;overflow:auto;padding:0 8px 8px;}
+.warehouse-debug-panel .wd-table {width:100%;border-collapse:collapse;font-size:12px;}
+.warehouse-debug-panel .wd-table thead th {position:sticky;top:0;background:rgba(0,120,212,0.2);backdrop-filter:blur(6px);padding:4px 6px;font-weight:600;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);}
+.warehouse-debug-panel .wd-table tbody td {padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap;}
+.warehouse-debug-panel .wd-table tbody tr {cursor:pointer;transition:background .18s;}
+.warehouse-debug-panel .wd-table tbody tr:hover {background:rgba(255,255,255,0.08);} 
+.warehouse-debug-panel .wd-table tbody tr:active {background:rgba(255,255,255,0.16);} 
+.warehouse-debug-panel .wd-table tbody tr.selected {background:rgba(255,170,0,0.25);} 
 </style>
 

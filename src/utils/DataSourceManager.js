@@ -1,4 +1,6 @@
 import * as Cesium from 'cesium'
+// 复用已有的数值/管径/埋深解析函数，删除本文件重复实现
+import { parseDiameterMeters, parseDepthMeters } from './NumberUtils.js'
 
 /**
  * 统一的 3D 数据源管理器
@@ -403,6 +405,94 @@ export class DataSourceManager {
   }
 
   /**
+   * 装饰仓库(分拣中心)多边形：
+   *  1. 解析 CSV (按“分拣中心”分组)
+   *  2. 根据 FID 分组推测分拣中心名称 (fidGroupSize)
+   *  3. 为每个 polygon 设置 description (即便无匹配也写入“暂无数据”)
+   *  4. 返回元数据数组，包含 fid / 组名 / 行数 / 经纬度 / entity 引用
+   * @param {Object} opt
+   * @param {string} opt.id GeoJSON 数据源 id (默认 warehouse)
+   * @param {string} opt.csvUrl CSV 地址
+   * @param {number} opt.fidGroupSize FID 分组跨度，用来推测 “X号 分拣”
+   * @param {boolean} opt.forceReload 是否强制重新解析 CSV
+   */
+  async decorateWarehousesFromCSV(opt = {}) {
+    const { id = 'warehouse', csvUrl = '/data/warehouse-centers.csv', fidGroupSize = 120, forceReload = false } = opt
+    const ds = this.getDataSource(id)
+    if (!ds) {
+      console.warn('[decorateWarehousesFromCSV] 数据源未找到:', id)
+      return []
+    }
+    // 兼容 dataSources.get(id) 返回对象结构 {dataSource,...}
+    const dataSource = ds.dataSource || ds
+    const entities = dataSource.entities?.values || []
+
+    // 简单缓存
+    if (!forceReload && this.__warehouseMetaCache) return this.__warehouseMetaCache
+
+    let groupMap = new Map()
+    try {
+      const text = await (await fetch(csvUrl)).text()
+      groupMap = parseWarehouseCSV(text)
+    } catch (e) {
+      console.warn('[decorateWarehousesFromCSV] CSV 加载失败, 仅生成基础信息', e)
+    }
+
+  const meta = []
+  const miss = []
+    entities.forEach(ent => {
+      if (!ent.polygon) return
+      const fid = ent.properties?.FID?.getValue?.(Cesium.JulianDate.now()) ?? ent.properties?.FID ?? null
+      if (fid == null) return
+      const groupName = buildGroupNameByFid(fid, fidGroupSize)
+      const normalizedGroupName = (function norm(n){
+        if (!n) return n
+        let k = n.replace(/\s+/g,'')
+        k = k.replace(/分拣中心|分拣|中心/g,'中心')
+        const m = /^(\d+)号?/.exec(k)
+        if (m && !k.includes('中心')) k = m[1] + '号中心'
+        return k
+      })(groupName)
+      let rows = groupMap.get(normalizedGroupName)
+      if (!rows) {
+        const m = /^(\d+)/.exec(groupName)
+        if (m) {
+          const num = m[1]
+          for (const key of groupMap.keys()) {
+            if (key.startsWith(num)) { rows = groupMap.get(key); break }
+          }
+          if (!rows) {
+            for (const key of groupMap.keys()) {
+              if (key.includes(num + '号')) { rows = groupMap.get(key); break }
+            }
+          }
+        }
+      }
+      // 计算简单质心
+      const centroid = computeEntityCentroid(ent)
+      const html = buildWarehouseDescription(groupName, rows)
+      ent.description = html
+      const item = {
+        fid,
+        groupName,
+        rowCount: rows ? rows.length : 0,
+        lon: centroid?.lon,
+        lat: centroid?.lat,
+        entity: ent,
+        routes: rows || []
+      }
+      if (!rows || rows.length === 0) miss.push(fid)
+      meta.push(item)
+    })
+    console.info('[decorateWarehousesFromCSV] 完成, 数量:', meta.length, '未匹配:', miss.length)
+    if (miss.length) {
+      console.info('[decorateWarehousesFromCSV] 未匹配FID列表(前50):', miss.slice(0,50).join(','))
+    }
+    this.__warehouseMetaCache = meta
+    return meta
+  }
+
+  /**
    * 获取数据源
    */
   getDataSource(id) {
@@ -480,95 +570,95 @@ export class DataSourceManager {
   }
 }
 
-// —— 属性解析与几何辅助（从外部仓库提炼并适配）——
-function parseNumberLike(value) {
-  if (value == null) return NaN
-  if (typeof value === 'number') return value
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    const sanitized = trimmed
-      .replace(/毫米|mm/gi, '')
-      .replace(/厘米|cm/gi, '')
-      .replace(/米|m/gi, '')
-      .replace(/长度|管径|直径|起点埋|终点埋|口径|DN/gi, '')
-      .replace(/[：:]/g, '')
-      .replace(/[^0-9+\-.]/g, '')
-      .trim()
-    const n = Number(sanitized)
-    return Number.isFinite(n) ? n : NaN
+// ====== 仓库 CSV 解析与描述构建辅助 ======
+function parseWarehouseCSV(text) {
+  const map = new Map()
+  if (!text) return map
+  const lines = text.split(/\r?\n/).filter(l => l.trim())
+  if (!lines.length) return map
+  const header = lines.shift().split(',').map(h => h.trim())
+  const alias = (raw) => {
+    if (!raw) return raw
+    let k = raw.trim()
+    k = k.replace(/\s+/g, '')
+    k = k.replace(/分拣中心|分拣|中心/g, '中心')
+    const m = /^(\d+)号?/.exec(k)
+    if (m && !k.includes('中心')) k = m[1] + '号中心'
+    return k
   }
-  return NaN
+  lines.forEach(line => {
+    const cols = line.split(',')
+    const obj = {}
+    header.forEach((h, i) => { obj[h] = (cols[i] || '').trim() })
+    const key = alias(obj['分拣中心'])
+    if (!key) return
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(obj)
+  })
+  return map
 }
 
-function getNumericProperty(properties, candidateKeys, defaultValue, transformFn) {
-  for (let i = 0; i < candidateKeys.length; i++) {
-    const key = candidateKeys[i]
-    if (Object.prototype.hasOwnProperty.call(properties, key)) {
-      const raw = properties[key]
-      let num = parseNumberLike(raw)
-      if (!Number.isFinite(num)) continue
-      if (typeof transformFn === 'function') {
-        num = transformFn(num, raw)
-      }
-      return num
-    }
-  }
-  return defaultValue
+// 显式 FID 区间映射（优先）
+const EXPLICIT_FID_RANGES = [
+  { min: 0,   max: 33,  name: '2号中心' },
+  { min: 34,  max: 67,  name: '4号中心' },
+  { min: 68,  max: 101, name: '6号中心' },
+  { min: 102, max: 135, name: '8号中心' },
+  { min: 136, max: 177, name: '1号中心' },
+  { min: 178, max: 219, name: '3号中心' },
+  { min: 220, max: 257, name: '5号中心' },
+  { min: 258, max: 289, name: '7号中心' },
+  { min: 290, max: 315, name: '10号中心' },
+  { min: 316, max: 349, name: '9号中心' },
+  { min: 350, max: 375, name: '12号中心' },
+  { min: 376, max: 401, name: '11号中心' }
+]
+function buildGroupNameByFid(fid, size) {
+  if (!Number.isFinite(fid) || fid < 0) return '未知中心'
+  const hit = EXPLICIT_FID_RANGES.find(r => fid >= r.min && fid <= r.max)
+  if (hit) return hit.name
+  const idx = Math.floor(fid / size) + 1
+  return `${idx}号中心(待定)`
 }
 
-function parseDiameterMeters(properties, propertiesRaw, fallbackRaw) {
-  const candidateKeys = ['管径', '直径', '口径', 'diameter', 'Diameter', 'DIAMETER']
-  const val = getNumericProperty(properties, candidateKeys, undefined)
-
-  let fallbackMeters = 0.2 // 安全默认 20cm
-  if (Number.isFinite(fallbackRaw)) {
-    if (fallbackRaw > 50) fallbackMeters = fallbackRaw / 1000 // mm→m
-    else if (fallbackRaw > 5) fallbackMeters = fallbackRaw / 100 // cm→m
-    else fallbackMeters = fallbackRaw // m
+function buildWarehouseDescription(centerName, rows) {
+  if (rows && rows.length) {
+    const trs = rows.map(r => `<tr><td>${r['序号']||''}</td><td>${r['物流']||''}</td><td>${r['线路/目的地']||''}</td><td>${r['电话']||''}</td></tr>`).join('')
+    return `
+    <div style="font-family:Arial;font-size:13px;">
+      <h3 style="margin:4px 0 8px;">${centerName}</h3>
+      <table style="border-collapse:collapse;width:100%;">
+        <thead><tr style="background:#2c3e50;color:#fff;">
+          <th style="border:1px solid #ccc;padding:4px;">序号</th>
+          <th style="border:1px solid #ccc;padding:4px;">物流</th>
+          <th style="border:1px solid #ccc;padding:4px;">线路/目的地</th>
+          <th style="border:1px solid #ccc;padding:4px;">电话</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+      <p style="margin-top:6px;color:#666;">共 ${rows.length} 条线路</p>
+    </div>`
   }
-
-  let primaryFromRaw = undefined
-  let rawUnitHint = ''
-  for (const k of candidateKeys) {
-    const raw = propertiesRaw && propertiesRaw[k]
-    if (typeof raw === 'string') {
-      rawUnitHint += raw
-      const matches = raw.match(/\d+(?:\.\d+)?/g)
-      if (matches && matches.length > 0) {
-        primaryFromRaw = Number(matches[0])
-        break
-      }
-    } else if (typeof raw === 'number' && Number.isFinite(raw)) {
-      primaryFromRaw = raw
-      break
-    }
-  }
-
-  const base = Number.isFinite(primaryFromRaw) ? primaryFromRaw : val
-  if (!Number.isFinite(base)) return fallbackMeters
-
-  let meters = base
-  for (const k of candidateKeys) {
-    const raw = propertiesRaw && propertiesRaw[k]
-    if (typeof raw === 'string' && /DN\s*\d+/i.test(raw)) {
-      meters = base / 1000
-      break
-    }
-  }
-  if (/mm/i.test(rawUnitHint) || meters > 50) meters /= 1000
-  else if (/cm/i.test(rawUnitHint) || meters > 5) meters /= 100
-  meters = Math.min(Math.max(meters, 0.02), 2.0)
-  return meters
+  return `<div style="font-family:Arial;font-size:13px;"><h3 style="margin:4px 0 8px;">${centerName}</h3><p style="color:#999;">暂无匹配 CSV 数据，可调整分组规则或补充名称映射。</p></div>`
 }
 
-function parseDepthMeters(properties, candidateKeys, fallbackMeters = 1) {
-  const val = getNumericProperty(properties, candidateKeys, undefined)
-  if (val == null) return fallbackMeters
-  if (!Number.isFinite(val)) return fallbackMeters
-  if (val > 50) return val / 1000 // 毫米 → 米
-  if (val > 5) return val / 100 // 厘米 → 米
-  return val
+function computeEntityCentroid(entity) {
+  try {
+    const hierarchy = entity.polygon.hierarchy.getValue?.(Cesium.JulianDate.now()) || entity.polygon.hierarchy
+    const positions = hierarchy.positions || hierarchy
+    if (!positions || !positions.length) return null
+    let sx=0, sy=0, sz=0
+    positions.forEach(p => { sx+=p.x; sy+=p.y; sz+=p.z })
+    const cx = sx / positions.length
+    const cy = sy / positions.length
+    const cz = sz / positions.length
+    const cart = new Cesium.Cartesian3(cx, cy, cz)
+    const carto = Cesium.Cartographic.fromCartesian(cart)
+    return { lon: Cesium.Math.toDegrees(carto.longitude), lat: Cesium.Math.toDegrees(carto.latitude), cartesian: cart }
+  } catch (e) { return null }
 }
+
+// —— 属性解析与几何辅助（去除重复：parseDiameterMeters / parseDepthMeters 已使用 NumberUtils 导入）——
 
 function computeUndergroundPositions(positions, startDepthM, endDepthM) {
   if (!Array.isArray(positions) || positions.length === 0) return positions

@@ -262,13 +262,16 @@ function handleLogistics(req, res, parsed) {
   // upsert
   if (req.method === 'POST' && parsed.pathname === '/api/logistics/hubs') {
     return readBody(req).then(body => {
-      const { centerId, centerTitle, code, name, regions, phones, company } = body
+      const { centerId, centerTitle, code, name, regions, phones, company, lat, lon, height } = body
       if (!centerId || !code || !name) return sendJson(res,400,{code:400,message:'centerId, code, name required'})
       upsertHub(editData, centerId, centerTitle||centerId, {
         code:String(code), name:String(name),
         regions: Array.isArray(regions)?regions:undefined,
         phones: Array.isArray(phones)?phones:undefined,
         company: company?String(company):undefined,
+        lat: (lat===0 || lat) ? Number(lat) : undefined,
+        lon: (lon===0 || lon) ? Number(lon) : undefined,
+        height: (height===0 || height) ? Number(height) : undefined,
         updatedAt: new Date().toISOString()
       })
       logiSaveEditable(editData)
@@ -296,6 +299,9 @@ function handleLogistics(req, res, parsed) {
         regions: body.regions?body.regions: existing.regions,
         phones: body.phones?body.phones: existing.phones,
         company: body.company?String(body.company): existing.company,
+        lat: (body.lat===0 || body.lat) ? Number(body.lat) : existing.lat,
+        lon: (body.lon===0 || body.lon) ? Number(body.lon) : existing.lon,
+        height: (body.height===0 || body.height) ? Number(body.height) : existing.height,
         updatedAt: new Date().toISOString()
       })
       logiSaveEditable(editData)

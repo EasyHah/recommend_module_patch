@@ -1,18 +1,2875 @@
 [
   {
-    "id": "v001",
-    "name": "华南冷链-1号",
+    "id": "vl0001",
+    "name": "姚江物流-20号",
+    "centerName": "2号中心",
+    "sequence": "20号",
+    "logisticsName": "姚江物流",
+    "route": "余姚 慈溪->临沂",
+    "phone": "0539-2986669",
     "location": {
-      "lat": 23.0485,
-      "lng": 112.9992
+      "lat": 35.04453,
+      "lng": 118.2043
     },
-    "serviceRadiusKm": 200,
+    "serviceRadiusKm": 211,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 21970,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.903,
+      "priceIndex": 0.84,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "2号中心",
+      "姚江物流"
+    ]
+  },
+  {
+    "id": "vl0002",
+    "name": "益恒大洋物流-22号",
+    "centerName": "2号中心",
+    "sequence": "22号",
+    "logisticsName": "益恒大洋物流",
+    "route": "义务<->临沂",
+    "phone": "15505493987 / 13953952633",
+    "location": {
+      "lat": 35.03795,
+      "lng": 118.20796
+    },
+    "serviceRadiusKm": 216,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 18378,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.94,
+      "priceIndex": 1.22,
+      "capacityUtilization": 0.9
+    },
+    "tags": [
+      "2号中心",
+      "益恒大洋物流"
+    ]
+  },
+  {
+    "id": "vl0003",
+    "name": "荣顺物流-26号",
+    "centerName": "2号中心",
+    "sequence": "26号",
+    "logisticsName": "荣顺物流",
+    "route": "张家口 乌兰察布 锡林浩特市",
+    "phone": "17753968787",
+    "location": {
+      "lat": 35.04452,
+      "lng": 118.20293
+    },
+    "serviceRadiusKm": 182,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 15960,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.868,
+      "priceIndex": 1.23,
+      "capacityUtilization": 0.5
+    },
+    "tags": [
+      "2号中心",
+      "荣顺物流"
+    ]
+  },
+  {
+    "id": "vl0004",
+    "name": "荣顺物流-27号",
+    "centerName": "2号中心",
+    "sequence": "27号",
+    "logisticsName": "荣顺物流",
+    "route": "呼市 包头 巴彦卓尔",
+    "phone": "18053989697",
+    "location": {
+      "lat": 35.04345,
+      "lng": 118.2119
+    },
+    "serviceRadiusKm": 186,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 16130,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.9,
+      "onTimeRate": 0.999,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.71
+    },
+    "tags": [
+      "2号中心",
+      "荣顺物流"
+    ]
+  },
+  {
+    "id": "vl0005",
+    "name": "荣顺物流-28号",
+    "centerName": "2号中心",
+    "sequence": "28号",
+    "logisticsName": "荣顺物流",
+    "route": "赤峰 通辽 呼和浩特",
+    "phone": "18053987608",
+    "location": {
+      "lat": 35.04005,
+      "lng": 118.20307
+    },
+    "serviceRadiusKm": 161,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 5534,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.903,
+      "priceIndex": 1.19,
+      "capacityUtilization": 0.6
+    },
+    "tags": [
+      "2号中心",
+      "荣顺物流"
+    ]
+  },
+  {
+    "id": "vl0006",
+    "name": "荣顺物流-29号",
+    "centerName": "2号中心",
+    "sequence": "29号",
+    "logisticsName": "荣顺物流",
+    "route": "昆明 贵阳",
+    "phone": "15305399516",
+    "location": {
+      "lat": 35.04306,
+      "lng": 118.20818
+    },
+    "serviceRadiusKm": 246,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 13874,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.967,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.69
+    },
+    "tags": [
+      "2号中心",
+      "荣顺物流"
+    ]
+  },
+  {
+    "id": "vl0007",
+    "name": "荣顺物流-30号",
+    "centerName": "2号中心",
+    "sequence": "30号",
+    "logisticsName": "荣顺物流",
+    "route": "新疆全境",
+    "phone": "18053987603",
+    "location": {
+      "lat": 35.03488,
+      "lng": 118.20755
+    },
+    "serviceRadiusKm": 184,
     "capabilities": {
       "types": [
         "normal",
         "fragile"
       ],
-      "maxWeightKg": 5000,
+      "maxWeightKg": 13903,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.869,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.09
+    },
+    "tags": [
+      "2号中心",
+      "荣顺物流"
+    ]
+  },
+  {
+    "id": "vl0008",
+    "name": "长运物流-31号",
+    "centerName": "2号中心",
+    "sequence": "31号",
+    "logisticsName": "长运物流",
+    "route": "诸城 五莲",
+    "phone": "13666396665",
+    "location": {
+      "lat": 35.03858,
+      "lng": 118.20312
+    },
+    "serviceRadiusKm": 164,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 2254,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.853,
+      "priceIndex": 0.85,
+      "capacityUtilization": 0.6
+    },
+    "tags": [
+      "2号中心",
+      "长运物流"
+    ]
+  },
+  {
+    "id": "vl0009",
+    "name": "海鹏（平顺）物流-33号",
+    "centerName": "2号中心",
+    "sequence": "33号",
+    "logisticsName": "海鹏（平顺）物流",
+    "route": "莱阳 邹城",
+    "phone": "0539-2113382 / 15562175088",
+    "location": {
+      "lat": 35.04413,
+      "lng": 118.2026
+    },
+    "serviceRadiusKm": 155,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 18481,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.934,
+      "priceIndex": 0.95,
+      "capacityUtilization": 0.06
+    },
+    "tags": [
+      "2号中心",
+      "海鹏（平顺）物流"
+    ]
+  },
+  {
+    "id": "vl0010",
+    "name": "海鹏（平顺）物流-35号",
+    "centerName": "2号中心",
+    "sequence": "35号",
+    "logisticsName": "海鹏（平顺）物流",
+    "route": "",
+    "phone": "0539-2113382 / 15562175088",
+    "location": {
+      "lat": 35.03654,
+      "lng": 118.2062
+    },
+    "serviceRadiusKm": 140,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 2269,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.999,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.08
+    },
+    "tags": [
+      "2号中心",
+      "海鹏（平顺）物流"
+    ]
+  },
+  {
+    "id": "vl0011",
+    "name": "双龙物流-32号",
+    "centerName": "4号中心",
+    "sequence": "32号",
+    "logisticsName": "双龙物流",
+    "route": "葫朝锦阜 芦 岛阳州新",
+    "phone": "15550498898",
+    "location": {
+      "lat": 35.04417,
+      "lng": 118.2095
+    },
+    "serviceRadiusKm": 104,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 20724,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.953,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.9
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0012",
+    "name": "双龙物流-31号",
+    "centerName": "4号中心",
+    "sequence": "31号",
+    "logisticsName": "双龙物流",
+    "route": "盘营鞍 锦口山",
+    "phone": "15550498898",
+    "location": {
+      "lat": 35.04743,
+      "lng": 118.20571
+    },
+    "serviceRadiusKm": 114,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 4016,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.863,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.77
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0013",
+    "name": "国力物流-30号",
+    "centerName": "4号中心",
+    "sequence": "30号",
+    "logisticsName": "国力物流",
+    "route": "临沂<->拉萨 日喀则 山南 那曲 阿里",
+    "phone": "18653995365 / 19853868333",
+    "location": {
+      "lat": 35.04774,
+      "lng": 118.21287
+    },
+    "serviceRadiusKm": 249,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 19540,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.951,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.81
+    },
+    "tags": [
+      "4号中心",
+      "国力物流"
+    ]
+  },
+  {
+    "id": "vl0014",
+    "name": "国力物流-29号",
+    "centerName": "4号中心",
+    "sequence": "29号",
+    "logisticsName": "国力物流",
+    "route": "西藏全境",
+    "phone": "18653995365 / 19853868333",
+    "location": {
+      "lat": 35.04324,
+      "lng": 118.21495
+    },
+    "serviceRadiusKm": 76,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 6461,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.85,
+      "priceIndex": 1.08,
+      "capacityUtilization": 0.7
+    },
+    "tags": [
+      "4号中心",
+      "国力物流"
+    ]
+  },
+  {
+    "id": "vl0015",
+    "name": "国力物流-28号",
+    "centerName": "4号中心",
+    "sequence": "28号",
+    "logisticsName": "国力物流",
+    "route": "临沂-->博乐 双河 ？？阿拉山口",
+    "phone": "15853855568 / 18653995365",
+    "location": {
+      "lat": 35.04183,
+      "lng": 118.20817
+    },
+    "serviceRadiusKm": 140,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 12295,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.984,
+      "priceIndex": 1.17,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "4号中心",
+      "国力物流"
+    ]
+  },
+  {
+    "id": "vl0016",
+    "name": "国力物流-27号",
+    "centerName": "4号中心",
+    "sequence": "27号",
+    "logisticsName": "国力物流",
+    "route": "新疆 乌鲁木齐 伊宁 霍尔果斯",
+    "phone": "18653995365 / 15853655553",
+    "location": {
+      "lat": 35.04139,
+      "lng": 118.2115
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 2290,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.955,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.93
+    },
+    "tags": [
+      "4号中心",
+      "国力物流"
+    ]
+  },
+  {
+    "id": "vl0017",
+    "name": "双龙物流-19号",
+    "centerName": "4号中心",
+    "sequence": "19号",
+    "logisticsName": "双龙物流",
+    "route": "到货分拣中心",
+    "phone": "19969978898 / 15562908898 / 15318578898",
+    "location": {
+      "lat": 35.04639,
+      "lng": 118.21274
+    },
+    "serviceRadiusKm": 109,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 16404,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.907,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.66
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0018",
+    "name": "双龙物流-23号",
+    "centerName": "4号中心",
+    "sequence": "23号",
+    "logisticsName": "双龙物流",
+    "route": "松白洮镇通乌延珲敦 兰 浩 原城南贲榆特吉春化",
+    "phone": "15689608898",
+    "location": {
+      "lat": 35.04228,
+      "lng": 118.21147
+    },
+    "serviceRadiusKm": 87,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 2499,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.992,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.56
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0019",
+    "name": "双龙物流-22号",
+    "centerName": "4号中心",
+    "sequence": "22号",
+    "logisticsName": "双龙物流",
+    "route": "吉磐桦蛟舒永林 市石甸河兰吉",
+    "phone": "15689608898",
+    "location": {
+      "lat": 35.04014,
+      "lng": 118.21291
+    },
+    "serviceRadiusKm": 88,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6700,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.923,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.63
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0020",
+    "name": "双龙物流-20号",
+    "centerName": "4号中心",
+    "sequence": "20号",
+    "logisticsName": "双龙物流",
+    "route": "长农榆德扶辽通白梅 春安树惠余源化山河 口",
+    "phone": "15689608898",
+    "location": {
+      "lat": 35.04374,
+      "lng": 118.20647
+    },
+    "serviceRadiusKm": 98,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 2048,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.925,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.26
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0021",
+    "name": "双龙物流-21号",
+    "centerName": "4号中心",
+    "sequence": "21号",
+    "logisticsName": "双龙物流",
+    "route": "长农榆德扶辽通白梅 春安树惠余源化山河 口",
+    "phone": "15689608898",
+    "location": {
+      "lat": 35.04047,
+      "lng": 118.21117
+    },
+    "serviceRadiusKm": 76,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 7728,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.882,
+      "priceIndex": 1.1,
+      "capacityUtilization": 0.54
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0022",
+    "name": "飞腾物流-19号",
+    "centerName": "4号中心",
+    "sequence": "19号",
+    "logisticsName": "飞腾物流",
+    "route": "延边专线 敦化 延吉 珲春",
+    "phone": "15318578898",
+    "location": {
+      "lat": 35.04296,
+      "lng": 118.20689
+    },
+    "serviceRadiusKm": 249,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 9363,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.896,
+      "priceIndex": 0.82,
+      "capacityUtilization": 0.67
+    },
+    "tags": [
+      "4号中心",
+      "飞腾物流"
+    ]
+  },
+  {
+    "id": "vl0023",
+    "name": "双龙物流-16号",
+    "centerName": "4号中心",
+    "sequence": "16号",
+    "logisticsName": "双龙物流",
+    "route": "哈肇肇肇富望同海 尔 滨源东州锦奎江伦",
+    "phone": "15265198898",
+    "location": {
+      "lat": 35.04322,
+      "lng": 118.2142
+    },
+    "serviceRadiusKm": 90,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 18194,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.998,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.61
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0024",
+    "name": "双龙物流-15号",
+    "centerName": "4号中心",
+    "sequence": "15号",
+    "logisticsName": "双龙物流",
+    "route": "哈嫩依巴安兰绥明 尔 滨江兰彦达西化水",
+    "phone": "15265198898",
+    "location": {
+      "lat": 35.04766,
+      "lng": 118.20987
+    },
+    "serviceRadiusKm": 124,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 12403,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.927,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.66
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0025",
+    "name": "双龙物流-14号",
+    "centerName": "4号中心",
+    "sequence": "14号",
+    "logisticsName": "双龙物流",
+    "route": "哈呼尚双鹤黑伊大 尔 鸭 兴 滨兰志山岗河春安 岭",
+    "phone": "15265198898",
+    "location": {
+      "lat": 35.04808,
+      "lng": 118.2103
+    },
+    "serviceRadiusKm": 222,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6088,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.986,
+      "priceIndex": 0.85,
+      "capacityUtilization": 0.7
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0026",
+    "name": "双龙物流-13号",
+    "centerName": "4号中心",
+    "sequence": "13号",
+    "logisticsName": "双龙物流",
+    "route": "佳 尔 斯",
+    "phone": "15265198898",
+    "location": {
+      "lat": 35.04167,
+      "lng": 118.21113
+    },
+    "serviceRadiusKm": 187,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 17362,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.968,
+      "priceIndex": 0.8,
+      "capacityUtilization": 0.32
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0027",
+    "name": "双龙物流-12号",
+    "centerName": "4号中心",
+    "sequence": "12号",
+    "logisticsName": "双龙物流",
+    "route": "牡绥东鸡七 丹芬 台 江河宁西河",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.03996,
+      "lng": 118.21273
+    },
+    "serviceRadiusKm": 163,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 4791,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.988,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.84
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0028",
+    "name": "双龙物流-11号",
+    "centerName": "4号中心",
+    "sequence": "11号",
+    "logisticsName": "双龙物流",
+    "route": "牡绥东鸡七 丹芬 台 江河宁西河",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.04324,
+      "lng": 118.21181
+    },
+    "serviceRadiusKm": 213,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 18413,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.899,
+      "priceIndex": 1,
+      "capacityUtilization": 0.5
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0029",
+    "name": "双龙物流-10号",
+    "centerName": "4号中心",
+    "sequence": "10号",
+    "logisticsName": "双龙物流",
+    "route": "齐龙泰扎 齐 赉 哈 特 尔江来旗",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.042,
+      "lng": 118.21263
+    },
+    "serviceRadiusKm": 176,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 18365,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.97,
+      "priceIndex": 0.88,
+      "capacityUtilization": 0.17
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0030",
+    "name": "双龙物流-9号",
+    "centerName": "4号中心",
+    "sequence": "9号",
+    "logisticsName": "双龙物流",
+    "route": "大 大同区 红岗区 杜尔伯特蒙古自治县 庆 林甸 安达 林源镇 泰康镇 太阳升镇",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.04481,
+      "lng": 118.20849
+    },
+    "serviceRadiusKm": 217,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 11037,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.956,
+      "priceIndex": 1.11,
+      "capacityUtilization": 0.26
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0031",
+    "name": "双龙物流-8号",
+    "centerName": "4号中心",
+    "sequence": "8号",
+    "logisticsName": "双龙物流",
+    "route": "海满牙扎 拉洲克兰 尔里石屯",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.03954,
+      "lng": 118.20638
+    },
+    "serviceRadiusKm": 226,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 15851,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.879,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.33
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0032",
+    "name": "双龙物流-7号",
+    "centerName": "4号中心",
+    "sequence": "7号",
+    "logisticsName": "双龙物流",
+    "route": "蒙利泗 城辛县",
+    "phone": "18660948898",
+    "location": {
+      "lat": 35.04046,
+      "lng": 118.20649
+    },
+    "serviceRadiusKm": 201,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 11156,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.952,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.82
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0033",
+    "name": "双龙物流-6号",
+    "centerName": "4号中心",
+    "sequence": "6号",
+    "logisticsName": "双龙物流",
+    "route": "赤通 峰辽",
+    "phone": "17353918898",
+    "location": {
+      "lat": 35.0412,
+      "lng": 118.21137
+    },
+    "serviceRadiusKm": 114,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 8157,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.911,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.02
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0034",
+    "name": "双龙物流-5号",
+    "centerName": "4号中心",
+    "sequence": "5号",
+    "logisticsName": "双龙物流",
+    "route": "四公双梨 主 平岭辽数",
+    "phone": "17353918898",
+    "location": {
+      "lat": 35.04408,
+      "lng": 118.2141
+    },
+    "serviceRadiusKm": 243,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 8825,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.929,
+      "priceIndex": 1,
+      "capacityUtilization": 0.35
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0035",
+    "name": "双龙物流-4号",
+    "centerName": "4号中心",
+    "sequence": "4号",
+    "logisticsName": "双龙物流",
+    "route": "沈抚本辽铁鞍阜 阳顺溪阳岭山新",
+    "phone": "17353918898",
+    "location": {
+      "lat": 35.04297,
+      "lng": 118.20893
+    },
+    "serviceRadiusKm": 171,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 6760,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.988,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.06
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0036",
+    "name": "双龙物流-3号",
+    "centerName": "4号中心",
+    "sequence": "3号",
+    "logisticsName": "双龙物流",
+    "route": "沈抚本辽铁鞍 阳顺溪阳岭山",
+    "phone": "17353918898",
+    "location": {
+      "lat": 35.04301,
+      "lng": 118.21406
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 8051,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.973,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.22
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0037",
+    "name": "双龙物流-2号",
+    "centerName": "4号中心",
+    "sequence": "2号",
+    "logisticsName": "双龙物流",
+    "route": "大庄丹普瓦 兰房 连河东店点",
+    "phone": "17353918898",
+    "location": {
+      "lat": 35.03926,
+      "lng": 118.21154
+    },
+    "serviceRadiusKm": 175,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 5605,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.963,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.92
+    },
+    "tags": [
+      "4号中心",
+      "双龙物流"
+    ]
+  },
+  {
+    "id": "vl0038",
+    "name": "中大运和-34号",
+    "centerName": "6号中心",
+    "sequence": "34号",
+    "logisticsName": "中大运和",
+    "route": "杭州 临平 萧山 富阳 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05059,
+      "lng": 118.20827
+    },
+    "serviceRadiusKm": 121,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15936,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.932,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0039",
+    "name": "中大运和-33号",
+    "centerName": "6号中心",
+    "sequence": "33号",
+    "logisticsName": "中大运和",
+    "route": "临安 桐庐 建德 湖州 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05166,
+      "lng": 118.2081
+    },
+    "serviceRadiusKm": 184,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 9997,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.852,
+      "priceIndex": 1,
+      "capacityUtilization": 0.01
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0040",
+    "name": "中大运和-32号",
+    "centerName": "6号中心",
+    "sequence": "32号",
+    "logisticsName": "中大运和",
+    "route": "长兴 南浔 安吉 德清 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.04973,
+      "lng": 118.21058
+    },
+    "serviceRadiusKm": 85,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 12693,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.85,
+      "priceIndex": 0.93,
+      "capacityUtilization": 0.95
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0041",
+    "name": "中大运和-31号",
+    "centerName": "6号中心",
+    "sequence": "31号",
+    "logisticsName": "中大运和",
+    "route": "嘉兴 桐乡海宁 嘉善 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.0451,
+      "lng": 118.21349
+    },
+    "serviceRadiusKm": 82,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 7131,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.949,
+      "priceIndex": 1.15,
+      "capacityUtilization": 0.36
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0042",
+    "name": "中大运和-30号",
+    "centerName": "6号中心",
+    "sequence": "30号",
+    "logisticsName": "中大运和",
+    "route": "绍兴 柯桥 新昌 嵊州 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.0444,
+      "lng": 118.21047
+    },
+    "serviceRadiusKm": 103,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 5008,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.862,
+      "priceIndex": 0.88,
+      "capacityUtilization": 0.53
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0043",
+    "name": "中大运和-29号",
+    "centerName": "6号中心",
+    "sequence": "29号",
+    "logisticsName": "中大运和",
+    "route": "宁波 奉化 宁海 象山 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.0437,
+      "lng": 118.21486
+    },
+    "serviceRadiusKm": 87,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 13857,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.995,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.22
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0044",
+    "name": "中大运和-28号",
+    "centerName": "6号中心",
+    "sequence": "28号",
+    "logisticsName": "中大运和",
+    "route": "慈溪 余姚 北仑 舟山 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05135,
+      "lng": 118.21082
+    },
+    "serviceRadiusKm": 180,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15289,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.992,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.19
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0045",
+    "name": "中大运和-27号",
+    "centerName": "6号中心",
+    "sequence": "27号",
+    "logisticsName": "中大运和",
+    "route": "永康 兰溪 诸暨 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05128,
+      "lng": 118.20797
+    },
+    "serviceRadiusKm": 116,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 16184,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.919,
+      "priceIndex": 1.12,
+      "capacityUtilization": 0.37
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0046",
+    "name": "中大运和-26号",
+    "centerName": "6号中心",
+    "sequence": "26号",
+    "logisticsName": "中大运和",
+    "route": "义乌 东阳 衢州 龙游 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05152,
+      "lng": 118.20957
+    },
+    "serviceRadiusKm": 127,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 7454,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.927,
+      "priceIndex": 1.06,
+      "capacityUtilization": 0.23
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0047",
+    "name": "中大运和-25号",
+    "centerName": "6号中心",
+    "sequence": "25号",
+    "logisticsName": "中大运和",
+    "route": "台州 天台 临海 温岭 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05033,
+      "lng": 118.2132
+    },
+    "serviceRadiusKm": 98,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 16919,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.901,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.42
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0048",
+    "name": "中大运和-24号",
+    "centerName": "6号中心",
+    "sequence": "24号",
+    "logisticsName": "中大运和",
+    "route": "苍南 龙港 丽水 缙云 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.04216,
+      "lng": 118.21188
+    },
+    "serviceRadiusKm": 149,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 19226,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.981,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.8
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0049",
+    "name": "中大运和-23号",
+    "centerName": "6号中心",
+    "sequence": "23号",
+    "logisticsName": "中大运和",
+    "route": "分拨中心23号 温州 乐清 永嘉 瑞安 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.05001,
+      "lng": 118.21035
+    },
+    "serviceRadiusKm": 195,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 16669,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.957,
+      "priceIndex": 0.87,
+      "capacityUtilization": 0.34
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0050",
+    "name": "中大运和-22号",
+    "centerName": "6号中心",
+    "sequence": "22号",
+    "logisticsName": "中大运和",
+    "route": "福州 泉州 厦门 漳州 ：",
+    "phone": "0539-7508888 / 13355031333",
+    "location": {
+      "lat": 35.04568,
+      "lng": 118.2166
+    },
+    "serviceRadiusKm": 199,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 10688,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.865,
+      "priceIndex": 0.84,
+      "capacityUtilization": 0.38
+    },
+    "tags": [
+      "6号中心",
+      "中大运和"
+    ]
+  },
+  {
+    "id": "vl0051",
+    "name": "泽笙物流-21号",
+    "centerName": "6号中心",
+    "sequence": "21号",
+    "logisticsName": "泽笙物流",
+    "route": "六号分拣苏州 吴江 常熟 ：",
+    "phone": "19860991419 / 13365394119",
+    "location": {
+      "lat": 35.0439,
+      "lng": 118.21479
+    },
+    "serviceRadiusKm": 203,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 6493,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.912,
+      "priceIndex": 1.05,
+      "capacityUtilization": 0.73
+    },
+    "tags": [
+      "6号中心",
+      "泽笙物流"
+    ]
+  },
+  {
+    "id": "vl0052",
+    "name": "泽笙物流-20号",
+    "centerName": "6号中心",
+    "sequence": "20号",
+    "logisticsName": "泽笙物流",
+    "route": "六号分拣无锡 江阴 宜兴 张家港 ：",
+    "phone": "19860991419 / 13365394119",
+    "location": {
+      "lat": 35.04784,
+      "lng": 118.2093
+    },
+    "serviceRadiusKm": 102,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 8556,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.953,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.58
+    },
+    "tags": [
+      "6号中心",
+      "泽笙物流"
+    ]
+  },
+  {
+    "id": "vl0053",
+    "name": "泽笙物流-19号",
+    "centerName": "6号中心",
+    "sequence": "19号",
+    "logisticsName": "泽笙物流",
+    "route": "六号分拣常州 金坛 溧阳 丹阳 ：",
+    "phone": "19860991419 / 13365394119",
+    "location": {
+      "lat": 35.04888,
+      "lng": 118.21518
+    },
+    "serviceRadiusKm": 247,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 11406,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.919,
+      "priceIndex": 0.87,
+      "capacityUtilization": 0.4
+    },
+    "tags": [
+      "6号中心",
+      "泽笙物流"
+    ]
+  },
+  {
+    "id": "vl0054",
+    "name": "泽笙物流-18号",
+    "centerName": "6号中心",
+    "sequence": "18号",
+    "logisticsName": "泽笙物流",
+    "route": "六号分拣上海全境 昆山 太仓 ：",
+    "phone": "19860991419 / 13365394119",
+    "location": {
+      "lat": 35.05054,
+      "lng": 118.21023
+    },
+    "serviceRadiusKm": 221,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 11577,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.975,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.51
+    },
+    "tags": [
+      "6号中心",
+      "泽笙物流"
+    ]
+  },
+  {
+    "id": "vl0055",
+    "name": "建成物流-1-2号",
+    "centerName": "6号中心",
+    "sequence": "1-2号",
+    "logisticsName": "建成物流",
+    "route": "涟水专线 ：",
+    "phone": "13792413135",
+    "location": {
+      "lat": 35.04462,
+      "lng": 118.20971
+    },
+    "serviceRadiusKm": 181,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 3578,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.975,
+      "priceIndex": 1.17,
+      "capacityUtilization": 0.85
+    },
+    "tags": [
+      "6号中心",
+      "建成物流"
+    ]
+  },
+  {
+    "id": "vl0056",
+    "name": "世佳物流-1-2号",
+    "centerName": "6号中心",
+    "sequence": "1-2号",
+    "logisticsName": "世佳物流",
+    "route": "淮安专线",
+    "phone": "13562981233",
+    "location": {
+      "lat": 35.04596,
+      "lng": 118.21665
+    },
+    "serviceRadiusKm": 242,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 8570,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.96,
+      "priceIndex": 0.9,
+      "capacityUtilization": 0.4
+    },
+    "tags": [
+      "6号中心",
+      "世佳物流"
+    ]
+  },
+  {
+    "id": "vl0057",
+    "name": "凯莱物流-3-4号",
+    "centerName": "6号中心",
+    "sequence": "3-4号",
+    "logisticsName": "凯莱物流",
+    "route": "临沂<->宿迁 睢宁 新沂 ：8022261",
+    "phone": "13608902822",
+    "location": {
+      "lat": 35.04873,
+      "lng": 118.21678
+    },
+    "serviceRadiusKm": 175,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 12192,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.994,
+      "priceIndex": 1.04,
+      "capacityUtilization": 0.47
+    },
+    "tags": [
+      "6号中心",
+      "凯莱物流"
+    ]
+  },
+  {
+    "id": "vl0058",
+    "name": "巨航物流-3-4号",
+    "centerName": "6号中心",
+    "sequence": "3-4号",
+    "logisticsName": "巨航物流",
+    "route": "枣强 冀州 故城 大营 清河 南宫 ：",
+    "phone": "15614886188 / 13102758526",
+    "location": {
+      "lat": 35.04728,
+      "lng": 118.21217
+    },
+    "serviceRadiusKm": 216,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 17803,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.853,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.63
+    },
+    "tags": [
+      "6号中心",
+      "巨航物流"
+    ]
+  },
+  {
+    "id": "vl0059",
+    "name": "易通物流-5-6号",
+    "centerName": "6号中心",
+    "sequence": "5-6号",
+    "logisticsName": "易通物流",
+    "route": "临沂->淄博全境 往返<->? 沈阳-长春-哈尔滨",
+    "phone": "",
+    "location": {
+      "lat": 35.04243,
+      "lng": 118.21636
+    },
+    "serviceRadiusKm": 111,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 15402,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.86,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.69
+    },
+    "tags": [
+      "6号中心",
+      "易通物流"
+    ]
+  },
+  {
+    "id": "vl0060",
+    "name": "易通物流-5-6号",
+    "centerName": "6号中心",
+    "sequence": "5-6号",
+    "logisticsName": "易通物流",
+    "route": "东北三省全境 沈阳-长春-哈尔滨",
+    "phone": "",
+    "location": {
+      "lat": 35.04809,
+      "lng": 118.2117
+    },
+    "serviceRadiusKm": 90,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 20970,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.935,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.34
+    },
+    "tags": [
+      "6号中心",
+      "易通物流"
+    ]
+  },
+  {
+    "id": "vl0061",
+    "name": "九九物流-7-8号",
+    "centerName": "6号中心",
+    "sequence": "7-8号",
+    "logisticsName": "九九物流",
+    "route": "昌邑 寒亭 清池 坊子 ： 每日往返 专线直达",
+    "phone": "17753910926",
+    "location": {
+      "lat": 35.04591,
+      "lng": 118.20813
+    },
+    "serviceRadiusKm": 241,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 5688,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.915,
+      "priceIndex": 0.84,
+      "capacityUtilization": 0.12
+    },
+    "tags": [
+      "6号中心",
+      "九九物流"
+    ]
+  },
+  {
+    "id": "vl0062",
+    "name": "九九物流-7-8号",
+    "centerName": "6号中心",
+    "sequence": "7-8号",
+    "logisticsName": "九九物流",
+    "route": "眉村 石埠 潍坊高新区 ： 每日往返 专线直达",
+    "phone": "17753910926",
+    "location": {
+      "lat": 35.04788,
+      "lng": 118.21339
+    },
+    "serviceRadiusKm": 245,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 7013,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.962,
+      "priceIndex": 0.96,
+      "capacityUtilization": 0.57
+    },
+    "tags": [
+      "6号中心",
+      "九九物流"
+    ]
+  },
+  {
+    "id": "vl0063",
+    "name": "未命名物流-9号",
+    "centerName": "6号中心",
+    "sequence": "9号",
+    "logisticsName": "未命名物流",
+    "route": "汇晟平安 临沂 大成 阜草 霸州 服务：",
+    "phone": "15669927557 / 17686966606",
+    "location": {
+      "lat": 35.04862,
+      "lng": 118.21203
+    },
+    "serviceRadiusKm": 148,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 5386,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.936,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.17
+    },
+    "tags": [
+      "6号中心",
+      "未命名物流"
+    ]
+  },
+  {
+    "id": "vl0064",
+    "name": "未命名物流-10号",
+    "centerName": "6号中心",
+    "sequence": "10号",
+    "logisticsName": "未命名物流",
+    "route": "汇晟平安 临沂 文安 新镇 服务：",
+    "phone": "15588081399",
+    "location": {
+      "lat": 35.05202,
+      "lng": 118.20902
+    },
+    "serviceRadiusKm": 98,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 6094,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.94,
+      "priceIndex": 1.2,
+      "capacityUtilization": 0.78
+    },
+    "tags": [
+      "6号中心",
+      "未命名物流"
+    ]
+  },
+  {
+    "id": "vl0065",
+    "name": "山东中大开亮物流-11号",
+    "centerName": "6号中心",
+    "sequence": "11号",
+    "logisticsName": "山东中大开亮物流",
+    "route": "宁德 莆田 三明 南平 ：",
+    "phone": "15165553111",
+    "location": {
+      "lat": 35.04962,
+      "lng": 118.21716
+    },
+    "serviceRadiusKm": 137,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 14653,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.884,
+      "priceIndex": 1.05,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "6号中心",
+      "山东中大开亮物流"
+    ]
+  },
+  {
+    "id": "vl0066",
+    "name": "山东中大开亮物流-12号",
+    "centerName": "6号中心",
+    "sequence": "12号",
+    "logisticsName": "山东中大开亮物流",
+    "route": "福州 泉州 厦门 漳州 ：",
+    "phone": "19553933999",
+    "location": {
+      "lat": 35.04856,
+      "lng": 118.21778
+    },
+    "serviceRadiusKm": 145,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 13252,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.914,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.13
+    },
+    "tags": [
+      "6号中心",
+      "山东中大开亮物流"
+    ]
+  },
+  {
+    "id": "vl0067",
+    "name": "山东中大开亮物流-13号",
+    "centerName": "6号中心",
+    "sequence": "13号",
+    "logisticsName": "山东中大开亮物流",
+    "route": "龙岩 晋江 福清 南安 ：",
+    "phone": "19553933888",
+    "location": {
+      "lat": 35.04906,
+      "lng": 118.21559
+    },
+    "serviceRadiusKm": 83,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6938,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.969,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.65
+    },
+    "tags": [
+      "6号中心",
+      "山东中大开亮物流"
+    ]
+  },
+  {
+    "id": "vl0068",
+    "name": "佰帆物流-14号",
+    "centerName": "6号中心",
+    "sequence": "14号",
+    "logisticsName": "佰帆物流",
+    "route": "中大运和 临朐 青州 寿光 ：",
+    "phone": "18606397370 / 18606397620",
+    "location": {
+      "lat": 35.04374,
+      "lng": 118.21539
+    },
+    "serviceRadiusKm": 237,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 12492,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.936,
+      "priceIndex": 1.13,
+      "capacityUtilization": 0.27
+    },
+    "tags": [
+      "6号中心",
+      "佰帆物流"
+    ]
+  },
+  {
+    "id": "vl0069",
+    "name": "未命名物流-15号",
+    "centerName": "6号中心",
+    "sequence": "15号",
+    "logisticsName": "未命名物流",
+    "route": "中大运和 日照 五莲 莒县 沂南 沂水 蒙阴 平邑 费县 兰陵 郯城临沭 莒南 ：",
+    "phone": "0539-7508888 / 18053977013",
+    "location": {
+      "lat": 35.04695,
+      "lng": 118.20803
+    },
+    "serviceRadiusKm": 159,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 8802,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.932,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.77
+    },
+    "tags": [
+      "6号中心",
+      "未命名物流"
+    ]
+  },
+  {
+    "id": "vl0070",
+    "name": "未命名物流-19号",
+    "centerName": "6号中心",
+    "sequence": "19号",
+    "logisticsName": "未命名物流",
+    "route": "中大运和 成都 达州 重庆 昆明 贵阳 拉萨 西安 银川 兰州 西宁 乌鲁木齐 哈密 ：",
+    "phone": "0539-7508888 / 13355018388",
+    "location": {
+      "lat": 35.04877,
+      "lng": 118.21025
+    },
+    "serviceRadiusKm": 99,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 2064,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.925,
+      "priceIndex": 0.87,
+      "capacityUtilization": 0.7
+    },
+    "tags": [
+      "6号中心",
+      "未命名物流"
+    ]
+  },
+  {
+    "id": "vl0071",
+    "name": "未命名物流-18号",
+    "centerName": "6号中心",
+    "sequence": "18号",
+    "logisticsName": "未命名物流",
+    "route": "中大运和 南昌 赣州 南宁 桂林 海口 三亚 武汉 荆州 宜昌 长沙 常德 永州 ：",
+    "phone": "0539-7508888 / 13355018388",
+    "location": {
+      "lat": 35.0459,
+      "lng": 118.21288
+    },
+    "serviceRadiusKm": 88,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 10644,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.937,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.5
+    },
+    "tags": [
+      "6号中心",
+      "未命名物流"
+    ]
+  },
+  {
+    "id": "vl0072",
+    "name": "远征物流-34号",
+    "centerName": "8号中心",
+    "sequence": "34号",
+    "logisticsName": "远征物流",
+    "route": "临沂<->潍坊 青州 寿光 高密 诸城 泰安 金乡 ： 1392605123",
+    "phone": "13563911931 / 18753995321",
+    "location": {
+      "lat": 35.04696,
+      "lng": 118.217
+    },
+    "serviceRadiusKm": 143,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 17560,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.916,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.69
+    },
+    "tags": [
+      "8号中心",
+      "远征物流"
+    ]
+  },
+  {
+    "id": "vl0073",
+    "name": "远征物流-33号",
+    "centerName": "8号中心",
+    "sequence": "33号",
+    "logisticsName": "远征物流",
+    "route": "山东鑫鲁顺 临沂<->广州 东莞 深圳 佛山 辐射全境：中山 珠海 惠州 滇远 品关 湛江 茂名 阳江 肇江 云浮 ：",
+    "phone": "18753905355 / 18753995321 / 13926205123 / 15875316558",
+    "location": {
+      "lat": 35.04784,
+      "lng": 118.21473
+    },
+    "serviceRadiusKm": 121,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 18191,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.867,
+      "priceIndex": 0.9,
+      "capacityUtilization": 0.61
+    },
+    "tags": [
+      "8号中心",
+      "远征物流"
+    ]
+  },
+  {
+    "id": "vl0074",
+    "name": "连盛物流-29-30号",
+    "centerName": "8号中心",
+    "sequence": "29-30号",
+    "logisticsName": "连盛物流",
+    "route": "湖南全境 长沙",
+    "phone": "17568150333",
+    "location": {
+      "lat": 35.04589,
+      "lng": 118.21238
+    },
+    "serviceRadiusKm": 152,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 4623,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.966,
+      "priceIndex": 1.1,
+      "capacityUtilization": 0.42
+    },
+    "tags": [
+      "8号中心",
+      "连盛物流"
+    ]
+  },
+  {
+    "id": "vl0075",
+    "name": "致胜物流-30号",
+    "centerName": "8号中心",
+    "sequence": "30号",
+    "logisticsName": "致胜物流",
+    "route": "福建全境 福州 泉州 漳州 厦门 龙岩 南平 三明 宁德 ：",
+    "phone": "0535-8535656",
+    "location": {
+      "lat": 35.04609,
+      "lng": 118.21536
+    },
+    "serviceRadiusKm": 236,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 7145,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.956,
+      "priceIndex": 1.11,
+      "capacityUtilization": 0.91
+    },
+    "tags": [
+      "8号中心",
+      "致胜物流"
+    ]
+  },
+  {
+    "id": "vl0076",
+    "name": "致胜物流-29号",
+    "centerName": "8号中心",
+    "sequence": "29号",
+    "logisticsName": "致胜物流",
+    "route": "四川全境 成都 服务：",
+    "phone": "0535-8535656",
+    "location": {
+      "lat": 35.04853,
+      "lng": 118.21171
+    },
+    "serviceRadiusKm": 217,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 7168,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.892,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.66
+    },
+    "tags": [
+      "8号中心",
+      "致胜物流"
+    ]
+  },
+  {
+    "id": "vl0077",
+    "name": "致胜物流-28号",
+    "centerName": "8号中心",
+    "sequence": "28号",
+    "logisticsName": "致胜物流",
+    "route": "重庆全境 服务：",
+    "phone": "0535-8535656",
+    "location": {
+      "lat": 35.04763,
+      "lng": 118.21085
+    },
+    "serviceRadiusKm": 177,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 21945,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.872,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.06
+    },
+    "tags": [
+      "8号中心",
+      "致胜物流"
+    ]
+  },
+  {
+    "id": "vl0078",
+    "name": "致胜物流-28号",
+    "centerName": "8号中心",
+    "sequence": "28号",
+    "logisticsName": "致胜物流",
+    "route": "攀枝花直达 西昌直达 服务：",
+    "phone": "0535-8535656",
+    "location": {
+      "lat": 35.04901,
+      "lng": 118.21871
+    },
+    "serviceRadiusKm": 194,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 7552,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.89,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "8号中心",
+      "致胜物流"
+    ]
+  },
+  {
+    "id": "vl0079",
+    "name": "济邹物流-25号",
+    "centerName": "8号中心",
+    "sequence": "25号",
+    "logisticsName": "济邹物流",
+    "route": "邹城 城前 田黄 尚河 接庄镇 ：",
+    "phone": "13953780120 / 18853980021",
+    "location": {
+      "lat": 35.04911,
+      "lng": 118.21712
+    },
+    "serviceRadiusKm": 78,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 13293,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.937,
+      "priceIndex": 0.92,
+      "capacityUtilization": 0.96
+    },
+    "tags": [
+      "8号中心",
+      "济邹物流"
+    ]
+  },
+  {
+    "id": "vl0080",
+    "name": "聚鲁物流-24号",
+    "centerName": "8号中心",
+    "sequence": "24号",
+    "logisticsName": "聚鲁物流",
+    "route": "23-24 山西全境 太原 晋中 吕梁 朔州 忻州 ：",
+    "phone": "15588187070 / 15588186767",
+    "location": {
+      "lat": 35.047,
+      "lng": 118.21693
+    },
+    "serviceRadiusKm": 157,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 6557,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.95,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.64
+    },
+    "tags": [
+      "8号中心",
+      "聚鲁物流"
+    ]
+  },
+  {
+    "id": "vl0081",
+    "name": "聚鲁物流-23号",
+    "centerName": "8号中心",
+    "sequence": "23号",
+    "logisticsName": "聚鲁物流",
+    "route": "23-24 山西全境 阳泉 长治 晋城 临汾 洪洞 运城 ：",
+    "phone": "15588187070 / 15588186767",
+    "location": {
+      "lat": 35.05161,
+      "lng": 118.21222
+    },
+    "serviceRadiusKm": 112,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 11555,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.879,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.38
+    },
+    "tags": [
+      "8号中心",
+      "聚鲁物流"
+    ]
+  },
+  {
+    "id": "vl0082",
+    "name": "亿丰物流-22号",
+    "centerName": "8号中心",
+    "sequence": "22号",
+    "logisticsName": "亿丰物流",
+    "route": "昆山 太仓 吴江 ：",
+    "phone": "17155266677 / 13954456588 / 15315095789",
+    "location": {
+      "lat": 35.04993,
+      "lng": 118.21688
+    },
+    "serviceRadiusKm": 149,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 3864,
       "cold": null,
       "certifications": [
         "ISO9001"
@@ -20,230 +2877,316 @@
     },
     "metrics": {
       "rating": 3.6,
-      "onTimeRate": 0.916,
-      "priceIndex": 0.81,
-      "capacityUtilization": 0.31
+      "onTimeRate": 0.981,
+      "priceIndex": 1.1,
+      "capacityUtilization": 0.36
     },
     "tags": [
-      "重载专线"
+      "8号中心",
+      "亿丰物流"
     ]
   },
   {
-    "id": "v002",
-    "name": "华东物流-2号",
+    "id": "vl0083",
+    "name": "亿丰物流-21号",
+    "centerName": "8号中心",
+    "sequence": "21号",
+    "logisticsName": "亿丰物流",
+    "route": "苏州 无锡 ：",
+    "phone": "17155266677 / 13954456588 / 15315095789",
     "location": {
-      "lat": 1.3984,
-      "lng": 103.7578
+      "lat": 35.05254,
+      "lng": 118.21438
     },
-    "serviceRadiusKm": 100,
+    "serviceRadiusKm": 149,
     "capabilities": {
       "types": [
         "normal",
+        "cold"
+      ],
+      "maxWeightKg": 11677,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.985,
+      "priceIndex": 1.11,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "8号中心",
+      "亿丰物流"
+    ]
+  },
+  {
+    "id": "vl0084",
+    "name": "来龙货运（浙闽物流-18-20号",
+    "centerName": "8号中心",
+    "sequence": "18-20号",
+    "logisticsName": "来龙货运（浙闽物流",
+    "route": "） 乌鲁木齐（新疆全境） ：",
+    "phone": "15824410039",
+    "location": {
+      "lat": 35.04761,
+      "lng": 118.21783
+    },
+    "serviceRadiusKm": 163,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 9045,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.9,
+      "priceIndex": 1,
+      "capacityUtilization": 0.09
+    },
+    "tags": [
+      "8号中心",
+      "来龙货运（浙闽物流"
+    ]
+  },
+  {
+    "id": "vl0085",
+    "name": "来龙货运（浙闽物流-18-20号",
+    "centerName": "8号中心",
+    "sequence": "18-20号",
+    "logisticsName": "来龙货运（浙闽物流",
+    "route": "） 丽水 福州 南平 三明 龙岩 ：",
+    "phone": "18950647672",
+    "location": {
+      "lat": 35.05267,
+      "lng": 118.21124
+    },
+    "serviceRadiusKm": 161,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 6744,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.857,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.61
+    },
+    "tags": [
+      "8号中心",
+      "来龙货运（浙闽物流"
+    ]
+  },
+  {
+    "id": "vl0086",
+    "name": "来龙货运（浙闽物流-18-20号",
+    "centerName": "8号中心",
+    "sequence": "18-20号",
+    "logisticsName": "来龙货运（浙闽物流",
+    "route": "） 临沂<->湳城 建阳 邵武 建瓯 三明 沙县 临沂<->丽水 云和 龙泉 松溪 政和 ：",
+    "phone": "18950647672",
+    "location": {
+      "lat": 35.04697,
+      "lng": 118.21081
+    },
+    "serviceRadiusKm": 200,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 14583,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.871,
+      "priceIndex": 0.87,
+      "capacityUtilization": 0.34
+    },
+    "tags": [
+      "8号中心",
+      "来龙货运（浙闽物流"
+    ]
+  },
+  {
+    "id": "vl0087",
+    "name": "路正通达（原宋亿物流-1号",
+    "centerName": "8号中心",
+    "sequence": "1号",
+    "logisticsName": "路正通达（原宋亿物流",
+    "route": "） 临沂 直达/往返 石家庄 廊坊 沧州 行唐 无极 新乐 正定 献县（诸城直达） ： 2988770",
+    "phone": "0539-8035188 / 13953900050",
+    "location": {
+      "lat": 35.055,
+      "lng": 118.21566
+    },
+    "serviceRadiusKm": 85,
+    "capabilities": {
+      "types": [
         "cold",
         "hazmat"
       ],
-      "maxWeightKg": 3000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
+      "maxWeightKg": 8993,
+      "cold": null,
       "certifications": [
-        "ISO9001",
-        "GSP"
+        "ISO9001"
       ]
     },
     "metrics": {
-      "rating": 4.3,
-      "onTimeRate": 0.877,
-      "priceIndex": 0.96,
-      "capacityUtilization": 0.59
+      "rating": 3.1,
+      "onTimeRate": 0.869,
+      "priceIndex": 0.86,
+      "capacityUtilization": 0.95
     },
     "tags": [
-      "干线网络",
-      "夜间配送"
+      "8号中心",
+      "路正通达（原宋亿物流"
     ]
   },
   {
-    "id": "v003",
-    "name": "华南冷链-3号",
+    "id": "vl0088",
+    "name": "路正通达（原宋亿物流-2号",
+    "centerName": "8号中心",
+    "sequence": "2号",
+    "logisticsName": "路正通达（原宋亿物流",
+    "route": "） 沧州 任丘 河间 米各庄 献县（专线往返） ： 2988770",
+    "phone": "0539-8035188 / 13953900050",
     "location": {
-      "lat": 39.9328,
-      "lng": 116.1451
+      "lat": 35.05393,
+      "lng": 118.21556
     },
-    "serviceRadiusKm": 80,
+    "serviceRadiusKm": 83,
     "capabilities": {
       "types": [
         "normal",
-        "cold",
-        "fragile"
+        "cold"
       ],
-      "maxWeightKg": 15000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
+      "maxWeightKg": 12209,
+      "cold": null,
       "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 3.9,
-      "onTimeRate": 0.948,
-      "priceIndex": 0.96,
-      "capacityUtilization": 0.45
-    },
-    "tags": [
-      "夜间配送",
-      "同城即达"
-    ]
-  },
-  {
-    "id": "v004",
-    "name": "华南冷链-4号",
-    "location": {
-      "lat": 23.1738,
-      "lng": 113.2795
-    },
-    "serviceRadiusKm": 120,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "hazmat"
-      ],
-      "maxWeightKg": 20000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.2,
-      "onTimeRate": 0.939,
-      "priceIndex": 0.81,
-      "capacityUtilization": 0.57
-    },
-    "tags": []
-  },
-  {
-    "id": "v005",
-    "name": "华南冷链-5号",
-    "location": {
-      "lat": 23.2878,
-      "lng": 113.3082
-    },
-    "serviceRadiusKm": 120,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "fragile"
-      ],
-      "maxWeightKg": 8000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.5,
-      "onTimeRate": 0.937,
-      "priceIndex": 1.02,
-      "capacityUtilization": 0.54
-    },
-    "tags": []
-  },
-  {
-    "id": "v006",
-    "name": "沿海速运-6号",
-    "location": {
-      "lat": 23.2174,
-      "lng": 113.5603
-    },
-    "serviceRadiusKm": 150,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "fragile"
-      ],
-      "maxWeightKg": 8000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.5,
-      "onTimeRate": 0.975,
-      "priceIndex": 0.93,
-      "capacityUtilization": 0.84
-    },
-    "tags": [
-      "同城即达"
-    ]
-  },
-  {
-    "id": "v007",
-    "name": "华北专线-7号",
-    "location": {
-      "lat": 1.4951,
-      "lng": 103.7585
-    },
-    "serviceRadiusKm": 150,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "hazmat"
-      ],
-      "maxWeightKg": 3000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
+        "ISO9001"
       ]
     },
     "metrics": {
       "rating": 3.8,
-      "onTimeRate": 0.912,
-      "priceIndex": 0.9,
-      "capacityUtilization": 0.34
+      "onTimeRate": 0.979,
+      "priceIndex": 1.05,
+      "capacityUtilization": 0.86
     },
     "tags": [
-      "干线网络"
+      "8号中心",
+      "路正通达（原宋亿物流"
     ]
   },
   {
-    "id": "v008",
-    "name": "西南运配-8号",
+    "id": "vl0089",
+    "name": "路正通达（原宋亿物流-3号",
+    "centerName": "8号中心",
+    "sequence": "3号",
+    "logisticsName": "路正通达（原宋亿物流",
+    "route": "） 保定 高阳 庞口 肃宁 雄安 徐水（专线往返） ： 2988770",
+    "phone": "0539-8035188 / 13953900050",
     "location": {
-      "lat": 22.3337,
-      "lng": 113.8636
+      "lat": 35.04604,
+      "lng": 118.21398
     },
-    "serviceRadiusKm": 100,
+    "serviceRadiusKm": 148,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 8444,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.99,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.24
+    },
+    "tags": [
+      "8号中心",
+      "路正通达（原宋亿物流"
+    ]
+  },
+  {
+    "id": "vl0090",
+    "name": "临郑物流-4-5号",
+    "centerName": "8号中心",
+    "sequence": "4-5号",
+    "logisticsName": "临郑物流",
+    "route": "万里物流 郑州 中牟 华南城（内部中转各市县） ：",
+    "phone": "0539-3123707 / 15376916357 / 15376916358",
+    "location": {
+      "lat": 35.04787,
+      "lng": 118.21719
+    },
+    "serviceRadiusKm": 183,
     "capabilities": {
       "types": [
         "normal",
         "fragile"
       ],
-      "maxWeightKg": 20000,
+      "maxWeightKg": 19771,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.897,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.7
+    },
+    "tags": [
+      "8号中心",
+      "临郑物流"
+    ]
+  },
+  {
+    "id": "vl0091",
+    "name": "临郑物流-4-5号",
+    "centerName": "8号中心",
+    "sequence": "4-5号",
+    "logisticsName": "临郑物流",
+    "route": "（原万里）河南全境 ：",
+    "phone": "15376916357 / 15376916358",
+    "location": {
+      "lat": 35.05512,
+      "lng": 118.21673
+    },
+    "serviceRadiusKm": 143,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 5614,
       "cold": null,
       "certifications": [
         "ISO9001"
@@ -251,347 +3194,429 @@
     },
     "metrics": {
       "rating": 3.9,
-      "onTimeRate": 0.923,
-      "priceIndex": 1.03,
-      "capacityUtilization": 0.42
+      "onTimeRate": 0.989,
+      "priceIndex": 1.23,
+      "capacityUtilization": 0.23
     },
-    "tags": []
+    "tags": [
+      "8号中心",
+      "临郑物流"
+    ]
   },
   {
-    "id": "v009",
-    "name": "华北专线-9号",
+    "id": "vl0092",
+    "name": "标强物流-6号",
+    "centerName": "8号中心",
+    "sequence": "6号",
+    "logisticsName": "标强物流",
+    "route": "崇明 太仓 昆山 ：",
+    "phone": "0539-3117506 / 15054905777 / 13225495777",
     "location": {
-      "lat": 40.0185,
-      "lng": 116.4167
+      "lat": 35.04802,
+      "lng": 118.21083
     },
-    "serviceRadiusKm": 200,
+    "serviceRadiusKm": 89,
     "capabilities": {
       "types": [
         "normal",
         "cold"
       ],
-      "maxWeightKg": 20000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
+      "maxWeightKg": 9591,
+      "cold": null,
       "certifications": [
-        "ISO9001",
-        "GSP"
+        "ISO9001"
       ]
     },
     "metrics": {
-      "rating": 4.5,
-      "onTimeRate": 0.867,
-      "priceIndex": 1.16,
+      "rating": 3.8,
+      "onTimeRate": 0.883,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.23
+    },
+    "tags": [
+      "8号中心",
+      "标强物流"
+    ]
+  },
+  {
+    "id": "vl0093",
+    "name": "标强物流-7号",
+    "centerName": "8号中心",
+    "sequence": "7号",
+    "logisticsName": "标强物流",
+    "route": "：",
+    "phone": "0539-3117506 / 15054905777 / 13225495777",
+    "location": {
+      "lat": 35.04902,
+      "lng": 118.21779
+    },
+    "serviceRadiusKm": 100,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 18232,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.992,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.25
+    },
+    "tags": [
+      "8号中心",
+      "标强物流"
+    ]
+  },
+  {
+    "id": "vl0094",
+    "name": "标强物流-8号",
+    "centerName": "8号中心",
+    "sequence": "8号",
+    "logisticsName": "标强物流",
+    "route": "上海全境 ：",
+    "phone": "0539-3117506 / 15054905777 / 13225495777",
+    "location": {
+      "lat": 35.04775,
+      "lng": 118.21918
+    },
+    "serviceRadiusKm": 82,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 21950,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.961,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.18
+    },
+    "tags": [
+      "8号中心",
+      "标强物流"
+    ]
+  },
+  {
+    "id": "vl0095",
+    "name": "通达物流-9号",
+    "centerName": "8号中心",
+    "sequence": "9号",
+    "logisticsName": "通达物流",
+    "route": "南京专线 ：",
+    "phone": "17605496116 / 15069880791",
+    "location": {
+      "lat": 35.05355,
+      "lng": 118.21338
+    },
+    "serviceRadiusKm": 87,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 2925,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.885,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.91
+    },
+    "tags": [
+      "8号中心",
+      "通达物流"
+    ]
+  },
+  {
+    "id": "vl0096",
+    "name": "通达物流-10号",
+    "centerName": "8号中心",
+    "sequence": "10号",
+    "logisticsName": "通达物流",
+    "route": "泰安 东平 ：",
+    "phone": "0539-2030865 / 15069880791",
+    "location": {
+      "lat": 35.04873,
+      "lng": 118.21489
+    },
+    "serviceRadiusKm": 69,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 19575,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.934,
+      "priceIndex": 0.86,
       "capacityUtilization": 0.74
     },
     "tags": [
-      "夜间配送",
-      "同城即达"
+      "8号中心",
+      "通达物流"
     ]
   },
   {
-    "id": "v010",
-    "name": "西南运配-10号",
+    "id": "vl0097",
+    "name": "通达物流-11号",
+    "centerName": "8号中心",
+    "sequence": "11号",
+    "logisticsName": "通达物流",
+    "route": "：",
+    "phone": "0539-2030865 / 15069880791",
     "location": {
-      "lat": 22.2835,
-      "lng": 113.8832
+      "lat": 35.05125,
+      "lng": 118.21124
     },
-    "serviceRadiusKm": 100,
+    "serviceRadiusKm": 221,
     "capabilities": {
       "types": [
         "normal",
-        "cold"
-      ],
-      "maxWeightKg": 3000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.0,
-      "onTimeRate": 0.867,
-      "priceIndex": 0.78,
-      "capacityUtilization": 0.35
-    },
-    "tags": []
-  },
-  {
-    "id": "v011",
-    "name": "港区链达-11号",
-    "location": {
-      "lat": 22.9182,
-      "lng": 113.1158
-    },
-    "serviceRadiusKm": 120,
-    "capabilities": {
-      "types": [
-        "normal",
-        "hazmat",
         "fragile"
       ],
-      "maxWeightKg": 15000,
+      "maxWeightKg": 8561,
       "cold": null,
       "certifications": [
         "ISO9001"
       ]
     },
     "metrics": {
-      "rating": 4.1,
-      "onTimeRate": 0.876,
-      "priceIndex": 1.14,
-      "capacityUtilization": 0.88
-    },
-    "tags": [
-      "夜间配送"
-    ]
-  },
-  {
-    "id": "v012",
-    "name": "沿海速运-12号",
-    "location": {
-      "lat": 22.5303,
-      "lng": 114.1731
-    },
-    "serviceRadiusKm": 200,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "hazmat"
-      ],
-      "maxWeightKg": 3000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 3.9,
-      "onTimeRate": 0.984,
-      "priceIndex": 0.93,
-      "capacityUtilization": 0.68
-    },
-    "tags": []
-  },
-  {
-    "id": "v013",
-    "name": "沿海速运-13号",
-    "location": {
-      "lat": 1.3631,
-      "lng": 104.0648
-    },
-    "serviceRadiusKm": 120,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "fragile"
-      ],
-      "maxWeightKg": 5000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.3,
-      "onTimeRate": 0.961,
-      "priceIndex": 0.92,
-      "capacityUtilization": 0.39
-    },
-    "tags": []
-  },
-  {
-    "id": "v014",
-    "name": "沿江货运-14号",
-    "location": {
-      "lat": 39.8175,
-      "lng": 116.1248
-    },
-    "serviceRadiusKm": 80,
-    "capabilities": {
-      "types": [
-        "normal",
-        "fragile"
-      ],
-      "maxWeightKg": 8000,
-      "cold": null,
-      "certifications": [
-        "ISO9001"
-      ]
-    },
-    "metrics": {
-      "rating": 4.2,
-      "onTimeRate": 0.885,
-      "priceIndex": 1.03,
-      "capacityUtilization": 0.47
-    },
-    "tags": [
-      "干线网络",
-      "同城即达"
-    ]
-  },
-  {
-    "id": "v015",
-    "name": "西南运配-15号",
-    "location": {
-      "lat": 31.22,
-      "lng": 121.7648
-    },
-    "serviceRadiusKm": 200,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "hazmat",
-        "fragile"
-      ],
-      "maxWeightKg": 3000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.2,
-      "onTimeRate": 0.945,
+      "rating": 3,
+      "onTimeRate": 0.974,
       "priceIndex": 1.12,
-      "capacityUtilization": 0.3
+      "capacityUtilization": 0.29
     },
     "tags": [
-      "重载专线",
-      "同城即达"
+      "8号中心",
+      "通达物流"
     ]
   },
   {
-    "id": "v016",
-    "name": "城配智能运-16号",
+    "id": "vl0098",
+    "name": "永疆供应链-12号",
+    "centerName": "8号中心",
+    "sequence": "12号",
+    "logisticsName": "永疆供应链",
+    "route": "阿克苏 ： 业务查询：",
+    "phone": "15653950066 / 13105490056 / 13275490056",
     "location": {
-      "lat": 39.6562,
-      "lng": 116.6751
+      "lat": 35.05424,
+      "lng": 118.2114
     },
-    "serviceRadiusKm": 150,
+    "serviceRadiusKm": 105,
     "capabilities": {
       "types": [
-        "normal",
-        "cold",
         "hazmat"
       ],
-      "maxWeightKg": 10000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
+      "maxWeightKg": 10145,
+      "cold": null,
       "certifications": [
-        "ISO9001",
-        "GSP"
+        "ISO9001"
       ]
     },
     "metrics": {
-      "rating": 4.1,
-      "onTimeRate": 0.983,
-      "priceIndex": 1.08,
-      "capacityUtilization": 0.36
+      "rating": 3.1,
+      "onTimeRate": 0.959,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.87
     },
-    "tags": []
+    "tags": [
+      "8号中心",
+      "永疆供应链"
+    ]
   },
   {
-    "id": "v017",
-    "name": "华北专线-17号",
+    "id": "vl0099",
+    "name": "永疆供应链-13号",
+    "centerName": "8号中心",
+    "sequence": "13号",
+    "logisticsName": "永疆供应链",
+    "route": "乌鲁木齐 ： 业务查询：",
+    "phone": "15653950066 / 13105490056 / 13275490056",
     "location": {
-      "lat": 31.2973,
-      "lng": 121.5312
+      "lat": 35.05497,
+      "lng": 118.21668
     },
-    "serviceRadiusKm": 150,
+    "serviceRadiusKm": 143,
     "capabilities": {
       "types": [
-        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 21469,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.859,
+      "priceIndex": 1,
+      "capacityUtilization": 0.95
+    },
+    "tags": [
+      "8号中心",
+      "永疆供应链"
+    ]
+  },
+  {
+    "id": "vl0100",
+    "name": "永疆供应链-14号",
+    "centerName": "8号中心",
+    "sequence": "14号",
+    "logisticsName": "永疆供应链",
+    "route": "库尔勒 ： 业务查询：",
+    "phone": "15653950066 / 13105490056 / 13275490056",
+    "location": {
+      "lat": 35.04757,
+      "lng": 118.21523
+    },
+    "serviceRadiusKm": 112,
+    "capabilities": {
+      "types": [
         "cold"
       ],
-      "maxWeightKg": 20000,
+      "maxWeightKg": 6777,
       "cold": {
-        "min": -25,
+        "min": -18,
         "max": 8
       },
       "certifications": [
-        "ISO9001",
-        "GSP"
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.853,
+      "priceIndex": 0.97,
+      "capacityUtilization": 0.43
+    },
+    "tags": [
+      "8号中心",
+      "永疆供应链"
+    ]
+  },
+  {
+    "id": "vl0101",
+    "name": "福甜物流-15-17号",
+    "centerName": "8号中心",
+    "sequence": "15-17号",
+    "logisticsName": "福甜物流",
+    "route": "崂山 胶州 日照 ： 8065716 接货： 监督：",
+    "phone": "0539-8065277 / 15963917222 / 15966394666",
+    "location": {
+      "lat": 35.04841,
+      "lng": 118.22025
+    },
+    "serviceRadiusKm": 127,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 21813,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
       ]
     },
     "metrics": {
       "rating": 4.8,
-      "onTimeRate": 0.88,
-      "priceIndex": 1.01,
-      "capacityUtilization": 0.26
+      "onTimeRate": 0.901,
+      "priceIndex": 1.07,
+      "capacityUtilization": 0.01
     },
     "tags": [
-      "重载专线",
-      "干线网络"
+      "8号中心",
+      "福甜物流"
     ]
   },
   {
-    "id": "v018",
-    "name": "西南运配-18号",
+    "id": "vl0102",
+    "name": "福甜物流-15-17号",
+    "centerName": "8号中心",
+    "sequence": "15-17号",
+    "logisticsName": "福甜物流",
+    "route": "青岛李沧 城阳 ： 8065716 接货： 监督：",
+    "phone": "0539-8065277 / 15963917222 / 15966394666",
     "location": {
-      "lat": 39.621,
-      "lng": 116.2351
+      "lat": 35.05464,
+      "lng": 118.21389
     },
-    "serviceRadiusKm": 200,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold"
-      ],
-      "maxWeightKg": 5000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.6,
-      "onTimeRate": 0.902,
-      "priceIndex": 1.01,
-      "capacityUtilization": 0.78
-    },
-    "tags": []
-  },
-  {
-    "id": "v019",
-    "name": "港区链达-19号",
-    "location": {
-      "lat": 23.3254,
-      "lng": 113.4913
-    },
-    "serviceRadiusKm": 100,
+    "serviceRadiusKm": 82,
     "capabilities": {
       "types": [
         "normal"
       ],
-      "maxWeightKg": 15000,
+      "maxWeightKg": 12652,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.939,
+      "priceIndex": 1.15,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "8号中心",
+      "福甜物流"
+    ]
+  },
+  {
+    "id": "vl0103",
+    "name": "致胜物流-27-28号",
+    "centerName": "9号中心",
+    "sequence": "27-28号",
+    "logisticsName": "致胜物流",
+    "route": "分拣中心",
+    "phone": "18853995152",
+    "location": {
+      "lat": 35.05524,
+      "lng": 118.21755
+    },
+    "serviceRadiusKm": 130,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 5127,
       "cold": null,
       "certifications": [
         "ISO9001"
@@ -599,91 +3624,239 @@
     },
     "metrics": {
       "rating": 3.8,
-      "onTimeRate": 0.926,
-      "priceIndex": 1.15,
-      "capacityUtilization": 0.74
+      "onTimeRate": 0.877,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.47
     },
     "tags": [
-      "重载专线",
-      "夜间配送"
+      "9号中心",
+      "致胜物流"
     ]
   },
   {
-    "id": "v020",
-    "name": "华东物流-20号",
+    "id": "vl0104",
+    "name": "东飞物流-29号",
+    "centerName": "9号中心",
+    "sequence": "29号",
+    "logisticsName": "东飞物流",
+    "route": "邯郸 馆陶 大名 魏县 鸡泽 广平 河古庙 冠县 ：",
+    "phone": "19153921502 / 19153921506",
     "location": {
-      "lat": 39.7998,
-      "lng": 116.4184
+      "lat": 35.05715,
+      "lng": 118.21912
     },
-    "serviceRadiusKm": 200,
-    "capabilities": {
-      "types": [
-        "normal",
-        "cold",
-        "fragile"
-      ],
-      "maxWeightKg": 10000,
-      "cold": {
-        "min": -25,
-        "max": 8
-      },
-      "certifications": [
-        "ISO9001",
-        "GSP"
-      ]
-    },
-    "metrics": {
-      "rating": 4.6,
-      "onTimeRate": 0.874,
-      "priceIndex": 1.02,
-      "capacityUtilization": 0.41
-    },
-    "tags": [
-      "重载专线"
-    ]
-  },
-  {
-    "id": "v021",
-    "name": "华南冷链-21号",
-    "location": {
-      "lat": 31.1963,
-      "lng": 121.5412
-    },
-    "serviceRadiusKm": 200,
+    "serviceRadiusKm": 92,
     "capabilities": {
       "types": [
         "normal"
       ],
-      "maxWeightKg": 15000,
+      "maxWeightKg": 8662,
       "cold": null,
       "certifications": [
         "ISO9001"
       ]
     },
     "metrics": {
-      "rating": 4.3,
-      "onTimeRate": 0.95,
-      "priceIndex": 0.97,
-      "capacityUtilization": 0.59
+      "rating": 4.7,
+      "onTimeRate": 0.913,
+      "priceIndex": 1.21,
+      "capacityUtilization": 0.19
     },
     "tags": [
-      "同城即达"
+      "9号中心",
+      "东飞物流"
     ]
   },
   {
-    "id": "v022",
-    "name": "西南运配-22号",
+    "id": "vl0105",
+    "name": "永川物流-30号",
+    "centerName": "9号中心",
+    "sequence": "30号",
+    "logisticsName": "永川物流",
+    "route": "中牟 华南城 南四环 郑州 伊滨 老城 关林 洛阳 分拣 济南 港南 蚌埠 毫州 宿州 淮北 阜阳 合肥",
+    "phone": "",
     "location": {
-      "lat": 1.5561,
-      "lng": 103.6021
+      "lat": 35.05385,
+      "lng": 118.21595
     },
-    "serviceRadiusKm": 80,
+    "serviceRadiusKm": 127,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 21683,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.978,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.15
+    },
+    "tags": [
+      "9号中心",
+      "永川物流"
+    ]
+  },
+  {
+    "id": "vl0106",
+    "name": "安旭物流-31号",
+    "centerName": "9号中心",
+    "sequence": "31号",
+    "logisticsName": "安旭物流",
+    "route": "分拣 泗县",
+    "phone": "18266709811 / 13733003100",
+    "location": {
+      "lat": 35.05101,
+      "lng": 118.21665
+    },
+    "serviceRadiusKm": 234,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 19315,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.974,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.6
+    },
+    "tags": [
+      "9号中心",
+      "安旭物流"
+    ]
+  },
+  {
+    "id": "vl0107",
+    "name": "顺平物流-32号",
+    "centerName": "9号中心",
+    "sequence": "32号",
+    "logisticsName": "顺平物流",
+    "route": "分拣 黄岛 胶南 胶州 平度 城阳 高密 徐州 岚山 汾水 ：",
+    "phone": "0539-3101898 / 15964688899",
+    "location": {
+      "lat": 35.05478,
+      "lng": 118.21628
+    },
+    "serviceRadiusKm": 218,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 5680,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.975,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.49
+    },
+    "tags": [
+      "9号中心",
+      "顺平物流"
+    ]
+  },
+  {
+    "id": "vl0108",
+    "name": "成飞物流-12号",
+    "centerName": "7号中心",
+    "sequence": "12号",
+    "logisticsName": "成飞物流",
+    "route": "致胜 分拣 临沂往返 宿州",
+    "phone": "13563995588",
+    "location": {
+      "lat": 35.04946,
+      "lng": 118.21599
+    },
+    "serviceRadiusKm": 176,
     "capabilities": {
       "types": [
         "normal",
         "fragile"
       ],
-      "maxWeightKg": 10000,
+      "maxWeightKg": 10398,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.926,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.59
+    },
+    "tags": [
+      "7号中心",
+      "成飞物流"
+    ]
+  },
+  {
+    "id": "vl0109",
+    "name": "成飞物流-13号",
+    "centerName": "7号中心",
+    "sequence": "13号",
+    "logisticsName": "成飞物流",
+    "route": "致胜 分拣 淮南 淮北 凤台 寿县",
+    "phone": "",
+    "location": {
+      "lat": 35.04989,
+      "lng": 118.21714
+    },
+    "serviceRadiusKm": 212,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 12194,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.973,
+      "priceIndex": 0.86,
+      "capacityUtilization": 0.31
+    },
+    "tags": [
+      "7号中心",
+      "成飞物流"
+    ]
+  },
+  {
+    "id": "vl0110",
+    "name": "成飞物流-14号",
+    "centerName": "7号中心",
+    "sequence": "14号",
+    "logisticsName": "成飞物流",
+    "route": "致胜 分拣 蚌埠 怀远 凤阳",
+    "phone": "",
+    "location": {
+      "lat": 35.05166,
+      "lng": 118.21287
+    },
+    "serviceRadiusKm": 71,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 6335,
       "cold": null,
       "certifications": [
         "ISO9001"
@@ -691,13 +3864,4312 @@
     },
     "metrics": {
       "rating": 4.2,
-      "onTimeRate": 0.869,
+      "onTimeRate": 0.957,
+      "priceIndex": 1.07,
+      "capacityUtilization": 0.76
+    },
+    "tags": [
+      "7号中心",
+      "成飞物流"
+    ]
+  },
+  {
+    "id": "vl0111",
+    "name": "成飞物流-15号",
+    "centerName": "7号中心",
+    "sequence": "15号",
+    "logisticsName": "成飞物流",
+    "route": "致胜 分拣 合肥 芜湖 宣城 安庆 六安 舒城 淮北 濉溪 金寨 霍邱 滁州 全椒",
+    "phone": "",
+    "location": {
+      "lat": 35.04959,
+      "lng": 118.21304
+    },
+    "serviceRadiusKm": 246,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 18802,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.973,
+      "priceIndex": 1.06,
+      "capacityUtilization": 0.04
+    },
+    "tags": [
+      "7号中心",
+      "成飞物流"
+    ]
+  },
+  {
+    "id": "vl0112",
+    "name": "成飞物流-16号",
+    "centerName": "7号中心",
+    "sequence": "16号",
+    "logisticsName": "成飞物流",
+    "route": "分拣中心12-16号 ：",
+    "phone": "18650978212",
+    "location": {
+      "lat": 35.05277,
+      "lng": 118.2168
+    },
+    "serviceRadiusKm": 148,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 15491,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.893,
+      "priceIndex": 0.85,
+      "capacityUtilization": 0.07
+    },
+    "tags": [
+      "7号中心",
+      "成飞物流"
+    ]
+  },
+  {
+    "id": "vl0113",
+    "name": "祥和物流-11号",
+    "centerName": "7号中心",
+    "sequence": "11号",
+    "logisticsName": "祥和物流",
+    "route": "致胜 连云港 海州 赣榆 ：3886788 ：1875123999",
+    "phone": "13153929998",
+    "location": {
+      "lat": 35.05127,
+      "lng": 118.21918
+    },
+    "serviceRadiusKm": 131,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 19276,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.853,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.35
+    },
+    "tags": [
+      "7号中心",
+      "祥和物流"
+    ]
+  },
+  {
+    "id": "vl0114",
+    "name": "佳泽物流-10号",
+    "centerName": "7号中心",
+    "sequence": "10号",
+    "logisticsName": "佳泽物流",
+    "route": "承德全境 临沂：",
+    "phone": "0535-7208292 / 13953995879",
+    "location": {
+      "lat": 35.05012,
+      "lng": 118.21672
+    },
+    "serviceRadiusKm": 218,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 18030,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.934,
+      "priceIndex": 1.2,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "7号中心",
+      "佳泽物流"
+    ]
+  },
+  {
+    "id": "vl0115",
+    "name": "佳泽物流-9号",
+    "centerName": "7号中心",
+    "sequence": "9号",
+    "logisticsName": "佳泽物流",
+    "route": "承德 隆化 围场 丰宁 宽城 兴隆 滦平 临沂：",
+    "phone": "0535-7208292 / 13953995879",
+    "location": {
+      "lat": 35.0457,
+      "lng": 118.2172
+    },
+    "serviceRadiusKm": 88,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 3113,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.994,
+      "priceIndex": 1.27,
+      "capacityUtilization": 0.97
+    },
+    "tags": [
+      "7号中心",
+      "佳泽物流"
+    ]
+  },
+  {
+    "id": "vl0116",
+    "name": "佳泽物流-8号",
+    "centerName": "7号中心",
+    "sequence": "8号",
+    "logisticsName": "佳泽物流",
+    "route": "平泉 双滦 营子 宁城 凌源 ：",
+    "phone": "0314-7019012 / 15733967688 / 17605396699",
+    "location": {
+      "lat": 35.04516,
+      "lng": 118.21738
+    },
+    "serviceRadiusKm": 216,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 7442,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.906,
+      "priceIndex": 1.1,
+      "capacityUtilization": 0.86
+    },
+    "tags": [
+      "7号中心",
+      "佳泽物流"
+    ]
+  },
+  {
+    "id": "vl0117",
+    "name": "龙虎物流-4-7号",
+    "centerName": "7号中心",
+    "sequence": "4-7号",
+    "logisticsName": "龙虎物流",
+    "route": "郑州 许昌 长葛 ：1677480666",
+    "phone": "13605392637",
+    "location": {
+      "lat": 35.04889,
+      "lng": 118.20948
+    },
+    "serviceRadiusKm": 103,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 13511,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.862,
+      "priceIndex": 1.12,
+      "capacityUtilization": 0.31
+    },
+    "tags": [
+      "7号中心",
+      "龙虎物流"
+    ]
+  },
+  {
+    "id": "vl0118",
+    "name": "汇通物流-1-2号",
+    "centerName": "7号中心",
+    "sequence": "1-2号",
+    "logisticsName": "汇通物流",
+    "route": "党山",
+    "phone": "13969955265 / 13989829889",
+    "location": {
+      "lat": 35.04522,
+      "lng": 118.21302
+    },
+    "serviceRadiusKm": 165,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 3401,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.94,
       "priceIndex": 0.88,
+      "capacityUtilization": 0.1
+    },
+    "tags": [
+      "7号中心",
+      "汇通物流"
+    ]
+  },
+  {
+    "id": "vl0119",
+    "name": "思鸿物流-15号",
+    "centerName": "7号中心",
+    "sequence": "15号",
+    "logisticsName": "思鸿物流",
+    "route": "振玉物流",
+    "phone": "15092377170",
+    "location": {
+      "lat": 35.04729,
+      "lng": 118.21597
+    },
+    "serviceRadiusKm": 214,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 9491,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.956,
+      "priceIndex": 1.2,
+      "capacityUtilization": 0.02
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0120",
+    "name": "思鸿物流-16号",
+    "centerName": "7号中心",
+    "sequence": "16号",
+    "logisticsName": "思鸿物流",
+    "route": "临沂往返莱州、沙河",
+    "phone": "15092377170",
+    "location": {
+      "lat": 35.04957,
+      "lng": 118.21666
+    },
+    "serviceRadiusKm": 136,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 19506,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.946,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.05
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0121",
+    "name": "正迎物流-17号",
+    "centerName": "7号中心",
+    "sequence": "17号",
+    "logisticsName": "正迎物流",
+    "route": "太原 晋源 晋中 迎泽 尖草坪 分拣",
+    "phone": "17753979551",
+    "location": {
+      "lat": 35.04948,
+      "lng": 118.21472
+    },
+    "serviceRadiusKm": 114,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 12504,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.93,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.93
+    },
+    "tags": [
+      "7号中心",
+      "正迎物流"
+    ]
+  },
+  {
+    "id": "vl0122",
+    "name": "正迎物流-18号",
+    "centerName": "7号中心",
+    "sequence": "18号",
+    "logisticsName": "正迎物流",
+    "route": "榆林 神木 大同 朔州 忻州 吕梁 分拣",
+    "phone": "15615896332",
+    "location": {
+      "lat": 35.05288,
+      "lng": 118.2162
+    },
+    "serviceRadiusKm": 73,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 4815,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.914,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.08
+    },
+    "tags": [
+      "7号中心",
+      "正迎物流"
+    ]
+  },
+  {
+    "id": "vl0123",
+    "name": "正迎物流-19号",
+    "centerName": "7号中心",
+    "sequence": "19号",
+    "logisticsName": "正迎物流",
+    "route": "长治 晋城 高平 临汾 分拣 看不清",
+    "phone": "",
+    "location": {
+      "lat": 35.05067,
+      "lng": 118.21888
+    },
+    "serviceRadiusKm": 164,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 20375,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.958,
+      "priceIndex": 1.23,
+      "capacityUtilization": 0.19
+    },
+    "tags": [
+      "7号中心",
+      "正迎物流"
+    ]
+  },
+  {
+    "id": "vl0124",
+    "name": "正迎物流-20号",
+    "centerName": "7号中心",
+    "sequence": "20号",
+    "logisticsName": "正迎物流",
+    "route": "运城 新绛 侯马 三门峡 分拣",
+    "phone": "13375691309",
+    "location": {
+      "lat": 35.05019,
+      "lng": 118.212
+    },
+    "serviceRadiusKm": 61,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 8225,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.999,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.04
+    },
+    "tags": [
+      "7号中心",
+      "正迎物流"
+    ]
+  },
+  {
+    "id": "vl0125",
+    "name": "正迎物流-21号",
+    "centerName": "7号中心",
+    "sequence": "21号",
+    "logisticsName": "正迎物流",
+    "route": "三方落地分拣中心 分拣",
+    "phone": "",
+    "location": {
+      "lat": 35.04816,
+      "lng": 118.21108
+    },
+    "serviceRadiusKm": 68,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 8515,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.916,
+      "priceIndex": 0.92,
+      "capacityUtilization": 0.55
+    },
+    "tags": [
+      "7号中心",
+      "正迎物流"
+    ]
+  },
+  {
+    "id": "vl0126",
+    "name": "思鸿物流-26号",
+    "centerName": "7号中心",
+    "sequence": "26号",
+    "logisticsName": "思鸿物流",
+    "route": "银川 吴忠 固原 乌海 客服：",
+    "phone": "17853918019 / 0539-8990271",
+    "location": {
+      "lat": 35.04865,
+      "lng": 118.20947
+    },
+    "serviceRadiusKm": 68,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 17830,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.934,
+      "priceIndex": 0.84,
+      "capacityUtilization": 0.03
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0127",
+    "name": "思鸿物流-27号",
+    "centerName": "7号中心",
+    "sequence": "27号",
+    "logisticsName": "思鸿物流",
+    "route": "西安 宝鸡 榆林 庆阳 客服：",
+    "phone": "17853918019 / 0539-8990271",
+    "location": {
+      "lat": 35.0519,
+      "lng": 118.21864
+    },
+    "serviceRadiusKm": 205,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 18056,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.869,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.71
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0128",
+    "name": "思鸿物流-28号",
+    "centerName": "7号中心",
+    "sequence": "28号",
+    "logisticsName": "思鸿物流",
+    "route": "兰州 武威 西宁 拉萨 客服：",
+    "phone": "17853918019 / 0539-8990271",
+    "location": {
+      "lat": 35.04771,
+      "lng": 118.21608
+    },
+    "serviceRadiusKm": 68,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 8005,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.961,
+      "priceIndex": 1.05,
+      "capacityUtilization": 0.26
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0129",
+    "name": "思鸿物流-29号",
+    "centerName": "7号中心",
+    "sequence": "29号",
+    "logisticsName": "思鸿物流",
+    "route": "三财讯诚 乌鲁木齐（南区沙依巴克） 客服：",
+    "phone": "13754708817 / 0539-8990271",
+    "location": {
+      "lat": 35.04675,
+      "lng": 118.21259
+    },
+    "serviceRadiusKm": 60,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 14404,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.86,
+      "priceIndex": 0.95,
+      "capacityUtilization": 0.84
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0130",
+    "name": "思鸿物流-30号",
+    "centerName": "7号中心",
+    "sequence": "30号",
+    "logisticsName": "思鸿物流",
+    "route": "三财讯诚 乌鲁木齐（北区米东 新华凌） 客服：",
+    "phone": "13754708817 / 0539-8990271",
+    "location": {
+      "lat": 35.04932,
+      "lng": 118.21787
+    },
+    "serviceRadiusKm": 217,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 10256,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.922,
+      "priceIndex": 1.06,
+      "capacityUtilization": 0.2
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0131",
+    "name": "思鸿物流-31号",
+    "centerName": "7号中心",
+    "sequence": "31号",
+    "logisticsName": "思鸿物流",
+    "route": "三财讯诚 哈密米伊犁 喀什 客服：",
+    "phone": "13754708817 / 0539-8990271",
+    "location": {
+      "lat": 35.05204,
+      "lng": 118.21705
+    },
+    "serviceRadiusKm": 116,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 2932,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.957,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.72
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0132",
+    "name": "思鸿物流-32号",
+    "centerName": "7号中心",
+    "sequence": "32号",
+    "logisticsName": "思鸿物流",
+    "route": "三财讯诚 石河子 奎屯 博乐 库尔勒 客服：",
+    "phone": "15753950666 / 0539-8990271",
+    "location": {
+      "lat": 35.04586,
+      "lng": 118.21805
+    },
+    "serviceRadiusKm": 144,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 4321,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.864,
+      "priceIndex": 1.12,
+      "capacityUtilization": 0.27
+    },
+    "tags": [
+      "7号中心",
+      "思鸿物流"
+    ]
+  },
+  {
+    "id": "vl0133",
+    "name": "骏盛驰物流-20号",
+    "centerName": "5号中心",
+    "sequence": "20号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 嘉祥 ：",
+    "phone": "0539-3116567 / 13468110786",
+    "location": {
+      "lat": 35.042,
+      "lng": 118.21518
+    },
+    "serviceRadiusKm": 186,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 4429,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.981,
+      "priceIndex": 0.91,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0134",
+    "name": "骏盛驰物流-21号",
+    "centerName": "5号中心",
+    "sequence": "21号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 威海高区 张村 ：",
+    "phone": "13176961678 / 18265958887",
+    "location": {
+      "lat": 35.04059,
+      "lng": 118.20961
+    },
+    "serviceRadiusKm": 73,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 17704,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.863,
+      "priceIndex": 0.97,
+      "capacityUtilization": 0.58
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0135",
+    "name": "骏盛驰物流-22号",
+    "centerName": "5号中心",
+    "sequence": "22号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 威海环翠 经区 ： 家家悦 外运 海联 临港区",
+    "phone": "13176961678 / 18265958887",
+    "location": {
+      "lat": 35.05,
+      "lng": 118.21086
+    },
+    "serviceRadiusKm": 186,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 4578,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.906,
+      "priceIndex": 1.23,
+      "capacityUtilization": 0.07
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0136",
+    "name": "骏盛驰物流-23号",
+    "centerName": "5号中心",
+    "sequence": "23号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 海阳 乳山 ：",
+    "phone": "13176961678 / 18265958887",
+    "location": {
+      "lat": 35.04677,
+      "lng": 118.21419
+    },
+    "serviceRadiusKm": 97,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 2276,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.986,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.6
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0137",
+    "name": "骏盛驰物流-24号",
+    "centerName": "5号中心",
+    "sequence": "24号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 文登 蔄山 ：",
+    "phone": "13176961678 / 18265958887",
+    "location": {
+      "lat": 35.04695,
+      "lng": 118.21317
+    },
+    "serviceRadiusKm": 87,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 19714,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.979,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.05
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0138",
+    "name": "骏盛驰物流-25号",
+    "centerName": "5号中心",
+    "sequence": "25号",
+    "logisticsName": "骏盛驰物流",
+    "route": "山东鑫鲁顺 荣成 石岛 ：",
+    "phone": "13176961678 / 18265958887",
+    "location": {
+      "lat": 35.04921,
+      "lng": 118.21007
+    },
+    "serviceRadiusKm": 163,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 10264,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.852,
+      "priceIndex": 1.19,
+      "capacityUtilization": 0.76
+    },
+    "tags": [
+      "5号中心",
+      "骏盛驰物流"
+    ]
+  },
+  {
+    "id": "vl0139",
+    "name": "邦讯物流-26号",
+    "centerName": "5号中心",
+    "sequence": "26号",
+    "logisticsName": "邦讯物流",
+    "route": "广州往返临沂 ：",
+    "phone": "13325080099 / 15065901468",
+    "location": {
+      "lat": 35.04374,
+      "lng": 118.21391
+    },
+    "serviceRadiusKm": 191,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 4696,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.924,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.77
+    },
+    "tags": [
+      "5号中心",
+      "邦讯物流"
+    ]
+  },
+  {
+    "id": "vl0140",
+    "name": "福顺物流-27号",
+    "centerName": "5号中心",
+    "sequence": "27号",
+    "logisticsName": "福顺物流",
+    "route": "山东鑫鲁顺 临沂 鄄城 ：",
+    "phone": "0539-8535886 / 15266939599 / 15588101119",
+    "location": {
+      "lat": 35.04395,
+      "lng": 118.2133
+    },
+    "serviceRadiusKm": 240,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 5728,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.973,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.63
+    },
+    "tags": [
+      "5号中心",
+      "福顺物流"
+    ]
+  },
+  {
+    "id": "vl0141",
+    "name": "百川物流-28号",
+    "centerName": "5号中心",
+    "sequence": "28号",
+    "logisticsName": "百川物流",
+    "route": "山东鑫鲁顺 嘉祥 ：",
+    "phone": "0539-3115052 / 15054661616",
+    "location": {
+      "lat": 35.04806,
+      "lng": 118.20647
+    },
+    "serviceRadiusKm": 219,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 18548,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.887,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.96
+    },
+    "tags": [
+      "5号中心",
+      "百川物流"
+    ]
+  },
+  {
+    "id": "vl0142",
+    "name": "百川物流-29号",
+    "centerName": "5号中心",
+    "sequence": "29号",
+    "logisticsName": "百川物流",
+    "route": "山东鑫鲁顺 巨野 郓城 ：",
+    "phone": "0539-3115052 / 15054661616",
+    "location": {
+      "lat": 35.04721,
+      "lng": 118.20822
+    },
+    "serviceRadiusKm": 130,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 6912,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.992,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.63
+    },
+    "tags": [
+      "5号中心",
+      "百川物流"
+    ]
+  },
+  {
+    "id": "vl0143",
+    "name": "百川物流-30号",
+    "centerName": "5号中心",
+    "sequence": "30号",
+    "logisticsName": "百川物流",
+    "route": "山东鑫鲁顺 三财龙腾 日照 滕州 ：8070277",
+    "phone": "18206399222",
+    "location": {
+      "lat": 35.04724,
+      "lng": 118.21041
+    },
+    "serviceRadiusKm": 176,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 10159,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.865,
+      "priceIndex": 1.23,
+      "capacityUtilization": 0.62
+    },
+    "tags": [
+      "5号中心",
+      "百川物流"
+    ]
+  },
+  {
+    "id": "vl0144",
+    "name": "百川物流-31号",
+    "centerName": "5号中心",
+    "sequence": "31号",
+    "logisticsName": "百川物流",
+    "route": "山东鑫鲁顺 三财翔霖 枣庄 薛城 ：8070277",
+    "phone": "18206399222",
+    "location": {
+      "lat": 35.04744,
+      "lng": 118.20692
+    },
+    "serviceRadiusKm": 129,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 18120,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.977,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.85
+    },
+    "tags": [
+      "5号中心",
+      "百川物流"
+    ]
+  },
+  {
+    "id": "vl0145",
+    "name": "百川物流-32号",
+    "centerName": "5号中心",
+    "sequence": "32号",
+    "logisticsName": "百川物流",
+    "route": "山东鑫鲁顺 三财海赋 微山 台儿庄 ：8070277",
+    "phone": "18206399222",
+    "location": {
+      "lat": 35.04773,
+      "lng": 118.20961
+    },
+    "serviceRadiusKm": 175,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6942,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.855,
+      "priceIndex": 1.03,
+      "capacityUtilization": 0.31
+    },
+    "tags": [
+      "5号中心",
+      "百川物流"
+    ]
+  },
+  {
+    "id": "vl0146",
+    "name": "捷通物流-33号",
+    "centerName": "5号中心",
+    "sequence": "33号",
+    "logisticsName": "捷通物流",
+    "route": "山东鑫鲁顺 滨州 ：",
+    "phone": "15168908810 / 15069995617",
+    "location": {
+      "lat": 35.04696,
+      "lng": 118.20653
+    },
+    "serviceRadiusKm": 239,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 12326,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.925,
+      "priceIndex": 1.08,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "5号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0147",
+    "name": "大雁物流-34-36号",
+    "centerName": "5号中心",
+    "sequence": "34-36号",
+    "logisticsName": "大雁物流",
+    "route": "山东鑫鲁顺 泰安 大汶口 ： 文成物流：",
+    "phone": "18805396656 / 13355085432",
+    "location": {
+      "lat": 35.04426,
+      "lng": 118.21342
+    },
+    "serviceRadiusKm": 182,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 21974,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.947,
+      "priceIndex": 1.05,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "5号中心",
+      "大雁物流"
+    ]
+  },
+  {
+    "id": "vl0148",
+    "name": "大雁物流-34-36号",
+    "centerName": "5号中心",
+    "sequence": "34-36号",
+    "logisticsName": "大雁物流",
+    "route": "山东鑫鲁顺 薛城 德州 莒县 ： 文成物流：有个看不清",
+    "phone": "18805396656 / 13355085432",
+    "location": {
+      "lat": 35.0421,
+      "lng": 118.2075
+    },
+    "serviceRadiusKm": 151,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 5022,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.985,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.21
+    },
+    "tags": [
+      "5号中心",
+      "大雁物流"
+    ]
+  },
+  {
+    "id": "vl0149",
+    "name": "大雁物流-34-36号",
+    "centerName": "5号中心",
+    "sequence": "34-36号",
+    "logisticsName": "大雁物流",
+    "route": "山东鑫鲁顺 新泰 ：",
+    "phone": "18754820988 / 13805481398",
+    "location": {
+      "lat": 35.04479,
+      "lng": 118.20884
+    },
+    "serviceRadiusKm": 80,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 8304,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.852,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.46
+    },
+    "tags": [
+      "5号中心",
+      "大雁物流"
+    ]
+  },
+  {
+    "id": "vl0150",
+    "name": "大雁物流-37-38号",
+    "centerName": "5号中心",
+    "sequence": "37-38号",
+    "logisticsName": "大雁物流",
+    "route": "山东鑫鲁顺 黑风快运 温州至临沂分拣中心 ：",
+    "phone": "0539-8296159 / 15964875881",
+    "location": {
+      "lat": 35.04834,
+      "lng": 118.21028
+    },
+    "serviceRadiusKm": 227,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 15598,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.982,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "5号中心",
+      "大雁物流"
+    ]
+  },
+  {
+    "id": "vl0151",
+    "name": "大雁物流-37-38号",
+    "centerName": "5号中心",
+    "sequence": "37-38号",
+    "logisticsName": "大雁物流",
+    "route": "山东鑫鲁顺 黑风快运 温州至临沂分拣中心 ：",
+    "phone": "0539-8296159 / 15964875881",
+    "location": {
+      "lat": 35.04255,
+      "lng": 118.21365
+    },
+    "serviceRadiusKm": 161,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 10552,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.878,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.6
+    },
+    "tags": [
+      "5号中心",
+      "大雁物流"
+    ]
+  },
+  {
+    "id": "vl0152",
+    "name": "健捷物流-21号",
+    "centerName": "3号中心",
+    "sequence": "21号",
+    "logisticsName": "健捷物流",
+    "route": "山东鑫鲁顺 临沂往返烟台 7033222",
+    "phone": "0539-7299567 / 18953983111",
+    "location": {
+      "lat": 35.04361,
+      "lng": 118.20491
+    },
+    "serviceRadiusKm": 196,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 10212,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.96,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.36
+    },
+    "tags": [
+      "3号中心",
+      "健捷物流"
+    ]
+  },
+  {
+    "id": "vl0153",
+    "name": "健捷物流-20号",
+    "centerName": "3号中心",
+    "sequence": "20号",
+    "logisticsName": "健捷物流",
+    "route": "山东鑫鲁顺 芝罘 福山 莱山 7033222",
+    "phone": "0539-7299567 / 18953983111",
+    "location": {
+      "lat": 35.04561,
+      "lng": 118.2112
+    },
+    "serviceRadiusKm": 240,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 8582,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.92,
+      "priceIndex": 1.08,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "3号中心",
+      "健捷物流"
+    ]
+  },
+  {
+    "id": "vl0154",
+    "name": "健捷物流-19号",
+    "centerName": "3号中心",
+    "sequence": "19号",
+    "logisticsName": "健捷物流",
+    "route": "山东鑫鲁顺 牟平 莱州 招远 7033222",
+    "phone": "0539-7299567 / 18953983111",
+    "location": {
+      "lat": 35.04386,
+      "lng": 118.20427
+    },
+    "serviceRadiusKm": 198,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 19626,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.919,
+      "priceIndex": 0.86,
+      "capacityUtilization": 0.09
+    },
+    "tags": [
+      "3号中心",
+      "健捷物流"
+    ]
+  },
+  {
+    "id": "vl0155",
+    "name": "龙驰快运(澳运物流-18号",
+    "centerName": "3号中心",
+    "sequence": "18号",
+    "logisticsName": "龙驰快运(澳运物流",
+    "route": ") 聊城全境 安徽全境 临沂往来聊城",
+    "phone": "18053973321 / 15805490699",
+    "location": {
+      "lat": 35.04383,
+      "lng": 118.20478
+    },
+    "serviceRadiusKm": 168,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 3413,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.924,
+      "priceIndex": 0.9,
+      "capacityUtilization": 0.61
+    },
+    "tags": [
+      "3号中心",
+      "龙驰快运(澳运物流"
+    ]
+  },
+  {
+    "id": "vl0156",
+    "name": "乐宇物流-17号",
+    "centerName": "3号中心",
+    "sequence": "17号",
+    "logisticsName": "乐宇物流",
+    "route": "山东鑫鲁顺 03分拣栖霞 桃村",
+    "phone": "15265101552 / 15552932862",
+    "location": {
+      "lat": 35.03739,
+      "lng": 118.21176
+    },
+    "serviceRadiusKm": 196,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6632,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.857,
+      "priceIndex": 1.21,
+      "capacityUtilization": 0.15
+    },
+    "tags": [
+      "3号中心",
+      "乐宇物流"
+    ]
+  },
+  {
+    "id": "vl0157",
+    "name": "虹海物流-13号",
+    "centerName": "3号中心",
+    "sequence": "13号",
+    "logisticsName": "虹海物流",
+    "route": "山东鑫鲁顺 (原虹源) 高唐 禹城. 3129587",
+    "phone": "0539-8889433 / 18653557258",
+    "location": {
+      "lat": 35.04233,
+      "lng": 118.21283
+    },
+    "serviceRadiusKm": 228,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 13107,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.864,
+      "priceIndex": 1.11,
+      "capacityUtilization": 0.83
+    },
+    "tags": [
+      "3号中心",
+      "虹海物流"
+    ]
+  },
+  {
+    "id": "vl0158",
+    "name": "虹海物流-14号",
+    "centerName": "3号中心",
+    "sequence": "14号",
+    "logisticsName": "虹海物流",
+    "route": "山东鑫鲁顺 (原虹源) 齐河 桑梓店 3129587",
+    "phone": "0539-8889433 / 18653557258",
+    "location": {
+      "lat": 35.04585,
+      "lng": 118.20845
+    },
+    "serviceRadiusKm": 115,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 18108,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.907,
+      "priceIndex": 1.08,
+      "capacityUtilization": 0.81
+    },
+    "tags": [
+      "3号中心",
+      "虹海物流"
+    ]
+  },
+  {
+    "id": "vl0159",
+    "name": "米迪金镖物流-12号",
+    "centerName": "3号中心",
+    "sequence": "12号",
+    "logisticsName": "米迪金镖物流",
+    "route": "山东鑫鲁顺 分拨12号 临沂往返胶南 黄岛",
+    "phone": "13355000727 / 13355000893",
+    "location": {
+      "lat": 35.04344,
+      "lng": 118.20891
+    },
+    "serviceRadiusKm": 115,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 13929,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.949,
+      "priceIndex": 1.03,
       "capacityUtilization": 0.3
     },
     "tags": [
-      "干线网络",
-      "重载专线"
+      "3号中心",
+      "米迪金镖物流"
+    ]
+  },
+  {
+    "id": "vl0160",
+    "name": "宏盾物流-11号",
+    "centerName": "3号中心",
+    "sequence": "11号",
+    "logisticsName": "宏盾物流",
+    "route": "山东鑫鲁顺 王台 泊里",
+    "phone": "",
+    "location": {
+      "lat": 35.03796,
+      "lng": 118.21264
+    },
+    "serviceRadiusKm": 181,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 8490,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.2,
+      "onTimeRate": 0.857,
+      "priceIndex": 1.22,
+      "capacityUtilization": 0.93
+    },
+    "tags": [
+      "3号中心",
+      "宏盾物流"
+    ]
+  },
+  {
+    "id": "vl0161",
+    "name": "振山物流-08-09号",
+    "centerName": "3号中心",
+    "sequence": "08-09号",
+    "logisticsName": "振山物流",
+    "route": "山东鑫鲁顺 济宁 汶上 梁山",
+    "phone": "0539-8539260 / 13608999422 / 15552926888",
+    "location": {
+      "lat": 35.03853,
+      "lng": 118.20647
+    },
+    "serviceRadiusKm": 103,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 5494,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.89,
+      "priceIndex": 0.97,
+      "capacityUtilization": 0.93
+    },
+    "tags": [
+      "3号中心",
+      "振山物流"
+    ]
+  },
+  {
+    "id": "vl0162",
+    "name": "振山物流-08-09号",
+    "centerName": "3号中心",
+    "sequence": "08-09号",
+    "logisticsName": "振山物流",
+    "route": "山东鑫鲁顺 济宁 汶上 梁山",
+    "phone": "0539-8539260 / 13608999422 / 15552926888",
+    "location": {
+      "lat": 35.0422,
+      "lng": 118.21124
+    },
+    "serviceRadiusKm": 153,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 10593,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.893,
+      "priceIndex": 0.88,
+      "capacityUtilization": 0.9
+    },
+    "tags": [
+      "3号中心",
+      "振山物流"
+    ]
+  },
+  {
+    "id": "vl0163",
+    "name": "伟兴物流-07号",
+    "centerName": "3号中心",
+    "sequence": "07号",
+    "logisticsName": "伟兴物流",
+    "route": "山东鑫鲁顺 临沂往返淄博 张店",
+    "phone": "0539-8378036 / 13734375858",
+    "location": {
+      "lat": 35.03841,
+      "lng": 118.21125
+    },
+    "serviceRadiusKm": 112,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 4814,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.921,
+      "priceIndex": 1.17,
+      "capacityUtilization": 0.67
+    },
+    "tags": [
+      "3号中心",
+      "伟兴物流"
+    ]
+  },
+  {
+    "id": "vl0164",
+    "name": "伟兴物流-06号",
+    "centerName": "3号中心",
+    "sequence": "06号",
+    "logisticsName": "伟兴物流",
+    "route": "山东鑫鲁顺 淄川 周村 邹平",
+    "phone": "0539-8378036 / 13734375858",
+    "location": {
+      "lat": 35.04178,
+      "lng": 118.20438
+    },
+    "serviceRadiusKm": 63,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 14692,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.929,
+      "priceIndex": 0.95,
+      "capacityUtilization": 0.19
+    },
+    "tags": [
+      "3号中心",
+      "伟兴物流"
+    ]
+  },
+  {
+    "id": "vl0165",
+    "name": "伟兴物流-05号",
+    "centerName": "3号中心",
+    "sequence": "05号",
+    "logisticsName": "伟兴物流",
+    "route": "山东鑫鲁顺 桓台 临淄 博山",
+    "phone": "0539-8378036 / 13734375858",
+    "location": {
+      "lat": 35.03721,
+      "lng": 118.20622
+    },
+    "serviceRadiusKm": 178,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 8041,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.929,
+      "priceIndex": 1.1,
+      "capacityUtilization": 0.2
+    },
+    "tags": [
+      "3号中心",
+      "伟兴物流"
+    ]
+  },
+  {
+    "id": "vl0166",
+    "name": "一站式物流-4号",
+    "centerName": "3号中心",
+    "sequence": "4号",
+    "logisticsName": "一站式物流",
+    "route": "山东鑫鲁顺 黑风快运 分拨配送中心 ：",
+    "phone": "0539-8203888 / 18853989053 / 18853989675",
+    "location": {
+      "lat": 35.04506,
+      "lng": 118.20745
+    },
+    "serviceRadiusKm": 238,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 9128,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.948,
+      "priceIndex": 0.85,
+      "capacityUtilization": 0.4
+    },
+    "tags": [
+      "3号中心",
+      "一站式物流"
+    ]
+  },
+  {
+    "id": "vl0167",
+    "name": "一站式物流-3号",
+    "centerName": "3号中心",
+    "sequence": "3号",
+    "logisticsName": "一站式物流",
+    "route": "山东鑫鲁顺 黑风快运 济南 潍坊 青州 寿光 日照 ：",
+    "phone": "0539-8203888 / 18853989053 / 18853989675",
+    "location": {
+      "lat": 35.0414,
+      "lng": 118.20899
+    },
+    "serviceRadiusKm": 116,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6546,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.959,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.01
+    },
+    "tags": [
+      "3号中心",
+      "一站式物流"
+    ]
+  },
+  {
+    "id": "vl0168",
+    "name": "一站式物流-2号",
+    "centerName": "3号中心",
+    "sequence": "2号",
+    "logisticsName": "一站式物流",
+    "route": "山东鑫鲁顺 黑风快运 费县 蒙阴 莒南 临沭 莒县 ：",
+    "phone": "0539-8203888 / 18853989053 / 18853989675",
+    "location": {
+      "lat": 35.03672,
+      "lng": 118.20841
+    },
+    "serviceRadiusKm": 247,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 7170,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.953,
+      "priceIndex": 0.8,
+      "capacityUtilization": 0.98
+    },
+    "tags": [
+      "3号中心",
+      "一站式物流"
+    ]
+  },
+  {
+    "id": "vl0169",
+    "name": "一站式物流-1号",
+    "centerName": "3号中心",
+    "sequence": "1号",
+    "logisticsName": "一站式物流",
+    "route": "山东鑫鲁顺 黑风快运 郯城兰陵 沂水 沂南 平邑 ：",
+    "phone": "0539-8203888 / 18853989053 / 18853989675",
+    "location": {
+      "lat": 35.04252,
+      "lng": 118.20591
+    },
+    "serviceRadiusKm": 68,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 2937,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.974,
+      "priceIndex": 1.06,
+      "capacityUtilization": 0.21
+    },
+    "tags": [
+      "3号中心",
+      "一站式物流"
+    ]
+  },
+  {
+    "id": "vl0170",
+    "name": "一站式物流-22号",
+    "centerName": "3号中心",
+    "sequence": "22号",
+    "logisticsName": "一站式物流",
+    "route": "山东鑫鲁顺 临沂往返 蓝村 城阳",
+    "phone": "0539-8356321 / 13153966778",
+    "location": {
+      "lat": 35.04333,
+      "lng": 118.20385
+    },
+    "serviceRadiusKm": 151,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 19642,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.891,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.32
+    },
+    "tags": [
+      "3号中心",
+      "一站式物流"
+    ]
+  },
+  {
+    "id": "vl0171",
+    "name": "中立物流-23号",
+    "centerName": "3号中心",
+    "sequence": "23号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 菏泽",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.04067,
+      "lng": 118.21303
+    },
+    "serviceRadiusKm": 218,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 19795,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.881,
+      "priceIndex": 0.92,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0172",
+    "name": "中立物流-24号",
+    "centerName": "3号中心",
+    "sequence": "24号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 曹县 单县",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.0424,
+      "lng": 118.20956
+    },
+    "serviceRadiusKm": 104,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 5583,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.991,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.14
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0173",
+    "name": "中立物流-25号",
+    "centerName": "3号中心",
+    "sequence": "25号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 巨野 郓城",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.03697,
+      "lng": 118.20594
+    },
+    "serviceRadiusKm": 61,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 21774,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.995,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.49
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0174",
+    "name": "中立物流-26号",
+    "centerName": "3号中心",
+    "sequence": "26号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 成武 定陶",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.04269,
+      "lng": 118.21064
+    },
+    "serviceRadiusKm": 80,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 8392,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.94,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.64
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0175",
+    "name": "中立物流-27号",
+    "centerName": "3号中心",
+    "sequence": "27号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 东明 枣庄",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.04149,
+      "lng": 118.20836
+    },
+    "serviceRadiusKm": 134,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 17861,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.943,
+      "priceIndex": 0.82,
+      "capacityUtilization": 0
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0176",
+    "name": "中立物流-28号",
+    "centerName": "3号中心",
+    "sequence": "28号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 济宁 金乡",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.04451,
+      "lng": 118.20927
+    },
+    "serviceRadiusKm": 243,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 11960,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.918,
+      "priceIndex": 1.19,
+      "capacityUtilization": 0.37
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0177",
+    "name": "中立物流-29号",
+    "centerName": "3号中心",
+    "sequence": "29号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 鱼台 鄄城",
+    "phone": "17762053666 / 13869920103 / 18606390800",
+    "location": {
+      "lat": 35.03748,
+      "lng": 118.21333
+    },
+    "serviceRadiusKm": 187,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 19305,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.921,
+      "priceIndex": 1.29,
+      "capacityUtilization": 1
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0178",
+    "name": "中立物流-30号",
+    "centerName": "3号中心",
+    "sequence": "30号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 潍坊",
+    "phone": "13864966315 / 15265912552",
+    "location": {
+      "lat": 35.04634,
+      "lng": 118.21134
+    },
+    "serviceRadiusKm": 90,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 6409,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.973,
+      "priceIndex": 1.3,
+      "capacityUtilization": 0.11
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0179",
+    "name": "中立物流-31号",
+    "centerName": "3号中心",
+    "sequence": "31号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 徐州",
+    "phone": "13864966315 / 15265912552",
+    "location": {
+      "lat": 35.04065,
+      "lng": 118.20425
+    },
+    "serviceRadiusKm": 187,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 19576,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.934,
+      "priceIndex": 0.89,
+      "capacityUtilization": 0.59
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0180",
+    "name": "中立物流-32号",
+    "centerName": "3号中心",
+    "sequence": "32号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 贾汪",
+    "phone": "13864966315 / 15265912552",
+    "location": {
+      "lat": 35.04349,
+      "lng": 118.2065
+    },
+    "serviceRadiusKm": 107,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 21068,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.99,
+      "priceIndex": 1.18,
+      "capacityUtilization": 0.71
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0181",
+    "name": "中立物流-33号",
+    "centerName": "3号中心",
+    "sequence": "33号",
+    "logisticsName": "中立物流",
+    "route": "山东鑫鲁顺 丰县 沛县",
+    "phone": "13864966315 / 15265912552",
+    "location": {
+      "lat": 35.03904,
+      "lng": 118.20926
+    },
+    "serviceRadiusKm": 97,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 12240,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.906,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.96
+    },
+    "tags": [
+      "3号中心",
+      "中立物流"
+    ]
+  },
+  {
+    "id": "vl0182",
+    "name": "路风物流-34号",
+    "centerName": "3号中心",
+    "sequence": "34号",
+    "logisticsName": "路风物流",
+    "route": "山东鑫鲁顺 澳龙 扬州",
+    "phone": "15305397189 / 18653537931",
+    "location": {
+      "lat": 35.03871,
+      "lng": 118.2135
+    },
+    "serviceRadiusKm": 226,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 21601,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.934,
+      "priceIndex": 1.19,
+      "capacityUtilization": 0.1
+    },
+    "tags": [
+      "3号中心",
+      "路风物流"
+    ]
+  },
+  {
+    "id": "vl0183",
+    "name": "路风物流-35号",
+    "centerName": "3号中心",
+    "sequence": "35号",
+    "logisticsName": "路风物流",
+    "route": "山东鑫鲁顺 日照 岚山",
+    "phone": "15305397189 / 16653537931",
+    "location": {
+      "lat": 35.04471,
+      "lng": 118.20384
+    },
+    "serviceRadiusKm": 204,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 8733,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.991,
+      "priceIndex": 1.3,
+      "capacityUtilization": 0.09
+    },
+    "tags": [
+      "3号中心",
+      "路风物流"
+    ]
+  },
+  {
+    "id": "vl0184",
+    "name": "凯明物流-36号",
+    "centerName": "3号中心",
+    "sequence": "36号",
+    "logisticsName": "凯明物流",
+    "route": "山东鑫鲁顺 蓬菜 龙口 黄城 长岛 8331822",
+    "phone": "15953593366",
+    "location": {
+      "lat": 35.03956,
+      "lng": 118.20895
+    },
+    "serviceRadiusKm": 73,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 5240,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.887,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.41
+    },
+    "tags": [
+      "3号中心",
+      "凯明物流"
+    ]
+  },
+  {
+    "id": "vl0185",
+    "name": "捷通物流-37号",
+    "centerName": "3号中心",
+    "sequence": "37号",
+    "logisticsName": "捷通物流",
+    "route": "山东鑫鲁顺 临沂往返宁阳 磁窑",
+    "phone": "17853832988 / 15653980735 / 18553980135",
+    "location": {
+      "lat": 35.04246,
+      "lng": 118.21066
+    },
+    "serviceRadiusKm": 82,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 19016,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.93,
+      "priceIndex": 1,
+      "capacityUtilization": 0.22
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0186",
+    "name": "捷通物流-38号",
+    "centerName": "3号中心",
+    "sequence": "38号",
+    "logisticsName": "捷通物流",
+    "route": "山东鑫鲁顺 临沂往返宁阳 磁窑",
+    "phone": "17853832988 / 15653980735 / 18553980135",
+    "location": {
+      "lat": 35.04333,
+      "lng": 118.207
+    },
+    "serviceRadiusKm": 68,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 14746,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.853,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.22
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0187",
+    "name": "捷通物流-39号",
+    "centerName": "3号中心",
+    "sequence": "39号",
+    "logisticsName": "捷通物流",
+    "route": "临沂领泰 宁波金星 宁波→临沂",
+    "phone": "13853908996 / 16553901666",
+    "location": {
+      "lat": 35.03725,
+      "lng": 118.21338
+    },
+    "serviceRadiusKm": 199,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15473,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.997,
+      "priceIndex": 0.81,
+      "capacityUtilization": 0.59
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0188",
+    "name": "捷通物流-40号",
+    "centerName": "3号中心",
+    "sequence": "40号",
+    "logisticsName": "捷通物流",
+    "route": "临沂领泰 宁波金星 绍兴 越城 上虞 嵊州 新昌 就、诸暨",
+    "phone": "13853908996 / 16553901666",
+    "location": {
+      "lat": 35.04577,
+      "lng": 118.20422
+    },
+    "serviceRadiusKm": 104,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 3711,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.888,
+      "priceIndex": 1.29,
+      "capacityUtilization": 0.63
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0189",
+    "name": "捷通物流-40号",
+    "centerName": "3号中心",
+    "sequence": "40号",
+    "logisticsName": "捷通物流",
+    "route": "临沂领泰 宁波金星 慈溪 余姚 宁海 象山 舟山 定海",
+    "phone": "13853908996 / 16553901666",
+    "location": {
+      "lat": 35.04148,
+      "lng": 118.20374
+    },
+    "serviceRadiusKm": 93,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 15418,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.5,
+      "onTimeRate": 0.91,
+      "priceIndex": 0.98,
+      "capacityUtilization": 0.04
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0190",
+    "name": "捷通物流-40号",
+    "centerName": "3号中心",
+    "sequence": "40号",
+    "logisticsName": "捷通物流",
+    "route": "临沂领泰 宁波金星 宁波 海曙 江北 奉化 北仓 鄞州",
+    "phone": "13853908996 / 16553901666",
+    "location": {
+      "lat": 35.04137,
+      "lng": 118.20869
+    },
+    "serviceRadiusKm": 207,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 12412,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.869,
+      "priceIndex": 0.83,
+      "capacityUtilization": 0.39
+    },
+    "tags": [
+      "3号中心",
+      "捷通物流"
+    ]
+  },
+  {
+    "id": "vl0191",
+    "name": "仁果物流-1号",
+    "centerName": "1号中心",
+    "sequence": "1号",
+    "logisticsName": "仁果物流",
+    "route": "山东鑫鲁顺 潍坊 昌邑",
+    "phone": "18669919636 / 18669919637",
+    "location": {
+      "lat": 35.03305,
+      "lng": 118.21045
+    },
+    "serviceRadiusKm": 74,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 14166,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.9,
+      "priceIndex": 1.04,
+      "capacityUtilization": 0.92
+    },
+    "tags": [
+      "1号中心",
+      "仁果物流"
+    ]
+  },
+  {
+    "id": "vl0192",
+    "name": "仁果物流-2号",
+    "centerName": "1号中心",
+    "sequence": "2号",
+    "logisticsName": "仁果物流",
+    "route": "山东鑫鲁顺 诸城 安丘 高密",
+    "phone": "18669919636 / 18669919637",
+    "location": {
+      "lat": 35.04013,
+      "lng": 118.20496
+    },
+    "serviceRadiusKm": 194,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold"
+      ],
+      "maxWeightKg": 11962,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.996,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.15
+    },
+    "tags": [
+      "1号中心",
+      "仁果物流"
+    ]
+  },
+  {
+    "id": "vl0193",
+    "name": "仁果物流-3号",
+    "centerName": "1号中心",
+    "sequence": "3号",
+    "logisticsName": "仁果物流",
+    "route": "山东鑫鲁顺 寿光 昌乐",
+    "phone": "18669919636 / 18669919637",
+    "location": {
+      "lat": 35.03615,
+      "lng": 118.20594
+    },
+    "serviceRadiusKm": 249,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 5433,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.932,
+      "priceIndex": 1.04,
+      "capacityUtilization": 0.87
+    },
+    "tags": [
+      "1号中心",
+      "仁果物流"
+    ]
+  },
+  {
+    "id": "vl0194",
+    "name": "仁果物流-4号",
+    "centerName": "1号中心",
+    "sequence": "4号",
+    "logisticsName": "仁果物流",
+    "route": "山东鑫鲁顺 临朐 青州",
+    "phone": "18669919636 / 18669919637",
+    "location": {
+      "lat": 35.03896,
+      "lng": 118.20157
+    },
+    "serviceRadiusKm": 108,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 3981,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.864,
+      "priceIndex": 1.12,
+      "capacityUtilization": 0.62
+    },
+    "tags": [
+      "1号中心",
+      "仁果物流"
+    ]
+  },
+  {
+    "id": "vl0195",
+    "name": "三鑫物流-7号",
+    "centerName": "1号中心",
+    "sequence": "7号",
+    "logisticsName": "三鑫物流",
+    "route": "临沂久泰 临沂往返魏县",
+    "phone": "18353922231 / 0539-3599199",
+    "location": {
+      "lat": 35.04258,
+      "lng": 118.20435
+    },
+    "serviceRadiusKm": 60,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 15152,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.906,
+      "priceIndex": 1.04,
+      "capacityUtilization": 0.92
+    },
+    "tags": [
+      "1号中心",
+      "三鑫物流"
+    ]
+  },
+  {
+    "id": "vl0196",
+    "name": "三鑫物流-7号",
+    "centerName": "1号中心",
+    "sequence": "7号",
+    "logisticsName": "三鑫物流",
+    "route": "临沂久泰 临沂往返永年 曲周",
+    "phone": "18353922231 / 0539-3599199",
+    "location": {
+      "lat": 35.0357,
+      "lng": 118.20643
+    },
+    "serviceRadiusKm": 195,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 8784,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.931,
+      "priceIndex": 0.88,
+      "capacityUtilization": 0.19
+    },
+    "tags": [
+      "1号中心",
+      "三鑫物流"
+    ]
+  },
+  {
+    "id": "vl0197",
+    "name": "三鑫物流-7号",
+    "centerName": "1号中心",
+    "sequence": "7号",
+    "logisticsName": "三鑫物流",
+    "route": "临沂久泰 临沂往返邯郸",
+    "phone": "18353922231 / 0539-3599199",
+    "location": {
+      "lat": 35.03444,
+      "lng": 118.20473
+    },
+    "serviceRadiusKm": 212,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 19238,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.956,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.72
+    },
+    "tags": [
+      "1号中心",
+      "三鑫物流"
+    ]
+  },
+  {
+    "id": "vl0198",
+    "name": "永顺物流-8号",
+    "centerName": "1号中心",
+    "sequence": "8号",
+    "logisticsName": "永顺物流",
+    "route": "临沂往返呼市 包头 东胜 集宁 临河 乌海",
+    "phone": "0539-2197111 / 16562128888 / 15953953666",
+    "location": {
+      "lat": 35.03373,
+      "lng": 118.20109
+    },
+    "serviceRadiusKm": 87,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 13346,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.863,
+      "priceIndex": 1.26,
+      "capacityUtilization": 0.18
+    },
+    "tags": [
+      "1号中心",
+      "永顺物流"
+    ]
+  },
+  {
+    "id": "vl0199",
+    "name": "永顺物流-9号",
+    "centerName": "1号中心",
+    "sequence": "9号",
+    "logisticsName": "永顺物流",
+    "route": "临沂往返赤峰 通辽 锡林浩特 乌兰浩特",
+    "phone": "0539-2197111 / 16562128888 / 15953953666",
+    "location": {
+      "lat": 35.03531,
+      "lng": 118.20196
+    },
+    "serviceRadiusKm": 213,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 3798,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.5,
+      "onTimeRate": 0.952,
+      "priceIndex": 0.81,
+      "capacityUtilization": 0.73
+    },
+    "tags": [
+      "1号中心",
+      "永顺物流"
+    ]
+  },
+  {
+    "id": "vl0200",
+    "name": "永顺物流-10号",
+    "centerName": "1号中心",
+    "sequence": "10号",
+    "logisticsName": "永顺物流",
+    "route": "山东鑫鲁顺 临沂往返莱阳 临沂 莱阳：",
+    "phone": "15153931456 / 0535-7575595",
+    "location": {
+      "lat": 35.03639,
+      "lng": 118.20099
+    },
+    "serviceRadiusKm": 79,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 17163,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.6,
+      "onTimeRate": 0.985,
+      "priceIndex": 1.09,
+      "capacityUtilization": 0.91
+    },
+    "tags": [
+      "1号中心",
+      "永顺物流"
+    ]
+  },
+  {
+    "id": "vl0201",
+    "name": "东胜永厦物流-11号",
+    "centerName": "1号中心",
+    "sequence": "11号",
+    "logisticsName": "东胜永厦物流",
+    "route": "夏邑 毫州",
+    "phone": "15032670678 / 0539-2800816",
+    "location": {
+      "lat": 35.0365,
+      "lng": 118.20777
+    },
+    "serviceRadiusKm": 229,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 9975,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3,
+      "onTimeRate": 0.9,
+      "priceIndex": 0.96,
+      "capacityUtilization": 0.39
+    },
+    "tags": [
+      "1号中心",
+      "东胜永厦物流"
+    ]
+  },
+  {
+    "id": "vl0202",
+    "name": "东胜永厦物流-12号",
+    "centerName": "1号中心",
+    "sequence": "12号",
+    "logisticsName": "东胜永厦物流",
+    "route": "临沂往返永城",
+    "phone": "15032670678 / 0539-2800816",
+    "location": {
+      "lat": 35.03553,
+      "lng": 118.2011
+    },
+    "serviceRadiusKm": 61,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 12824,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.918,
+      "priceIndex": 1,
+      "capacityUtilization": 0.81
+    },
+    "tags": [
+      "1号中心",
+      "东胜永厦物流"
+    ]
+  },
+  {
+    "id": "vl0203",
+    "name": "其根物流-13号",
+    "centerName": "1号中心",
+    "sequence": "13号",
+    "logisticsName": "其根物流",
+    "route": "永康→临沂 7672858",
+    "phone": "0539-7672868",
+    "location": {
+      "lat": 35.0346,
+      "lng": 118.20974
+    },
+    "serviceRadiusKm": 214,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 8381,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.891,
+      "priceIndex": 1.27,
+      "capacityUtilization": 0.88
+    },
+    "tags": [
+      "1号中心",
+      "其根物流"
+    ]
+  },
+  {
+    "id": "vl0204",
+    "name": "其根物流-14号",
+    "centerName": "1号中心",
+    "sequence": "14号",
+    "logisticsName": "其根物流",
+    "route": "永康→临沂 7672858",
+    "phone": "0539-7672868",
+    "location": {
+      "lat": 35.03579,
+      "lng": 118.2042
+    },
+    "serviceRadiusKm": 110,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 5325,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.964,
+      "priceIndex": 1.2,
+      "capacityUtilization": 0.32
+    },
+    "tags": [
+      "1号中心",
+      "其根物流"
+    ]
+  },
+  {
+    "id": "vl0205",
+    "name": "其根物流-15号",
+    "centerName": "1号中心",
+    "sequence": "15号",
+    "logisticsName": "其根物流",
+    "route": "永康→临沂 7672858",
+    "phone": "0539-7672868",
+    "location": {
+      "lat": 35.0395,
+      "lng": 118.20485
+    },
+    "serviceRadiusKm": 138,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 20986,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.7,
+      "onTimeRate": 0.959,
+      "priceIndex": 1.01,
+      "capacityUtilization": 0.8
+    },
+    "tags": [
+      "1号中心",
+      "其根物流"
+    ]
+  },
+  {
+    "id": "vl0206",
+    "name": "领泰物流-16号",
+    "centerName": "1号中心",
+    "sequence": "16号",
+    "logisticsName": "领泰物流",
+    "route": "东阳往返临沂",
+    "phone": "0539-8198556 / 13805393178",
+    "location": {
+      "lat": 35.03412,
+      "lng": 118.20671
+    },
+    "serviceRadiusKm": 132,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 9280,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.874,
+      "priceIndex": 1.19,
+      "capacityUtilization": 0.49
+    },
+    "tags": [
+      "1号中心",
+      "领泰物流"
+    ]
+  },
+  {
+    "id": "vl0207",
+    "name": "领泰物流-17号",
+    "centerName": "1号中心",
+    "sequence": "17号",
+    "logisticsName": "领泰物流",
+    "route": "义乌往返临沂",
+    "phone": "0539-8198556 / 13805393178",
+    "location": {
+      "lat": 35.03838,
+      "lng": 118.2107
+    },
+    "serviceRadiusKm": 176,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 21043,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.864,
+      "priceIndex": 1.14,
+      "capacityUtilization": 0.1
+    },
+    "tags": [
+      "1号中心",
+      "领泰物流"
+    ]
+  },
+  {
+    "id": "vl0208",
+    "name": "宝港物流-18号",
+    "centerName": "1号中心",
+    "sequence": "18号",
+    "logisticsName": "宝港物流",
+    "route": "捷达物流 临沂往返柬埔寨全境 合作电 话: 收货电 话:",
+    "phone": "18957991313 / 13792968350",
+    "location": {
+      "lat": 35.03916,
+      "lng": 118.20434
+    },
+    "serviceRadiusKm": 69,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 18703,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.969,
+      "priceIndex": 1.27,
+      "capacityUtilization": 0.02
+    },
+    "tags": [
+      "1号中心",
+      "宝港物流"
+    ]
+  },
+  {
+    "id": "vl0209",
+    "name": "领泰物流-19号",
+    "centerName": "1号中心",
+    "sequence": "19号",
+    "logisticsName": "领泰物流",
+    "route": "临沂往返浦江 兰溪",
+    "phone": "0539-8198556 / 13805393178",
+    "location": {
+      "lat": 35.04034,
+      "lng": 118.20812
+    },
+    "serviceRadiusKm": 248,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 12758,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.922,
+      "priceIndex": 1.16,
+      "capacityUtilization": 0.02
+    },
+    "tags": [
+      "1号中心",
+      "领泰物流"
+    ]
+  },
+  {
+    "id": "vl0210",
+    "name": "领泰物流-20号",
+    "centerName": "1号中心",
+    "sequence": "20号",
+    "logisticsName": "领泰物流",
+    "route": "临沂往返金华 永康",
+    "phone": "0539-8198556 / 13805393178",
+    "location": {
+      "lat": 35.03469,
+      "lng": 118.20476
+    },
+    "serviceRadiusKm": 74,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 9005,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.919,
+      "priceIndex": 1.13,
+      "capacityUtilization": 0.53
+    },
+    "tags": [
+      "1号中心",
+      "领泰物流"
+    ]
+  },
+  {
+    "id": "vl0211",
+    "name": "领泰物流-21号",
+    "centerName": "1号中心",
+    "sequence": "21号",
+    "logisticsName": "领泰物流",
+    "route": "临沂往返义鸟 东阳",
+    "phone": "0539-8198556 / 13805393178",
+    "location": {
+      "lat": 35.03626,
+      "lng": 118.2075
+    },
+    "serviceRadiusKm": 110,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 16778,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.984,
+      "priceIndex": 0.93,
+      "capacityUtilization": 0.42
+    },
+    "tags": [
+      "1号中心",
+      "领泰物流"
+    ]
+  },
+  {
+    "id": "vl0212",
+    "name": "建铧物流-42号",
+    "centerName": "1号中心",
+    "sequence": "42号",
+    "logisticsName": "建铧物流",
+    "route": "山东鑫鲁顺 广东全境 梅州 河源 茂名 湛江",
+    "phone": "",
+    "location": {
+      "lat": 35.03397,
+      "lng": 118.20857
+    },
+    "serviceRadiusKm": 218,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 14947,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.853,
+      "priceIndex": 0.97,
+      "capacityUtilization": 0.58
+    },
+    "tags": [
+      "1号中心",
+      "建铧物流"
+    ]
+  },
+  {
+    "id": "vl0213",
+    "name": "建铧物流-41号",
+    "centerName": "1号中心",
+    "sequence": "41号",
+    "logisticsName": "建铧物流",
+    "route": "山东鑫鲁顺 广东全境 海南 番禺 清远 江门",
+    "phone": "",
+    "location": {
+      "lat": 35.03434,
+      "lng": 118.20498
+    },
+    "serviceRadiusKm": 202,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 12574,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 1,
+      "priceIndex": 1.22,
+      "capacityUtilization": 0.94
+    },
+    "tags": [
+      "1号中心",
+      "建铧物流"
+    ]
+  },
+  {
+    "id": "vl0214",
+    "name": "建铧物流-40号",
+    "centerName": "1号中心",
+    "sequence": "40号",
+    "logisticsName": "建铧物流",
+    "route": "山东鑫鲁顺 广东全境 韶关 肇庆 珠海 惠州",
+    "phone": "",
+    "location": {
+      "lat": 35.03632,
+      "lng": 118.20616
+    },
+    "serviceRadiusKm": 240,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 11970,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4,
+      "onTimeRate": 0.871,
+      "priceIndex": 0.94,
+      "capacityUtilization": 0.47
+    },
+    "tags": [
+      "1号中心",
+      "建铧物流"
+    ]
+  },
+  {
+    "id": "vl0215",
+    "name": "建铧物流-39号",
+    "centerName": "1号中心",
+    "sequence": "39号",
+    "logisticsName": "建铧物流",
+    "route": "山东鑫鲁顺 广东全境 佛山 中山 东莞 广州",
+    "phone": "",
+    "location": {
+      "lat": 35.03426,
+      "lng": 118.20603
+    },
+    "serviceRadiusKm": 114,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 21189,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.3,
+      "onTimeRate": 0.993,
+      "priceIndex": 1.04,
+      "capacityUtilization": 0.16
+    },
+    "tags": [
+      "1号中心",
+      "建铧物流"
+    ]
+  },
+  {
+    "id": "vl0216",
+    "name": "鲁驰供应链-38号",
+    "centerName": "1号中心",
+    "sequence": "38号",
+    "logisticsName": "鲁驰供应链",
+    "route": "山东鑫鲁顺 苏州分拨处",
+    "phone": "17753997626",
+    "location": {
+      "lat": 35.04088,
+      "lng": 118.20649
+    },
+    "serviceRadiusKm": 128,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 21945,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.7,
+      "onTimeRate": 0.878,
+      "priceIndex": 0.87,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0217",
+    "name": "鲁驰供应链-37号",
+    "centerName": "1号中心",
+    "sequence": "37号",
+    "logisticsName": "鲁驰供应链",
+    "route": "山东鑫鲁顺 宁波红城 西安",
+    "phone": "17753997626",
+    "location": {
+      "lat": 35.03711,
+      "lng": 118.20132
+    },
+    "serviceRadiusKm": 226,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 17890,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.873,
+      "priceIndex": 0.8,
+      "capacityUtilization": 0.8
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0218",
+    "name": "鲁驰供应链-36号",
+    "centerName": "1号中心",
+    "sequence": "36号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 河北白沟分拔处",
+    "phone": "18853939349",
+    "location": {
+      "lat": 35.04233,
+      "lng": 118.20686
+    },
+    "serviceRadiusKm": 204,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 14594,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.8,
+      "onTimeRate": 0.873,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.45
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0219",
+    "name": "鲁驰供应链-35号",
+    "centerName": "1号中心",
+    "sequence": "35号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 河北大城分拨处",
+    "phone": "15318505109",
+    "location": {
+      "lat": 35.03518,
+      "lng": 118.20722
+    },
+    "serviceRadiusKm": 135,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 5975,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.873,
+      "priceIndex": 1.15,
+      "capacityUtilization": 0.4
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0220",
+    "name": "鲁驰供应链-34号",
+    "centerName": "1号中心",
+    "sequence": "34号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 余姚 慈溪 舟山 柯桥 上虞",
+    "phone": "15318505196",
+    "location": {
+      "lat": 35.03648,
+      "lng": 118.20222
+    },
+    "serviceRadiusKm": 178,
+    "capabilities": {
+      "types": [
+        "normal",
+        "cold",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 10887,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.8,
+      "onTimeRate": 0.952,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.98
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0221",
+    "name": "鲁驰供应链-33号",
+    "centerName": "1号中心",
+    "sequence": "33号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 宁波 奉化 宁海象山 北仑",
+    "phone": "15318505196",
+    "location": {
+      "lat": 35.03425,
+      "lng": 118.20907
+    },
+    "serviceRadiusKm": 158,
+    "capabilities": {
+      "types": [
+        "cold"
+      ],
+      "maxWeightKg": 17177,
+      "cold": {
+        "min": -18,
+        "max": 8
+      },
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.3,
+      "onTimeRate": 0.893,
+      "priceIndex": 1.06,
+      "capacityUtilization": 0.86
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0222",
+    "name": "鲁驰供应链-32号",
+    "centerName": "1号中心",
+    "sequence": "32号",
+    "logisticsName": "鲁驰供应链",
+    "route": "临浙市兰山区茶丰货衡市西中心 临沂往返海州 新浦 连云港",
+    "phone": "15318595398",
+    "location": {
+      "lat": 35.0329,
+      "lng": 118.20643
+    },
+    "serviceRadiusKm": 230,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 3434,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.918,
+      "priceIndex": 1.27,
+      "capacityUtilization": 0.92
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0223",
+    "name": "鲁驰供应链-31号",
+    "centerName": "1号中心",
+    "sequence": "31号",
+    "logisticsName": "鲁驰供应链",
+    "route": "临浙市兰山区茶丰货衡市西中心 临沂往返灌云灌南 城坤 连云区",
+    "phone": "15318595398",
+    "location": {
+      "lat": 35.039,
+      "lng": 118.20766
+    },
+    "serviceRadiusKm": 232,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 15426,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.4,
+      "onTimeRate": 0.85,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0224",
+    "name": "鲁驰供应链-30号",
+    "centerName": "1号中心",
+    "sequence": "30号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 白沟 高碑店 雄县",
+    "phone": "15318556692 / 18353922215",
+    "location": {
+      "lat": 35.0337,
+      "lng": 118.20999
+    },
+    "serviceRadiusKm": 69,
+    "capabilities": {
+      "types": [
+        "hazmat"
+      ],
+      "maxWeightKg": 10072,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.1,
+      "onTimeRate": 0.887,
+      "priceIndex": 0.93,
+      "capacityUtilization": 0.77
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0225",
+    "name": "鲁驰供应链-29号",
+    "centerName": "1号中心",
+    "sequence": "29号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 德州",
+    "phone": "15318505102",
+    "location": {
+      "lat": 35.03394,
+      "lng": 118.20436
+    },
+    "serviceRadiusKm": 116,
+    "capabilities": {
+      "types": [
+        "fragile"
+      ],
+      "maxWeightKg": 4887,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.6,
+      "onTimeRate": 0.884,
+      "priceIndex": 1.24,
+      "capacityUtilization": 0.06
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0226",
+    "name": "鲁驰供应链-28号",
+    "centerName": "1号中心",
+    "sequence": "28号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 菏泽",
+    "phone": "15318505103",
+    "location": {
+      "lat": 35.0412,
+      "lng": 118.20895
+    },
+    "serviceRadiusKm": 62,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 5806,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.9,
+      "onTimeRate": 0.897,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.32
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0227",
+    "name": "鲁驰供应链-27号",
+    "centerName": "1号中心",
+    "sequence": "27号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 青州 辛寨 临朐",
+    "phone": "15318503860",
+    "location": {
+      "lat": 35.03382,
+      "lng": 118.2043
+    },
+    "serviceRadiusKm": 167,
+    "capabilities": {
+      "types": [
+        "normal"
+      ],
+      "maxWeightKg": 14481,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.959,
+      "priceIndex": 0.99,
+      "capacityUtilization": 0.73
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0228",
+    "name": "鲁驰供应链-26号",
+    "centerName": "1号中心",
+    "sequence": "26号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 淮安 楚州 汇通 徐州",
+    "phone": "15653998518",
+    "location": {
+      "lat": 35.04162,
+      "lng": 118.20329
+    },
+    "serviceRadiusKm": 168,
+    "capabilities": {
+      "types": [
+        "cold",
+        "fragile"
+      ],
+      "maxWeightKg": 14820,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 3.4,
+      "onTimeRate": 0.888,
+      "priceIndex": 1.25,
+      "capacityUtilization": 0.86
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0229",
+    "name": "鲁驰供应链-25号",
+    "centerName": "1号中心",
+    "sequence": "25号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 昆山 太仓",
+    "phone": "15318590106",
+    "location": {
+      "lat": 35.03947,
+      "lng": 118.20785
+    },
+    "serviceRadiusKm": 132,
+    "capabilities": {
+      "types": [
+        "normal",
+        "hazmat"
+      ],
+      "maxWeightKg": 9176,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.9,
+      "onTimeRate": 0.918,
+      "priceIndex": 1.21,
+      "capacityUtilization": 0.25
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0230",
+    "name": "鲁驰供应链-24号",
+    "centerName": "1号中心",
+    "sequence": "24号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 苏州 张家港 常熟",
+    "phone": "15318590106",
+    "location": {
+      "lat": 35.04258,
+      "lng": 118.20108
+    },
+    "serviceRadiusKm": 146,
+    "capabilities": {
+      "types": [
+        "fragile",
+        "hazmat"
+      ],
+      "maxWeightKg": 10246,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.2,
+      "onTimeRate": 0.856,
+      "priceIndex": 1.28,
+      "capacityUtilization": 0.52
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0231",
+    "name": "鲁驰供应链-23号",
+    "centerName": "1号中心",
+    "sequence": "23号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 常州 溧阳 镇江 丹阳",
+    "phone": "15969965789",
+    "location": {
+      "lat": 35.03648,
+      "lng": 118.20832
+    },
+    "serviceRadiusKm": 108,
+    "capabilities": {
+      "types": [
+        "cold",
+        "hazmat"
+      ],
+      "maxWeightKg": 17990,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 4.1,
+      "onTimeRate": 0.958,
+      "priceIndex": 0.95,
+      "capacityUtilization": 0.74
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
+    ]
+  },
+  {
+    "id": "vl0232",
+    "name": "鲁驰供应链-22号",
+    "centerName": "1号中心",
+    "sequence": "22号",
+    "logisticsName": "鲁驰供应链",
+    "route": "宏伟物流 无锡 江阴 宜兴",
+    "phone": "15969965789",
+    "location": {
+      "lat": 35.03364,
+      "lng": 118.21053
+    },
+    "serviceRadiusKm": 169,
+    "capabilities": {
+      "types": [
+        "normal",
+        "fragile"
+      ],
+      "maxWeightKg": 10437,
+      "cold": null,
+      "certifications": [
+        "ISO9001"
+      ]
+    },
+    "metrics": {
+      "rating": 5,
+      "onTimeRate": 0.944,
+      "priceIndex": 1.3,
+      "capacityUtilization": 0.44
+    },
+    "tags": [
+      "1号中心",
+      "鲁驰供应链"
     ]
   }
 ]
