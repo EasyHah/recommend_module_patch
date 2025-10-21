@@ -334,16 +334,6 @@ export class DataSourceManager {
         }
       },
       {
-        type: '3dtileset',
-        id: 'ck',
-        url: '/Assets/data/ck/tileset.json',
-        options: {
-          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
-          modelMatrix: Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, 135)),
-          maximumScreenSpaceError: 12
-        }
-      },
-      {
         type: 'model',
         id: 'factory-base',
         url: '/Assets/data/factoryOBJ/factory.glb',
@@ -409,17 +399,6 @@ export class DataSourceManager {
           color: '#00ff00',
           depth: 10,
           diameter: 10
-        }
-      },
-      {
-        type: 'pipeline',
-        id: 'communication',
-        url: '/Assets/data/json/TXLN_Project4_FeaturesToJSON.json',
-        config: {
-          name: '通信管线',
-          color: '#00ff00',
-          depth: 7,
-          diameter: 8
         }
       },
       {

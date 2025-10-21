@@ -1,295 +1,171 @@
 <template>
   <div class="map-root" v-bind="$attrs">
-  <div id="cesiumContainer" ref="cesiumContainer"></div>
+    <div id="cesiumContainer" ref="cesiumContainer"></div>
 
-  <!-- 图层面板（右上角，可折叠） -->
-  <div class="layer-panel" :class="{ collapsed: panelCollapse.layers }">
-    <div class="row title">
-      <span>图层</span>
-      <button class="collapse-btn" @click="panelCollapse.layers = !panelCollapse.layers" :title="panelCollapse.layers ? '展开' : '收起'">{{ panelCollapse.layers ? '＋' : '－' }}</button>
-    </div>
-    <transition name="panel-fade">
-    <div v-show="!panelCollapse.layers" class="panel-body">
-      <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
-      <label class="row"><input type="checkbox" v-model="ui.ck"> 分类 CK</label>
-  <label class="row"><input type="checkbox" v-model="ui.factory"> 厂房模型</label>
-  <label class="row small" v-if="ui.factory"><input type="checkbox" v-model="ui.factoryRoofOpen"> 厂房掀盖</label>
-  <label class="row"><input type="checkbox" v-model="ui.office"> 新大楼模型</label>
-      <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
-      <label class="row"><input type="checkbox" v-model="ui.floors"> 楼层抽屉</label>
-      <label class="row"><input type="checkbox" v-model="ui.facilities"> 设施标注</label>
-      <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
-      <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
-
-      <div class="row sep"></div>
-
-      <!-- 管线图层控制 -->
-      <label class="row">
-        <input type="checkbox" v-model="ui.pipelines"> 地下管线
-      </label>
-      <template v-if="ui.pipelines">
-        <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
-        <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
-      </template>
-
-      <div class="row sep"></div>
-
-      <label class="row">
-        <input type="checkbox" v-model="ui.cluster"> 红点聚合
-      </label>
-      <div class="row small">聚合强度：{{ ui.clusterRange }}</div>
-      <input class="slider" type="range" min="20" max="90" step="1" v-model.number="ui.clusterRange" />
-
-      <div class="row sep"></div>
-
-      <!-- 天气图层控制 -->
-      <label class="row">
-        <input type="checkbox" v-model="ui.weather"> 天气图层
-      </label>
-      <template v-if="ui.weather">
-        <label class="row small"><input type="checkbox" v-model="ui.temperature"> 温度分布</label>
-        <label class="row small"><input type="checkbox" v-model="ui.precipitation"> 降水预报</label>
-        <label class="row small"><input type="checkbox" v-model="ui.wind"> 风力风向</label>
-        <label class="row small"><input type="checkbox" v-model="ui.warnings"> 预警信息</label>
-        <div class="row small">透明度：{{ ui.weatherOpacity }}%</div>
-        <input class="slider" type="range" min="10" max="100" step="10" v-model.number="ui.weatherOpacity" />
-      </template>
-
-      <div class="row sep"></div>
-
-      <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
-      <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
-    </div>
-    </transition>
-  </div>
-
-  <!-- 管线分析工具面板（左上角，可折叠） -->
-  <div class="analysis-panel" v-if="ui.pipelines" :class="{ collapsed: panelCollapse.analysis }">
-    <div class="panel-header">
-      <h3>地下管线分析</h3>
-      <button class="collapse-btn" @click="panelCollapse.analysis = !panelCollapse.analysis" :title="panelCollapse.analysis ? '展开' : '收起'">{{ panelCollapse.analysis ? '＋' : '－' }}</button>
-    </div>
-    <transition name="panel-fade">
-    <div v-show="!panelCollapse.analysis" class="panel-collapse-body">
-    <!-- 信息面板（优先显示结果） -->
-    <div class="info-panel" v-if="pipelineInfo.show">
-      <div class="panel-header">
-        <h3>{{ pipelineInfo.title }}</h3>
-        <button @click="pipelineInfo.show = false" class="close-btn">×</button>
+    <!-- 图层面板（右上角，可折叠） -->
+    <div class="layer-panel" :class="{ collapsed: panelCollapse.layers }">
+      <div class="row title">
+        <span>图层</span>
+        <button class="collapse-btn" @click="panelCollapse.layers = !panelCollapse.layers" :title="panelCollapse.layers ? '展开' : '收起'">{{ panelCollapse.layers ? '＋' : '－' }}</button>
       </div>
-      <div class="control-group" v-if="pipelineInfo.pipelines.length > 0" style="margin-top: 8px;">
-        <button @click="exportPipelinesGeoJSON">导出 GeoJSON</button>
-        <button @click="exportPipelinesCSV">导出 CSV</button>
-      </div>
-      <div class="info-content">
-        <div v-if="pipelineInfo.pipelines.length === 0" class="no-data">
-          未发现管线
-        </div>
-        <div v-else class="pipeline-list">
-          <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item" @click="focusPipeline(index)" style="cursor: pointer;">
-            <h4>管线 {{ index + 1 }}: {{ pipeline.name }}</h4>
-            <div class="properties">
-              <div v-for="(value, key) in pipeline.properties" :key="key" class="property">
-                <span class="label">{{ key }}:</span>
-                <span class="value">{{ value }}</span>
-              </div>
-              <div v-if="pipeline.distance !== undefined" class="property">
-                <span class="label">距离:</span>
-                <span class="value">{{ pipeline.distance.toFixed(1) }}m</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <transition name="panel-fade">
+        <div v-show="!panelCollapse.layers" class="panel-body">
+          <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
+          <label class="row"><input type="checkbox" v-model="ui.factory"> 厂房模型</label>
+          <label class="row small" v-if="ui.factory"><input type="checkbox" v-model="ui.factoryRoofOpen"> 厂房掀盖</label>
+          <label class="row"><input type="checkbox" v-model="ui.office"> 新大楼模型</label>
+          <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
+          <label class="row"><input type="checkbox" v-model="ui.floors"> 楼层抽屉</label>
+          <label class="row"><input type="checkbox" v-model="ui.facilities"> 设施标注</label>
+          <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
+          <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
 
-    <!-- 管线图例（信息面板下方，随分析面板滚动） -->
-    <div class="legend-section" v-if="ui.pipelines">
-      <div class="panel-header">
-        <h3>管线图例</h3>
-      </div>
-      <div class="legend-content">
-        <div v-for="([name, group]) in pipelineGroupEntries" :key="name" class="legend-item">
-          <label>
-            <input type="checkbox" 
-                   :checked="group.visible !== false" 
-                   @change="togglePipelineGroup(name, $event.target.checked)" />
-            <span class="swatch" :style="{ backgroundColor: group.color }"></span>
-            <span class="name">{{ name }}</span>
-            <span class="count">({{ Array.isArray(group.entities) ? group.entities.length : 0 }})</span>
+          <div class="row sep"></div>
+
+          <!-- 管线图层控制 -->
+          <label class="row">
+            <input type="checkbox" v-model="ui.pipelines"> 地下管线
           </label>
+          <template v-if="ui.pipelines">
+            <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
+            <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
+          </template>
+
+          <div class="row sep"></div>
+
+          <label class="row">
+            <input type="checkbox" v-model="ui.cluster"> 红点聚合
+          </label>
+          <div class="row small">聚合强度：{{ ui.clusterRange }}</div>
+          <input class="slider" type="range" min="20" max="90" step="1" v-model.number="ui.clusterRange" />
+
+          <div class="row sep"></div>
+
+          <!-- 天气图层控制 -->
+          <label class="row">
+            <input type="checkbox" v-model="ui.weather"> 天气图层
+          </label>
+          <template v-if="ui.weather">
+            <label class="row small"><input type="checkbox" v-model="ui.temperature"> 温度分布</label>
+            <label class="row small"><input type="checkbox" v-model="ui.precipitation"> 降水预报</label>
+            <label class="row small"><input type="checkbox" v-model="ui.wind"> 风力风向</label>
+            <label class="row small"><input type="checkbox" v-model="ui.warnings"> 预警信息</label>
+            <div class="row small">透明度：{{ ui.weatherOpacity }}%</div>
+            <input class="slider" type="range" min="10" max="100" step="10" v-model.number="ui.weatherOpacity" />
+          </template>
+
+          <div class="row sep"></div>
+
+          <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
+          <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
         </div>
-      </div>
+      </transition>
     </div>
 
-    <!-- 剖面工具 -->
-    <div class="subsection">
-      <div class="sub-title">剖面工具</div>
-      <div class="control-group">
-        <button @click="startSectionAnalysis" :class="{ active: sectionMode }" title="剖面分析：依次点击两点生成剖面，并列出附近管线">
-          {{ sectionMode ? '取消剖面' : '剖面分析' }}
-        </button>
-        <div class="row small" style="margin-left: 2px;">缓冲距离：{{ ui.sectionBuffer }} m</div>
-        <input class="slider" type="range" min="10" max="200" step="5" v-model.number="ui.sectionBuffer" />
+    <!-- 管线分析工具面板（左上角，可折叠） -->
+    <div class="analysis-panel" v-if="ui.pipelines" :class="{ collapsed: panelCollapse.analysis }">
+      <div class="panel-header">
+        <h3>地下管线分析</h3>
+        <button class="collapse-btn" @click="panelCollapse.analysis = !panelCollapse.analysis" :title="panelCollapse.analysis ? '展开' : '收起'">{{ panelCollapse.analysis ? '＋' : '－' }}</button>
       </div>
-    </div>
-
-    <!-- 挖方工具：聚合相关按钮，明确用途 -->
-    <div class="subsection">
-      <div class="sub-title">挖方工具</div>
-      <div class="control-group">
-        <button @click="startExcavationAnalysis" :class="{ active: excavationMode }" title="挖方分析：进入多边形绘制模式，单击加点">
-          {{ excavationMode ? '取消挖方' : '挖方分析' }}
-        </button>
-        <button @click="completeExcavation" :disabled="!excavationMode || excavationPointsCount < 3" title="完成挖方：点位≥3后生成挖方范围并展示结果">
-          完成挖方
-        </button>
-        <button @click="undoExcavationPoint" :disabled="!excavationMode || excavationPointsCount === 0" title="撤销一点：可按 Backspace/Delete 快捷键">
-          撤销一点
-        </button>
-      </div>
-      <div class="row small" v-if="excavationMode">
-        已选点：{{ excavationPointsCount }}（单击加点，双击完成，Backspace 撤销，Esc 取消）
-      </div>
-    </div>
-
-    <!-- 通用操作 -->
-    <div class="control-group">
-      <button @click="clearAllAnalysis" title="清除分析：移除临时绘制、结果列表与范围标注">清除分析</button>
-    </div>
-    </div>
-    </transition>
-  </div>
-
-  <!-- 全景查看器 -->
-  <PanoramaViewer 
-    ref="panoramaViewer"
-    :visible="panoramaModal.show" 
-    @close="onPanoramaClosed" />
-  
-  <!-- 仓库调试面板（右下角，可折叠） -->
-  <div class="warehouse-debug-panel" v-if="warehousesMeta.showPanel" :class="{ collapsed: panelCollapse.warehouse }">
-    <div class="wd-header">
-      <h3>仓库调试</h3>
-      <div class="wd-actions">
-        <label class="chk"><input type="checkbox" v-model="warehousesMeta.showLabels" /> 标签</label>
-        <button class="collapse-btn mini" @click="panelCollapse.warehouse = !panelCollapse.warehouse" :title="panelCollapse.warehouse ? '展开' : '收起'">{{ panelCollapse.warehouse ? '＋' : '－' }}</button>
-        <button class="close" @click="warehousesMeta.showPanel=false" title="关闭面板">×</button>
-      </div>
-    </div>
-    <transition name="panel-fade">
-    <div v-show="!panelCollapse.warehouse" class="wd-body">
-    <div class="wd-source" v-if="dataSourcesInfo.warehouseSource">
-      <small>数据源: {{ dataSourcesInfo.warehouseSource }}</small>
-    </div>
-    <div class="wd-grouping">
-      <label>分组跨度: <strong>{{ warehousesMeta.fidGroupSize }}</strong></label>
-      <input type="range" min="40" max="300" step="10" v-model.number="warehousesMeta.fidGroupSize" />
-      <small>调整后自动重新分组 (默认120)</small>
-    </div>
-    <div class="wd-stats">共 {{ warehousesMeta.list.length }} 个多边形</div>
-    <div class="wd-export" v-if="warehousesMeta.list.length">
-      <button @click="exportWarehouseMetaCSV" class="btn-small">导出全部CSV</button>
-      <button @click="exportWarehouseMissCSV" class="btn-small" :disabled="!warehousesMeta.missFids.length">导出未匹配FID({{ warehousesMeta.missFids.length }})</button>
-      <small v-if="warehousesMeta.missFids.length" style="display:block;margin-top:2px;">未匹配示例: {{ warehousesMeta.missFids.slice(0,8).join(',') }}</small>
-    </div>
-    <div class="wd-table-wrapper" v-if="warehousesMeta.list.length">
-      <table class="wd-table">
-        <thead>
-          <tr>
-            <th>FID</th><th>分组名</th><th>线路数</th><th>经度</th><th>纬度</th>
-          </tr>
-        </thead>
-        <tbody>
-      <tr v-for="w in warehousesMeta.list" :key="w.fid" :id="'wh-row-'+w.fid"
-        :class="{ selected: w.fid === warehousesMeta.selectedFid }"
-        @click="selectWarehouse(w, true)"
-              :title="'点击飞到并高亮 FID '+w.fid">
-            <td>{{ w.fid }}</td>
-            <td>{{ w.groupName }}</td>
-            <td>{{ w.rowCount }}</td>
-            <td>{{ w.lon?.toFixed(5) }}</td>
-            <td>{{ w.lat?.toFixed(5) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="currentWarehouseDetail" class="wd-detail">
-        <h4>中心线路：{{ currentWarehouseDetail.groupName }} (FID {{ currentWarehouseDetail.fid }})</h4>
-        <div v-if="!currentWarehouseDetail.routes.length" class="wd-empty-routes">暂无线路数据</div>
-        <table v-else class="wd-routes">
-          <thead>
-            <tr><th>#</th><th>物流</th><th>线路/目的地</th><th>电话</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="(r,i) in currentWarehouseDetail.routes" :key="i">
-              <td>{{ r['序号'] || i+1 }}</td>
-              <td>{{ r['物流'] || '' }}</td>
-              <td>{{ r['线路/目的地'] || r['线路'] || '' }}</td>
-              <td>{{ r['电话'] || '' }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="wd-vendor" v-if="aggregatedCenterMetrics.get(currentWarehouseDetail.groupName)">
-          <h5>中心聚合指标</h5>
-          <div class="vendor-metrics">
-            <div class="rows">
-              <div class="row"><span class="label">线路数</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).lineCount }}</span></div>
-              <div class="row"><span class="label">服务半径(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).serviceRadiusKm }} km</span></div>
-              <div class="row"><span class="label">能力类型合集</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).capabilities.types.join(' / ') }}</span></div>
-              <div class="row"><span class="label">最大载重(最大)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).capabilities.maxWeightKg }} kg</span></div>
-              <div class="row"><span class="label">评级(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.rating }}</span></div>
-              <div class="row"><span class="label">准时率(均值)</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.onTimeRate*100).toFixed(1) }}%</span></div>
-              <div class="row"><span class="label">价格指数(均值)</span><span>{{ aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.priceIndex }}</span></div>
-              <div class="row"><span class="label">利用率(均值)</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).metrics.capacityUtilization*100).toFixed(0) }}%</span></div>
-              <div class="row"><span class="label">标签合集</span><span>{{ (aggregatedCenterMetrics.get(currentWarehouseDetail.groupName).tags||[]).join(', ') }}</span></div>
+      <transition name="panel-fade">
+        <div v-show="!panelCollapse.analysis" class="panel-collapse-body">
+          <!-- 信息面板（优先显示结果） -->
+          <div class="info-panel" v-if="pipelineInfo.show">
+            <div class="panel-header">
+              <h3>{{ pipelineInfo.title }}</h3>
+              <button @click="pipelineInfo.show = false" class="close-btn">×</button>
+            </div>
+            <div class="control-group" v-if="pipelineInfo.pipelines.length > 0" style="margin-top: 8px;">
+              <button @click="exportPipelinesGeoJSON">导出 GeoJSON</button>
+              <button @click="exportPipelinesCSV">导出 CSV</button>
+            </div>
+            <div class="info-content">
+              <div v-if="pipelineInfo.pipelines.length === 0" class="no-data">
+                未发现管线
+              </div>
+              <div v-else class="pipeline-list">
+                <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item" @click="focusPipeline(index)" style="cursor: pointer;">
+                  <h4>管线 {{ index + 1 }}: {{ pipeline.name }}</h4>
+                  <div class="properties">
+                    <div v-for="(value, key) in pipeline.properties" :key="key" class="property">
+                      <span class="label">{{ key }}:</span>
+                      <span class="value">{{ value }}</span>
+                    </div>
+                    <div v-if="pipeline.distance !== undefined" class="property">
+                      <span class="label">距离:</span>
+                      <span class="value">{{ pipeline.distance.toFixed(1) }}m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="wd-vendor-lines" v-if="currentCenterVendors.length">
-          <h5>线路明细 (vendors.json)</h5>
-          <div class="wd-vendor-table-wrapper">
-            <table class="wd-vendor-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>序号</th>
-                  <th>物流</th>
-                  <th>线路/目的地</th>
-                  <th>电话</th>
-                  <th>类型</th>
-                  <th>载重</th>
-                  <th>服务半径</th>
-                  <th>评级</th>
-                  <th>准时率</th>
-                  <th>价格</th>
-                  <th>利用率</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(v,i) in currentCenterVendors" :key="v.id" :title="v.tags?.join(', ')">
-                  <td>{{ i+1 }}</td>
-                  <td>{{ v.sequence }}</td>
-                  <td>{{ v.logisticsName }}</td>
-                  <td class="route">{{ v.route }}</td>
-                  <td>{{ v.phone }}</td>
-                  <td>{{ (v.capabilities?.types||[]).join('/') }}</td>
-                  <td>{{ v.capabilities?.maxWeightKg }}</td>
-                  <td>{{ v.serviceRadiusKm }}</td>
-                  <td>{{ v.metrics?.rating }}</td>
-                  <td>{{ (v.metrics?.onTimeRate*100).toFixed(1) }}%</td>
-                  <td>{{ v.metrics?.priceIndex }}</td>
-                  <td>{{ (v.metrics?.capacityUtilization*100).toFixed(0) }}%</td>
-                </tr>
-              </tbody>
-            </table>
+
+          <!-- 管线图例（信息面板下方，随分析面板滚动） -->
+          <div class="legend-section" v-if="ui.pipelines">
+            <div class="panel-header">
+              <h3>管线图例</h3>
+            </div>
+            <div class="legend-content">
+              <div v-for="([name, group]) in pipelineGroupEntries" :key="name" class="legend-item">
+                <label>
+                  <input type="checkbox" 
+                         :checked="group.visible !== false" 
+                         @change="togglePipelineGroup(name, $event.target.checked)" />
+                  <span class="swatch" :style="{ backgroundColor: group.color }"></span>
+                  <span class="name">{{ name }}</span>
+                  <span class="count">({{ Array.isArray(group.entities) ? group.entities.length : 0 }})</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 剖面工具 -->
+          <div class="subsection">
+            <div class="sub-title">剖面工具</div>
+            <div class="control-group">
+              <button @click="startSectionAnalysis" :class="{ active: sectionMode }" title="剖面分析：依次点击两点生成剖面，并列出附近管线">
+                {{ sectionMode ? '取消剖面' : '剖面分析' }}
+              </button>
+              <div class="row small" style="margin-left: 2px;">缓冲距离：{{ ui.sectionBuffer }} m</div>
+              <input class="slider" type="range" min="10" max="200" step="5" v-model.number="ui.sectionBuffer" />
+            </div>
+          </div>
+
+          <!-- 挖方工具：聚合相关按钮，明确用途 -->
+          <div class="subsection">
+            <div class="sub-title">挖方工具</div>
+            <div class="control-group">
+              <button @click="startExcavationAnalysis" :class="{ active: excavationMode }" title="挖方分析：进入多边形绘制模式，单击加点">
+                {{ excavationMode ? '取消挖方' : '挖方分析' }}
+              </button>
+              <button @click="completeExcavation" :disabled="!excavationMode || excavationPointsCount < 3" title="完成挖方：点位≥3后生成挖方范围并展示结果">
+                完成挖方
+              </button>
+              <button @click="undoExcavationPoint" :disabled="!excavationMode || excavationPointsCount === 0" title="撤销一点：可按 Backspace/Delete 快捷键">
+                撤销一点
+              </button>
+            </div>
+            <div class="row small" v-if="excavationMode">
+              已选点：{{ excavationPointsCount }}（单击加点，双击完成，Backspace 撤销，Esc 取消）
+            </div>
+          </div>
+
+          <!-- 通用操作 -->
+          <div class="control-group">
+            <button @click="clearAllAnalysis" title="清除分析：移除临时绘制、结果列表与范围标注">清除分析</button>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
-    <div v-else class="wd-empty">暂无仓库实体（等待 GeoJSON 加载）</div>
-    </div>
-    </transition>
-  </div>
+
+    <!-- 全景查看器 -->
+    <PanoramaViewer 
+      ref="panoramaViewer"
+      :visible="panoramaModal.show" 
+      @close="onPanoramaClosed" />
+  
   <!-- 分析模式提示覆盖层（不拦截鼠标，pointer-events:none） -->
   <div class="analysis-overlay" v-if="sectionMode || excavationMode">
     <div class="msg">
@@ -363,7 +239,6 @@ const requestRender = () => {
 // UI 控制面板状态
 const ui = reactive({
   osgb: true,
-  ck: true,
   factory: true,
   factoryRoofOpen: false,
   office: true,
@@ -392,14 +267,12 @@ const ui = reactive({
 // 面板折叠状态
 const panelCollapse = reactive({
   layers: false,
-  analysis: false,
-  warehouse: false
+  analysis: false
 })
 
 // 仓库调试状态（用于展示 FID 与分组规则推断结果）
 const warehousesMeta = reactive({
   list: [],        // { fid, groupName, rowCount, lon, lat, entity }
-  showPanel: true,
   showLabels: true,
   selectedFid: null,
   fidGroupSize: 120,
@@ -748,9 +621,7 @@ function clearClipping() {
   if (viewer) viewer.scene.globe.clippingPlanes = undefined
   // 若未来对 3DTiles 使用裁剪，这里也应清理
   const osgb = dataSourceManager?.getDataSource?.('osgb')
-  const ck = dataSourceManager?.getDataSource?.('ck')
   if (osgb) osgb.clippingPlanes = undefined
-  if (ck) ck.clippingPlanes = undefined
 }
 
 //（移除重复的早期实现，保留下方更精确的版本）
@@ -1772,7 +1643,6 @@ onMounted(async () => {
           clearHighlight(lastSelected)
           lastSelected = null
         }
-        if (!warehousesMeta.showPanel) warehousesMeta.showPanel = true
         // 避免重复点击重复飞行：如果是同一个仓库且已经选中则不重复飞行
         const already = warehousesMeta.selectedFid === found.fid
         selectWarehouse(found, !already) // 已经选中则不再飞行
@@ -2402,8 +2272,7 @@ const redPoints = [
   const applyToggles = () => {
     // 使用数据源管理器控制显示
     if (dataSourceManager) {
-      dataSourceManager.toggleDataSource('osgb', ui.osgb)
-      dataSourceManager.toggleDataSource('ck', ui.ck)
+  dataSourceManager.toggleDataSource('osgb', ui.osgb)
       dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.baseId, ui.factory)
       dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.roofId, ui.factory)
       dataSourceManager.toggleDataSource(OFFICE_MODEL_ID, ui.office)
@@ -2466,7 +2335,7 @@ const redPoints = [
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.ck, ui.factory, ui.office, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
+  watch(() => [ui.osgb, ui.factory, ui.office, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
 
   // 地形透明度监听
   watch(() => ui.terrainAlpha, (alpha) => {
@@ -2481,13 +2350,6 @@ const redPoints = [
         })
       }
       
-      const ck = dataSourceManager.getDataSource('ck')
-      if (ck instanceof Cesium.Cesium3DTileset) {
-        ck.style = new Cesium.Cesium3DTileStyle({
-          color: `rgba(255,255,255, ${alpha})`
-        })
-      }
-
       const factoryBase = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId)
       if (factoryBase instanceof Cesium.Cesium3DTileset) {
         factoryBase.style = new Cesium.Cesium3DTileStyle({
@@ -2528,9 +2390,6 @@ const redPoints = [
       const osgb = dataSourceManager.getDataSource('osgb')
       if (osgb) osgb.maximumScreenSpaceError = v
       
-      const ck = dataSourceManager.getDataSource('ck')
-      if (ck) ck.maximumScreenSpaceError = v
-
       const factoryBase = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId)
       if (factoryBase && typeof factoryBase.maximumScreenSpaceError !== 'undefined') {
         factoryBase.maximumScreenSpaceError = v
@@ -3435,52 +3294,4 @@ function onVendorFloatUp(){
 }
 </style>
 
-<style>
-/* 仓库调试面板样式 */
-.warehouse-debug-panel {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  width: 420px;
-  max-height: 42vh;
-  display: flex;
-  flex-direction: column;
-  background: rgba(30,30,30,0.92);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  color: #eee;
-  font-size: 12px;
-  backdrop-filter: blur(18px);
-  z-index: 12;
-  box-shadow: 0 4px 22px rgba(0,0,0,0.35);
-}
-.warehouse-debug-panel.collapsed { max-height: unset; }
-.warehouse-debug-panel.collapsed .wd-body { display:none; }
-.warehouse-debug-panel .collapse-btn.mini { background:rgba(255,255,255,0.12);border:none;color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;cursor:pointer; }
-.warehouse-debug-panel .collapse-btn.mini:hover { background:rgba(255,255,255,0.25); }
-
-/* 进入离开动画 */
-.panel-fade-enter-active,.panel-fade-leave-active { transition: opacity .18s ease, transform .2s ease; }
-.panel-fade-enter-from,.panel-fade-leave-to { opacity:0; transform:translateY(-4px); }
-.warehouse-debug-panel .wd-header {
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px 6px;
-  border-bottom:1px solid rgba(255,255,255,0.12);
-}
-.warehouse-debug-panel h3 {margin:0;font-size:14px;font-weight:600;color:#4cc2ff;}
-.warehouse-debug-panel .wd-actions {display:flex;align-items:center;gap:10px;}
-.warehouse-debug-panel .wd-actions .chk {display:flex;align-items:center;gap:4px;cursor:pointer;}
-.warehouse-debug-panel button.close {background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;line-height:1;padding:0 4px;border-radius:4px;}
-.warehouse-debug-panel button.close:hover {background:rgba(255,255,255,0.1);color:#fff;}
-.warehouse-debug-panel .wd-stats {padding:4px 12px 6px;color:#aaa;}
-.warehouse-debug-panel .wd-empty {padding:12px;color:#888;font-style:italic;}
-.warehouse-debug-panel .wd-table-wrapper {flex:1;overflow:auto;padding:0 8px 8px;}
-.warehouse-debug-panel .wd-table {width:100%;border-collapse:collapse;font-size:12px;}
-.warehouse-debug-panel .wd-table thead th {position:sticky;top:0;background:rgba(0,120,212,0.2);backdrop-filter:blur(6px);padding:4px 6px;font-weight:600;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);}
-.warehouse-debug-panel .wd-table tbody td {padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap;}
-.warehouse-debug-panel .wd-table tbody tr {cursor:pointer;transition:background .18s;}
-.warehouse-debug-panel .wd-table tbody tr:hover {background:rgba(255,255,255,0.08);} 
-.warehouse-debug-panel .wd-table tbody tr:active {background:rgba(255,255,255,0.16);} 
-.warehouse-debug-panel .wd-table tbody tr.selected {background:rgba(255,170,0,0.25);} 
-</style>
 

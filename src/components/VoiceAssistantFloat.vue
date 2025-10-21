@@ -46,7 +46,13 @@
       </div>
       <div class="commands-content">
         <div class="command-category">
-          <h5>🔍 查询控制</h5>
+          <h5>� 唤醒助手</h5>
+          <ul>
+            <li>先说“{{ WAKE_PROMPT }}”唤醒后再给其它指令</li>
+          </ul>
+        </div>
+        <div class="command-category">
+          <h5>�🔍 查询控制</h5>
           <ul>
             <li>“查询”/“搜索”/“规划” - 执行查询</li>
             <li>“起点北京终点上海” 或 “从北京到上海” - 设置起终点</li>
@@ -205,7 +211,13 @@ const {
   clearMessages
 } = useLKEChat()
 const wakeActive = ref(false)
-const WAKE_WORDS = ['小智你好', '小智在吗', '小智你好啊']
+const WAKE_PROMPT = '小智小智'
+const WAKE_WORDS = [WAKE_PROMPT]
+const normalizeWakeText = (input: string) => (input || '').replace(/[，,。\s]/g, '')
+const containsWakeWord = (input: string) => {
+  const normalized = normalizeWakeText(input)
+  return WAKE_WORDS.some(w => normalized.includes(w))
+}
 
 function contentStyle(m: { role: 'user'|'assistant' }) {
   // 统一修改字体颜色：用户深灰、AI 蓝色
@@ -268,15 +280,10 @@ function getRecFormExpose(): any | null {
 }
 
 // 语音命令联动：优先填充商家推荐表单；否则再导航、最后聊天
-const handleFinalVoice = async (text: string, parsed?: any) => {
-  await ensureLKEInitialized()
+const handleFinalVoice = async (rawText: string, parsed?: any) => {
+  const text = (rawText || '').trim()
   if (!text) {
     speak('未识别到有效语音内容')
-    return
-  }
-  
-  if (!lkeReady.value) {
-    speak('AI助手未就绪，正在初始化')
     return
   }
 
@@ -285,7 +292,6 @@ const handleFinalVoice = async (text: string, parsed?: any) => {
     const isRecommend = parsed.navigation?.page === 'recommend' || /推荐|商家推荐/.test(text)
     if (isRecommend) {
       try {
-        // 直接打开推荐侧栏，让侧栏内部监听语音总线自行应用
         openRecommend()
         emitVoiceCommand({ transcript: text, isFinal: true, parsed })
         if (enableTTS.value) speak('已填入商家推荐表单')
@@ -307,6 +313,12 @@ const handleFinalVoice = async (text: string, parsed?: any) => {
     } catch (e) {
       speak('页面跳转失败')
     }
+    return
+  }
+
+  await ensureLKEInitialized()
+  if (!lkeReady.value) {
+    speak('AI助手未就绪，正在初始化')
     return
   }
 
@@ -396,6 +408,9 @@ onMounted(() => {
 
       // 语音直接控制：聊天开关 / 播报开关 / 停止生成 / 帮助
       if (/(打开|显示)(聊天|助手)|唤醒(助手|小智)/.test(text)) {
+        if (containsWakeWord(text)) {
+          wakeActive.value = true
+        }
         showChatPanel.value = true
         ensureLKEInitialized()
         if (enableTTS.value) speak('AI助手聊天面板已打开')
@@ -431,7 +446,6 @@ onMounted(() => {
       // 若聊天面板已打开，也需要唤醒词后才能向 AI 发送
       if (showChatPanel.value) {
         if (!wakeActive.value) {
-          if (enableTTS.value) speak('请先说出唤醒词：小智你好')
           return
         }
         handleFinalVoice(text, e.parsed)
@@ -458,13 +472,10 @@ onMounted(() => {
 
       // 其余自由聊天/问答再使用唤醒词
       if (!wakeActive.value) {
-        if (WAKE_WORDS.some(w => text.includes(w))) {
+        if (containsWakeWord(text)) {
           wakeActive.value = true
           speak('我在，请问您需要什么帮助？')
           return
-        }
-        if (Math.random() < 0.3) {
-          speak('请先说出唤醒词：小智能帮你')
         }
         return
       }
