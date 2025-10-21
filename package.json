@@ -12,9 +12,10 @@
     "lke:server": "node server/lke-token-server.mjs",
     "logistics:server": "node server/logistics-server.mjs",
     "parse:logistics": "node scripts/parse-logistics.mjs ./副本仓库名.csv ./src/data/logistics.json",
-    "parse:centers": "node scripts/parse-logistics-by-center.mjs ./副本仓库名.csv ./src/data/logistics-by-center.json"
-  ,"gen:vendors": "node scripts/create-vendors-from-csv.mjs",
-  "merge:warehouse-vendors": "node scripts/merge-warehouse-vendors.mjs"
+    "parse:centers": "node scripts/parse-logistics-by-center.mjs ./副本仓库名.csv ./src/data/logistics-by-center.json",
+    "gen:vendors": "node scripts/create-vendors-from-csv.mjs",
+    "merge:warehouse-vendors": "node scripts/merge-warehouse-vendors.mjs",
+    "convert:obj": "node scripts/convert-obj-to-gltf.mjs"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
@@ -36,6 +37,7 @@
     "vite": "^5.2.0",
     "vite-plugin-cesium": "^1.2.2",
     "vue-tsc": "^2.0.7",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "obj2gltf": "^3.1.6"
   }
 }

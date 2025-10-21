@@ -2,63 +2,75 @@
   <div class="map-root" v-bind="$attrs">
   <div id="cesiumContainer" ref="cesiumContainer"></div>
 
-  <!-- 图层面板（右上角） -->
-  <div class="layer-panel">
-    <div class="row title">图层</div>
-    <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
-    <label class="row"><input type="checkbox" v-model="ui.ck"> 分类 CK</label>
-    <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
-    <label class="row"><input type="checkbox" v-model="ui.floors"> 楼层抽屉</label>
-    <label class="row"><input type="checkbox" v-model="ui.facilities"> 设施标注</label>
-    <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
-    <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
+  <!-- 图层面板（右上角，可折叠） -->
+  <div class="layer-panel" :class="{ collapsed: panelCollapse.layers }">
+    <div class="row title">
+      <span>图层</span>
+      <button class="collapse-btn" @click="panelCollapse.layers = !panelCollapse.layers" :title="panelCollapse.layers ? '展开' : '收起'">{{ panelCollapse.layers ? '＋' : '－' }}</button>
+    </div>
+    <transition name="panel-fade">
+    <div v-show="!panelCollapse.layers" class="panel-body">
+      <label class="row"><input type="checkbox" v-model="ui.osgb"> OSGB 建筑</label>
+      <label class="row"><input type="checkbox" v-model="ui.ck"> 分类 CK</label>
+  <label class="row"><input type="checkbox" v-model="ui.factory"> 厂房模型</label>
+  <label class="row small" v-if="ui.factory"><input type="checkbox" v-model="ui.factoryRoofOpen"> 厂房掀盖</label>
+  <label class="row"><input type="checkbox" v-model="ui.office"> 新大楼模型</label>
+      <label class="row"><input type="checkbox" v-model="ui.geo"> 仓库面 (GeoJSON)</label>
+      <label class="row"><input type="checkbox" v-model="ui.floors"> 楼层抽屉</label>
+      <label class="row"><input type="checkbox" v-model="ui.facilities"> 设施标注</label>
+      <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
+      <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
 
-    <div class="row sep"></div>
+      <div class="row sep"></div>
 
-    <!-- 管线图层控制 -->
-    <label class="row">
-      <input type="checkbox" v-model="ui.pipelines"> 地下管线
-    </label>
-    <template v-if="ui.pipelines">
-      <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
-      <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
-    </template>
+      <!-- 管线图层控制 -->
+      <label class="row">
+        <input type="checkbox" v-model="ui.pipelines"> 地下管线
+      </label>
+      <template v-if="ui.pipelines">
+        <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
+        <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
+      </template>
 
-    <div class="row sep"></div>
+      <div class="row sep"></div>
 
-    <label class="row">
-      <input type="checkbox" v-model="ui.cluster"> 红点聚合
-    </label>
-    <div class="row small">聚合强度：{{ ui.clusterRange }}</div>
-    <input class="slider" type="range" min="20" max="90" step="1" v-model.number="ui.clusterRange" />
+      <label class="row">
+        <input type="checkbox" v-model="ui.cluster"> 红点聚合
+      </label>
+      <div class="row small">聚合强度：{{ ui.clusterRange }}</div>
+      <input class="slider" type="range" min="20" max="90" step="1" v-model.number="ui.clusterRange" />
 
-    <div class="row sep"></div>
+      <div class="row sep"></div>
 
-    <!-- 天气图层控制 -->
-    <label class="row">
-      <input type="checkbox" v-model="ui.weather"> 天气图层
-    </label>
-    <template v-if="ui.weather">
-      <label class="row small"><input type="checkbox" v-model="ui.temperature"> 温度分布</label>
-      <label class="row small"><input type="checkbox" v-model="ui.precipitation"> 降水预报</label>
-      <label class="row small"><input type="checkbox" v-model="ui.wind"> 风力风向</label>
-      <label class="row small"><input type="checkbox" v-model="ui.warnings"> 预警信息</label>
-      <div class="row small">透明度：{{ ui.weatherOpacity }}%</div>
-      <input class="slider" type="range" min="10" max="100" step="10" v-model.number="ui.weatherOpacity" />
-    </template>
+      <!-- 天气图层控制 -->
+      <label class="row">
+        <input type="checkbox" v-model="ui.weather"> 天气图层
+      </label>
+      <template v-if="ui.weather">
+        <label class="row small"><input type="checkbox" v-model="ui.temperature"> 温度分布</label>
+        <label class="row small"><input type="checkbox" v-model="ui.precipitation"> 降水预报</label>
+        <label class="row small"><input type="checkbox" v-model="ui.wind"> 风力风向</label>
+        <label class="row small"><input type="checkbox" v-model="ui.warnings"> 预警信息</label>
+        <div class="row small">透明度：{{ ui.weatherOpacity }}%</div>
+        <input class="slider" type="range" min="10" max="100" step="10" v-model.number="ui.weatherOpacity" />
+      </template>
 
-    <div class="row sep"></div>
+      <div class="row sep"></div>
 
-    <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
-    <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
+      <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
+      <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
+    </div>
+    </transition>
   </div>
 
-  <!-- 管线分析工具面板（左上角） -->
-  <div class="analysis-panel" v-if="ui.pipelines">
+  <!-- 管线分析工具面板（左上角，可折叠） -->
+  <div class="analysis-panel" v-if="ui.pipelines" :class="{ collapsed: panelCollapse.analysis }">
     <div class="panel-header">
       <h3>地下管线分析</h3>
+      <button class="collapse-btn" @click="panelCollapse.analysis = !panelCollapse.analysis" :title="panelCollapse.analysis ? '展开' : '收起'">{{ panelCollapse.analysis ? '＋' : '－' }}</button>
     </div>
-
+    <transition name="panel-fade">
+    <div v-show="!panelCollapse.analysis" class="panel-collapse-body">
     <!-- 信息面板（优先显示结果） -->
     <div class="info-panel" v-if="pipelineInfo.show">
       <div class="panel-header">
@@ -145,6 +157,8 @@
     <div class="control-group">
       <button @click="clearAllAnalysis" title="清除分析：移除临时绘制、结果列表与范围标注">清除分析</button>
     </div>
+    </div>
+    </transition>
   </div>
 
   <!-- 全景查看器 -->
@@ -153,15 +167,18 @@
     :visible="panoramaModal.show" 
     @close="onPanoramaClosed" />
   
-  <!-- 仓库调试面板（右下角） -->
-  <div class="warehouse-debug-panel" v-if="warehousesMeta.showPanel">
+  <!-- 仓库调试面板（右下角，可折叠） -->
+  <div class="warehouse-debug-panel" v-if="warehousesMeta.showPanel" :class="{ collapsed: panelCollapse.warehouse }">
     <div class="wd-header">
       <h3>仓库调试</h3>
       <div class="wd-actions">
         <label class="chk"><input type="checkbox" v-model="warehousesMeta.showLabels" /> 标签</label>
+        <button class="collapse-btn mini" @click="panelCollapse.warehouse = !panelCollapse.warehouse" :title="panelCollapse.warehouse ? '展开' : '收起'">{{ panelCollapse.warehouse ? '＋' : '－' }}</button>
         <button class="close" @click="warehousesMeta.showPanel=false" title="关闭面板">×</button>
       </div>
     </div>
+    <transition name="panel-fade">
+    <div v-show="!panelCollapse.warehouse" class="wd-body">
     <div class="wd-source" v-if="dataSourcesInfo.warehouseSource">
       <small>数据源: {{ dataSourcesInfo.warehouseSource }}</small>
     </div>
@@ -270,6 +287,8 @@
       </div>
     </div>
     <div v-else class="wd-empty">暂无仓库实体（等待 GeoJSON 加载）</div>
+    </div>
+    </transition>
   </div>
   <!-- 分析模式提示覆盖层（不拦截鼠标，pointer-events:none） -->
   <div class="analysis-overlay" v-if="sectionMode || excavationMode">
@@ -311,6 +330,18 @@ export default defineComponent({
   name: 'MapView',
   components: { PanoramaViewer },
   setup() {
+const FACTORY_MODEL_CONFIG = {
+  baseId: 'factory-base',
+  roofId: 'factory-roof',
+  hingeOffsetENU: [0, -20, 0],
+  rotationAxis: 'x',
+  liftMeters: 12,
+  openAngleDeg: 70,
+  animationDurationMs: 1200
+}
+const OFFICE_MODEL_ID = 'office-building'
+const CESIUM_ION_TOKEN = import.meta.env.VITE_CESIUM_ION_TOKEN || ''
+const CESIUM_ION_IMAGERY_ASSET_ID = Number.parseInt(import.meta.env.VITE_CESIUM_IMAGERY_ASSET_ID || '', 10)
 
 window.CESIUM_BASE_URL = '/'
 
@@ -333,6 +364,9 @@ const requestRender = () => {
 const ui = reactive({
   osgb: true,
   ck: true,
+  factory: true,
+  factoryRoofOpen: false,
+  office: true,
   geo: true,
   floors: true,
   facilities: true,
@@ -353,6 +387,13 @@ const ui = reactive({
   weatherOpacity: 70,
   // 剖面分析缓冲距离（米）
   sectionBuffer: 50
+})
+
+// 面板折叠状态
+const panelCollapse = reactive({
+  layers: false,
+  analysis: false,
+  warehouse: false
 })
 
 // 仓库调试状态（用于展示 FID 与分组规则推断结果）
@@ -541,6 +582,12 @@ let lastWarehouseHighlight = null
 let redecorateTimer = null
 // 仓库实体集合，用于区分与普通 polygon 高亮
 const warehouseEntities = new Set()
+
+// 厂房 / 新大楼模型引用与动画状态
+let factoryRoofTileset = null
+let factoryRoofState = null
+let factoryRoofDesiredOpen = false
+let factoryRoofAnimationId = null
 
 // 楼层抽屉相关变量
 let floor1 = null
@@ -1106,17 +1153,184 @@ function initFloorDrawer(viewer, floors, distance = 35.0) {
   return { expandFloor, resetFloors }
 }
 
+function factoryConfigWithOverrides(overrides = {}) {
+  return { ...FACTORY_MODEL_CONFIG, ...overrides }
+}
+
+function computeHingeOffsetCartesian(offset = []) {
+  if (!Array.isArray(offset) || offset.length !== 3) return null
+  return new Cesium.Cartesian3(offset[0], offset[1], offset[2])
+}
+
+const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
+function cancelFactoryRoofAnimation() {
+  if (factoryRoofAnimationId != null && typeof cancelAnimationFrame === 'function') {
+    cancelAnimationFrame(factoryRoofAnimationId)
+  }
+  factoryRoofAnimationId = null
+}
+
+function applyFactoryRoofProgress(progress, { forceRender = false } = {}) {
+  if (!factoryRoofState) return
+  const clamped = Cesium.Math.clamp(progress, 0, 1)
+  const { target, root, baseMatrix, hingeFrame, hingeFrameInverse, config } = factoryRoofState
+  const angleRad = Cesium.Math.toRadians((config.openAngleDeg ?? 70) * clamped)
+  const lift = (config.liftMeters ?? 10) * clamped
+
+  let rotationMatrix3
+  switch ((config.rotationAxis || 'x').toLowerCase()) {
+    case 'y':
+      rotationMatrix3 = Cesium.Matrix3.fromRotationY(angleRad)
+      break
+    case 'z':
+      rotationMatrix3 = Cesium.Matrix3.fromRotationZ(angleRad)
+      break
+    default:
+      rotationMatrix3 = Cesium.Matrix3.fromRotationX(angleRad)
+      break
+  }
+  const rotation = Cesium.Matrix4.fromRotationTranslation(rotationMatrix3)
+  const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, lift))
+  const localTransform = Cesium.Matrix4.multiply(translation, rotation, new Cesium.Matrix4())
+  const hingeLocal = Cesium.Matrix4.multiply(hingeFrame, localTransform, new Cesium.Matrix4())
+  const worldTransform = Cesium.Matrix4.multiply(hingeLocal, hingeFrameInverse, new Cesium.Matrix4())
+  const finalMatrix = Cesium.Matrix4.multiply(worldTransform, baseMatrix, new Cesium.Matrix4())
+
+  if (root) root.transform = finalMatrix
+  else target.modelMatrix = finalMatrix
+
+  factoryRoofState.progress = clamped
+  if (!forceRender) requestRender()
+}
+
+function setupFactoryRoofAnimator(target, overrides = {}) {
+  if (!target) return
+  cancelFactoryRoofAnimation()
+
+  const root = target.root || null
+  const baseMatrix =
+    (root?.transform && Cesium.Matrix4.clone(root.transform, new Cesium.Matrix4())) ||
+    (target.modelMatrix && Cesium.Matrix4.clone(target.modelMatrix, new Cesium.Matrix4())) ||
+    Cesium.Matrix4.clone(Cesium.Matrix4.IDENTITY, new Cesium.Matrix4())
+  const center = target.boundingSphere?.center
+  if (!center) return
+
+  const options = factoryConfigWithOverrides(overrides)
+  const hingeOffset = computeHingeOffsetCartesian(options.hingeOffsetENU)
+  const enuAtCenter = Cesium.Transforms.eastNorthUpToFixedFrame(center)
+  let hingePosition = Cesium.Cartesian3.clone(center)
+  if (hingeOffset) {
+    hingePosition = Cesium.Matrix4.multiplyByPoint(enuAtCenter, hingeOffset, new Cesium.Cartesian3())
+  }
+  const hingeFrame = Cesium.Transforms.eastNorthUpToFixedFrame(hingePosition)
+  let hingeFrameInverse = null
+  try {
+    hingeFrameInverse = Cesium.Matrix4.inverse(hingeFrame, new Cesium.Matrix4())
+  } catch (err) {
+    console.warn('[factoryRoof] hinge inverse failed:', err)
+    return
+  }
+
+  factoryRoofState = {
+  target,
+    root,
+    baseMatrix,
+    hingeFrame,
+    hingeFrameInverse,
+    config: options,
+    progress: 0
+  }
+
+  applyFactoryRoofProgress(factoryRoofDesiredOpen ? 1 : 0, { forceRender: true })
+}
+
+function animateFactoryRoof(open) {
+  factoryRoofDesiredOpen = !!open
+  if (!factoryRoofState) return
+  cancelFactoryRoofAnimation()
+
+  const startProgress = factoryRoofState.progress ?? 0
+  const target = open ? 1 : 0
+  if (Math.abs(target - startProgress) < 1e-3) {
+    applyFactoryRoofProgress(target)
+    return
+  }
+
+  const duration = factoryRoofState.config.animationDurationMs ?? 1200
+  const start = typeof performance !== 'undefined' ? performance.now() : Date.now()
+
+  const step = (timestamp) => {
+    const now = timestamp ?? (typeof performance !== 'undefined' ? performance.now() : Date.now())
+    const elapsed = now - start
+    const ratio = Math.min(elapsed / duration, 1)
+    const eased = easeInOutCubic(ratio)
+    const value = startProgress + (target - startProgress) * eased
+    applyFactoryRoofProgress(value)
+    if (ratio < 1 && typeof requestAnimationFrame === 'function') {
+      factoryRoofAnimationId = requestAnimationFrame(step)
+    } else {
+      factoryRoofAnimationId = null
+      applyFactoryRoofProgress(target)
+    }
+  }
+
+  if (typeof requestAnimationFrame === 'function') {
+    factoryRoofAnimationId = requestAnimationFrame(step)
+  } else {
+    // 环境不支持 requestAnimationFrame 时直接跳转
+    applyFactoryRoofProgress(target)
+  }
+}
+
 onMounted(async () => {
   // 注意：在第一个 await 之前不要调用生命周期注册之外的异步副作用，防止生命周期警告
-  Cesium.Ion.defaultAccessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZTFmMDI1YS05MTRkLTRhMzYtYTNiZi0wYmM2YTdlYjU5ODMiLCJpZCI6MjIwNDYzLCJpYXQiOjE3MTc2NTIwMDF9.U1PZjG0GiZdXjIvHRyAGsHRMveUVQdINghXIfF6xJDE'
+  if (CESIUM_ION_TOKEN) {
+    Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN
+  } else {
+    console.warn('[MapView] 未设置 VITE_CESIUM_ION_TOKEN，Cesium World Terrain 可能无法访问。请在 .env.local 中配置。')
+  }
+
+  let terrainProvider
+  try {
+    terrainProvider = await Cesium.createWorldTerrainAsync({
+      requestWaterMask: true,
+      requestVertexNormals: true
+    })
+  } catch (err) {
+    console.error('[MapView] 加载 Cesium World Terrain 失败，改用 EllipsoidTerrainProvider：', err)
+    terrainProvider = new Cesium.EllipsoidTerrainProvider()
+  }
+
+  let imageryProvider = null
+  if (CESIUM_ION_TOKEN) {
+    if (Number.isFinite(CESIUM_ION_IMAGERY_ASSET_ID) && CESIUM_ION_IMAGERY_ASSET_ID > 0) {
+      try {
+        imageryProvider = await Cesium.IonImageryProvider.fromAssetId(CESIUM_ION_IMAGERY_ASSET_ID)
+      } catch (err) {
+        console.error(`[MapView] 加载指定 Ion 影像资产 ${CESIUM_ION_IMAGERY_ASSET_ID} 失败，尝试默认世界影像：`, err)
+      }
+    }
+    if (!imageryProvider) {
+      try {
+        imageryProvider = await Cesium.IonImageryProvider.fromAssetId(3)
+      } catch (err) {
+        console.error('[MapView] 加载 Ion 世界影像失败，稍后将使用公共 OSM 影像：', err)
+      }
+    }
+  }
+
+  if (!imageryProvider) {
+    imageryProvider = new Cesium.OpenStreetMapImageryProvider({
+      url: 'https://tile.openstreetmap.org/'
+    })
+    console.warn('[MapView] 已使用 OpenStreetMap 影像作为兜底，注意遵守 OSM 使用条款。')
+  }
 
   // 1) Viewer：按需渲染 + 冻结时钟 + 降后处理
   const viewer = new Cesium.Viewer('cesiumContainer', {
-    terrainProvider: await Cesium.createWorldTerrainAsync({
-      requestWaterMask: true,
-      requestVertexNormals: true
-    }),
+    terrainProvider,
+    imageryProvider,
     animation: false,
     timeline: false,
     infoBox: false,
@@ -1231,6 +1445,12 @@ onMounted(async () => {
   const osgb = dataSourceManager.getDataSource('osgb')
   if (osgb) {
     viewer.zoomTo(osgb)
+  }
+
+  factoryRoofTileset = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId) || null
+  factoryRoofDesiredOpen = !!ui.factoryRoofOpen
+  if (factoryRoofTileset) {
+    setupFactoryRoofAnimator(factoryRoofTileset)
   }
   
   // 设置管线图例
@@ -1759,7 +1979,8 @@ const redPoints = [
   const panoDS = new Cesium.CustomDataSource('pano-dots')
   redPoints.forEach((pt) => {
     panoDS.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 0),
+      // 将全景红点高度从 0 调整为 50 米，避免贴地被建筑或地形遮挡
+      position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 100),
       billboard: {
         image: createPanoDot(pt.type),
         width: 28,
@@ -2183,6 +2404,9 @@ const redPoints = [
     if (dataSourceManager) {
       dataSourceManager.toggleDataSource('osgb', ui.osgb)
       dataSourceManager.toggleDataSource('ck', ui.ck)
+      dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.baseId, ui.factory)
+      dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.roofId, ui.factory)
+      dataSourceManager.toggleDataSource(OFFICE_MODEL_ID, ui.office)
       dataSourceManager.toggleDataSource('warehouse', ui.geo)
       
       // 管线图层显示控制
@@ -2223,6 +2447,11 @@ const redPoints = [
     precipitationDS.show = ui.weather && ui.precipitation
     windDS.show = ui.weather && ui.wind
     warningsDS.show = ui.weather && ui.warnings
+
+    if (!ui.factory && factoryRoofState) {
+      cancelFactoryRoofAnimation()
+      applyFactoryRoofProgress(0, { forceRender: true })
+    }
     
     // 应用透明度
     const opacity = ui.weatherOpacity / 100
@@ -2237,7 +2466,7 @@ const redPoints = [
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.ck, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
+  watch(() => [ui.osgb, ui.ck, ui.factory, ui.office, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
 
   // 地形透明度监听
   watch(() => ui.terrainAlpha, (alpha) => {
@@ -2246,15 +2475,36 @@ const redPoints = [
     // 同步调整建筑透明度
     if (dataSourceManager) {
       const osgb = dataSourceManager.getDataSource('osgb')
-      if (osgb) {
+      if (osgb instanceof Cesium.Cesium3DTileset) {
         osgb.style = new Cesium.Cesium3DTileStyle({
           color: `rgba(255,255,255, ${alpha})`
         })
       }
       
       const ck = dataSourceManager.getDataSource('ck')
-      if (ck) {
+      if (ck instanceof Cesium.Cesium3DTileset) {
         ck.style = new Cesium.Cesium3DTileStyle({
+          color: `rgba(255,255,255, ${alpha})`
+        })
+      }
+
+      const factoryBase = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId)
+      if (factoryBase instanceof Cesium.Cesium3DTileset) {
+        factoryBase.style = new Cesium.Cesium3DTileStyle({
+          color: `rgba(255,255,255, ${alpha})`
+        })
+      }
+
+      const factoryRoof = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId)
+      if (factoryRoof instanceof Cesium.Cesium3DTileset) {
+        factoryRoof.style = new Cesium.Cesium3DTileStyle({
+          color: `rgba(255,255,255, ${alpha})`
+        })
+      }
+
+      const office = dataSourceManager.getDataSource(OFFICE_MODEL_ID)
+      if (office instanceof Cesium.Cesium3DTileset) {
+        office.style = new Cesium.Cesium3DTileStyle({
           color: `rgba(255,255,255, ${alpha})`
         })
       }
@@ -2280,8 +2530,52 @@ const redPoints = [
       
       const ck = dataSourceManager.getDataSource('ck')
       if (ck) ck.maximumScreenSpaceError = v
+
+      const factoryBase = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId)
+      if (factoryBase && typeof factoryBase.maximumScreenSpaceError !== 'undefined') {
+        factoryBase.maximumScreenSpaceError = v
+      }
+
+      const factoryRoof = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId)
+      if (factoryRoof && typeof factoryRoof.maximumScreenSpaceError !== 'undefined') {
+        factoryRoof.maximumScreenSpaceError = v
+      }
+
+      const office = dataSourceManager.getDataSource(OFFICE_MODEL_ID)
+      if (office && typeof office.maximumScreenSpaceError !== 'undefined') {
+        office.maximumScreenSpaceError = v
+      }
     }
     poke()
+  })
+
+  watch(() => ui.factoryRoofOpen, (open) => {
+    factoryRoofDesiredOpen = !!open
+    if (!ui.factory) return
+    if (!factoryRoofState && factoryRoofTileset) {
+      setupFactoryRoofAnimator(factoryRoofTileset)
+    }
+    if (factoryRoofState) {
+      animateFactoryRoof(open)
+    }
+  })
+
+  watch(() => ui.factory, (visible) => {
+    if (!visible) {
+      factoryRoofDesiredOpen = false
+      if (ui.factoryRoofOpen) ui.factoryRoofOpen = false
+      cancelFactoryRoofAnimation()
+      if (factoryRoofState) {
+        applyFactoryRoofProgress(0, { forceRender: true })
+      }
+    } else {
+      if (!factoryRoofState && factoryRoofTileset) {
+        setupFactoryRoofAnimator(factoryRoofTileset)
+      }
+      if (factoryRoofState) {
+        applyFactoryRoofProgress(ui.factoryRoofOpen ? 1 : 0, { forceRender: true })
+      }
+    }
   })
 
   // 天气图层监听器
@@ -2325,6 +2619,9 @@ onUnmounted(() => {
     clearInterval(weatherUpdateInterval)
     weatherUpdateInterval = null
   }
+  cancelFactoryRoofAnimation()
+  factoryRoofState = null
+  factoryRoofTileset = null
   if (analysisHandler) {
     try { analysisHandler.destroy() } catch {}
     analysisHandler = null
@@ -2609,7 +2906,7 @@ function onVendorFloatUp(){
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  return { ui, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover }
+  return { ui, panelCollapse, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover }
 }
 })
 </script>
@@ -2637,6 +2934,11 @@ function onVendorFloatUp(){
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.layer-panel.collapsed { padding:12px 16px; }
+.layer-panel.collapsed .panel-body { display:none; }
+.collapse-btn { background:rgba(255,255,255,0.1);border:none;color:#fff;cursor:pointer;padding:2px 8px;font-size:14px;line-height:1;border-radius:6px; }
+.collapse-btn:hover { background:rgba(255,255,255,0.22); }
+.layer-panel .title { display:flex;justify-content:space-between;align-items:center; }
 .layer-panel .row { 
   margin: 8px 0; 
   display: flex; 
@@ -2745,6 +3047,8 @@ function onVendorFloatUp(){
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.analysis-panel.collapsed { max-height:none; padding:12px 16px; }
+.analysis-panel.collapsed .panel-collapse-body { display:none; }
 
 .analysis-panel .panel-header {
   display: flex;
@@ -3150,6 +3454,14 @@ function onVendorFloatUp(){
   z-index: 12;
   box-shadow: 0 4px 22px rgba(0,0,0,0.35);
 }
+.warehouse-debug-panel.collapsed { max-height: unset; }
+.warehouse-debug-panel.collapsed .wd-body { display:none; }
+.warehouse-debug-panel .collapse-btn.mini { background:rgba(255,255,255,0.12);border:none;color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;cursor:pointer; }
+.warehouse-debug-panel .collapse-btn.mini:hover { background:rgba(255,255,255,0.25); }
+
+/* 进入离开动画 */
+.panel-fade-enter-active,.panel-fade-leave-active { transition: opacity .18s ease, transform .2s ease; }
+.panel-fade-enter-from,.panel-fade-leave-to { opacity:0; transform:translateY(-4px); }
 .warehouse-debug-panel .wd-header {
   display:flex;align-items:center;justify-content:space-between;
   padding:8px 12px 6px;

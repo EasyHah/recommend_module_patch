@@ -569,11 +569,10 @@ function onVoiceCommandInFullscreen(e: { transcript: string; isFinal: boolean; p
   
   // 路线设置
   if (parsed.location) {
-    const origin = parsed.location.from
-    const destination = parsed.location.to
+    const [, origin, destination] = parsed.location || []
     if (origin && destination) {
-      routeOrigin.value = String(origin).trim()
-      routeDestination.value = String(destination).trim()
+      routeOrigin.value = origin.trim()
+      routeDestination.value = destination.trim()
       console.log('设置路线:', routeOrigin.value, '→', routeDestination.value)
       // 触发路线分析
       analyzeRouteWeather()
@@ -1391,16 +1390,14 @@ onMounted(() => {
 
 .page-header h2 {
   margin: 0 0 8px 0;
-  /* 明亮主题：标题使用更亮的蓝色 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1f2937;
   font-size: 28px;
   font-weight: 600;
 }
 
 .subtitle {
   margin: 0;
-  /* 明亮主题：副标题使用浅蓝色 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
   font-size: 16px;
 }
 
@@ -1451,22 +1448,19 @@ onMounted(() => {
 
 .province-name {
   font-weight: 600;
-  /* 明亮主题：省份名称高亮 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
   margin-bottom: 4px;
 }
 
 .province-temp {
   font-size: 18px;
   font-weight: 700;
-  /* 明亮主题：温度采用更醒目的深蓝 */
-  color: #0284c7; /* sky-600 */
+  color: #1f2937;
 }
 
 .province-weather {
   font-size: 12px;
-  /* 明亮主题：天气描述采用浅蓝 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
 }
 
 /* 路径分析 */
@@ -1487,8 +1481,7 @@ onMounted(() => {
   display: block;
   margin-bottom: 4px;
   font-weight: 500;
-  /* 明亮主题：表单标签 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
 }
 
 .input-group input {
@@ -1567,8 +1560,7 @@ onMounted(() => {
 
 .route-analysis h4, .route-analysis h5 {
   margin: 16px 0 8px 0;
-  /* 明亮主题：分析标题 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1f2937;
 }
 
 .risk-summary {
@@ -1595,14 +1587,12 @@ onMounted(() => {
 
 .section-risk, .alt-description {
   font-weight: 600;
-  /* 明亮主题：小节标题 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
 }
 
 .section-severity, .section-recommendation, .alt-distance, .alt-risk {
   font-size: 14px;
-  /* 明亮主题：说明文本 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
   margin-top: 4px;
 }
 
@@ -1615,8 +1605,7 @@ onMounted(() => {
 
 .timing-item {
   margin: 4px 0;
-  /* 明亮主题：时间建议颜色 */
-  color: #0284c7; /* sky-600 */
+  color: #1e40af;
 }
 
 /* 预警信息 */
@@ -1646,8 +1635,7 @@ onMounted(() => {
 
 .warning-type {
   font-weight: 600;
-  /* 明亮主题：预警类型 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1f2937;
 }
 
 .warning-level {
@@ -1660,14 +1648,12 @@ onMounted(() => {
 .warning-title {
   font-weight: 500;
   margin-bottom: 4px;
-  /* 明亮主题：预警标题 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
 }
 
 .warning-areas, .warning-logistics {
   font-size: 13px;
-  /* 明亮主题：预警细节 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
   margin: 2px 0;
 }
 
@@ -1680,8 +1666,7 @@ onMounted(() => {
 
 .category h4 {
   margin: 0 0 12px 0;
-  /* 明亮主题：分类标题 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1f2937;
   font-size: 16px;
 }
 
@@ -1693,8 +1678,7 @@ onMounted(() => {
 
 .category li {
   margin: 6px 0;
-  /* 明亮主题：列表项 */
-  color: #0284c7; /* sky-600 */
+  color: #4b5563;
   position: relative;
   font-size: 14px;
 }
@@ -1709,8 +1693,7 @@ onMounted(() => {
 
 .loading, .no-data, .no-warnings {
   text-align: center;
-  /* 明亮主题：空状态与加载 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
   padding: 40px 20px;
   font-style: italic;
 }
@@ -1758,15 +1741,13 @@ onMounted(() => {
 :global(.weather-marker .weather-temp) {
   font-weight: bold;
   font-size: 13px;
-  /* 明亮主题：地图天气温度文字 */
-  color: #0284c7; /* sky-600 */
+  color: #1f2937;
   line-height: 1;
 }
 
 :global(.weather-marker .weather-desc) {
   font-size: 10px;
-  /* 明亮主题：地图天气描述文字 */
-  color: #38bdf8; /* sky-400 */
+  color: #6b7280;
   margin-top: 2px;
 }
 
@@ -1939,8 +1920,7 @@ onMounted(() => {
 
 .control-group label {
   font-weight: 500;
-  /* 明亮主题：控件标签 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
   min-width: 40px;
 }
 
@@ -1985,8 +1965,7 @@ onMounted(() => {
 
 .clear-btn {
   background: #f3f4f6;
-  /* 明亮主题：清除按钮文字 */
-  color: #0284c7; /* sky-600 */
+  color: #374151;
   border: 2px solid #e5e7eb;
 }
 
@@ -2006,8 +1985,7 @@ onMounted(() => {
   gap: 6px;
   cursor: pointer;
   font-size: 14px;
-  /* 明亮主题：图层开关标签 */
-  color: #0ea5e9; /* sky-500 */
+  color: #374151;
 }
 
 .layer-toggle input[type="checkbox"] {
@@ -2033,8 +2011,7 @@ onMounted(() => {
 
 .route-info h4 {
   margin: 0 0 12px 0;
-  /* 明亮主题：路线信息标题 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1e293b;
   font-size: 16px;
 }
 
@@ -2056,14 +2033,12 @@ onMounted(() => {
 
 .info-item .label {
   font-weight: 500;
-  /* 明亮主题：信息项标签 */
-  color: #7dd3fc; /* sky-300 */
+  color: #64748b;
 }
 
 .info-item .value {
   font-weight: 600;
-  /* 明亮主题：信息项值 */
-  color: #0ea5e9; /* sky-500 */
+  color: #1e293b;
 }
 
 .province-risk-marker {

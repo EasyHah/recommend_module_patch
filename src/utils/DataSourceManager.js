@@ -12,6 +12,7 @@ export class DataSourceManager {
     this.viewer = viewer
     this.dataSources = new Map()
     this.tilesets = new Map()
+    this.models = new Map()
     this.loading = new Set()
   }
 
@@ -63,6 +64,82 @@ export class DataSourceManager {
       
     } catch (error) {
       console.error(`加载 3D Tileset ${id} 失败:`, error)
+      throw error
+    } finally {
+      this.loading.delete(id)
+    }
+  }
+
+  /**
+   * 加载 glTF/GLB 模型（由 OBJ 转换而来）
+   * @param {string} id 模型唯一标识
+   * @param {string} url glTF/GLB 资源 URL（需位于 public/ 下）
+   * @param {object} options 额外选项：scale、modelMatrix、position、hpr、color 等
+   */
+  async loadModel(id, url, options = {}) {
+    if (this.loading.has(id)) {
+      console.warn(`模型 ${id} 正在加载中`)
+      return null
+    }
+
+    if (this.models.has(id)) {
+      console.warn(`模型 ${id} 已存在`)
+      return this.models.get(id)
+    }
+
+    const buildModelMatrix = () => {
+      if (options.modelMatrix) return options.modelMatrix
+      if (options.position) {
+        const [lon, lat, height = 0] = options.position
+        const hprDegrees = options.headingPitchRollDegrees || [0, 0, 0]
+        const hpr = new Cesium.HeadingPitchRoll(
+          Cesium.Math.toRadians(hprDegrees[0] || 0),
+          Cesium.Math.toRadians(hprDegrees[1] || 0),
+          Cesium.Math.toRadians(hprDegrees[2] || 0)
+        )
+        return Cesium.Transforms.headingPitchRollToFixedFrame(
+          Cesium.Cartesian3.fromDegrees(lon, lat, height),
+          hpr
+        )
+      }
+      return Cesium.Matrix4.clone(Cesium.Matrix4.IDENTITY, new Cesium.Matrix4())
+    }
+
+    try {
+      this.loading.add(id)
+      console.log(`开始加载模型: ${id}`)
+
+      const modelOptions = {
+        url,
+        modelMatrix: buildModelMatrix(),
+        scale: options.scale ?? 1,
+        minimumPixelSize: options.minimumPixelSize,
+        maximumScale: options.maximumScale,
+        allowPicking: options.allowPicking !== false,
+        color: options.color ? Cesium.Color.fromCssColorString(options.color) : undefined
+      }
+
+      let model
+      if (typeof Cesium.Model.fromGltfAsync === 'function') {
+        model = await Cesium.Model.fromGltfAsync(modelOptions)
+      } else if (typeof Cesium.Model.fromGltf === 'function') {
+        model = Cesium.Model.fromGltf(modelOptions)
+        await model.readyPromise
+      } else {
+        throw new Error('当前 Cesium 版本不支持 Model.fromGltf / Model.fromGltfAsync API')
+      }
+
+      this.viewer.scene.primitives.add(model)
+      if (typeof model.readyPromise?.then === 'function') {
+        await model.readyPromise
+      }
+
+      this.models.set(id, model)
+      console.log(`模型 ${id} 加载完成`)
+      return model
+
+    } catch (error) {
+      console.error(`加载模型 ${id} 失败:`, error)
       throw error
     } finally {
       this.loading.delete(id)
@@ -266,6 +343,36 @@ export class DataSourceManager {
           maximumScreenSpaceError: 12
         }
       },
+      {
+        type: 'model',
+        id: 'factory-base',
+        url: '/Assets/data/factoryOBJ/factory.glb',
+        options: {
+          position: [118.229307, 35.106653, 0],
+          headingPitchRollDegrees: [180, 0, 0],
+          scale: 1
+        }
+      },
+      {
+        type: 'model',
+        id: 'factory-roof',
+        url: '/Assets/data/factoryOBJ/Roof.glb',
+        options: {
+          position: [118.229307, 35.106653, 0],
+          headingPitchRollDegrees: [180, 0, 0],
+          scale: 1
+        }
+      },
+      {
+        type: 'model',
+        id: 'office-building',
+        url: '/Assets/data/buldingOBJ/Floor1.glb',
+        options: {
+          position: [118.229842, 35.107103, 0],
+          headingPitchRollDegrees: [180, 0, 0],
+          scale: 1
+        }
+      },
       // GeoJSON 数据
       {
         type: 'geojson',
@@ -394,6 +501,9 @@ export class DataSourceManager {
           case '3dtileset':
             result = await this.load3DTileset(config.id, config.url, config.options)
             break
+          case 'model':
+            result = await this.loadModel(config.id, config.url, config.options)
+            break
           case 'geojson':
             result = await this.loadGeoJSON(config.id, config.url, config.options)
             break
@@ -509,7 +619,7 @@ export class DataSourceManager {
    * 获取数据源
    */
   getDataSource(id) {
-    return this.dataSources.get(id) || this.tilesets.get(id)
+    return this.dataSources.get(id) || this.tilesets.get(id) || this.models.get(id)
   }
 
   /**
@@ -536,7 +646,11 @@ export class DataSourceManager {
       } else if (dataSource.dataSource) {
         dataSource.dataSource.show = visible
       }
+      return
     }
+
+    const model = this.models.get(id)
+    if (model) model.show = visible
   }
 
   /**
@@ -555,6 +669,13 @@ export class DataSourceManager {
       const dataSource = dataSourceData.dataSource || dataSourceData
       this.viewer.dataSources.remove(dataSource)
       this.dataSources.delete(id)
+      return true
+    }
+
+    const model = this.models.get(id)
+    if (model) {
+      this.viewer.scene.primitives.remove(model)
+      this.models.delete(id)
       return true
     }
 
@@ -577,6 +698,11 @@ export class DataSourceManager {
       this.viewer.dataSources.remove(dataSource)
     })
     this.dataSources.clear()
+
+    this.models.forEach((model) => {
+      this.viewer.scene.primitives.remove(model)
+    })
+    this.models.clear()
 
     this.loading.clear()
     console.log('数据源管理器已清理')
