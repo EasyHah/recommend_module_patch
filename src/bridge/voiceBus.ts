@@ -1,4 +1,4 @@
-import { onUnmounted } from 'vue'
+import { getCurrentInstance, onUnmounted } from 'vue'
 
 export type VoiceCommandPayload = {
   transcript: string
@@ -12,8 +12,10 @@ const listeners = new Set<Handler>()
 
 export function onVoiceCommand(handler: Handler) {
   listeners.add(handler)
-  // 方便在组件中自动清理
-  onUnmounted(() => listeners.delete(handler))
+  // 方便在组件中自动清理；若当前不在组件上下文则跳过生命周期注册
+  if (getCurrentInstance()) {
+    onUnmounted(() => listeners.delete(handler))
+  }
   return () => listeners.delete(handler)
 }
 

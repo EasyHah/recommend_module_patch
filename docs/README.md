@@ -123,6 +123,18 @@ docs/
 如需进一步拆分/合并，请在本文件开头追加“结构变更日志”小节。
 
 ---
+## 附：更换“全景红点”图标（1 分钟）
+- 图标文件位置：`public/Assets/Images/pano-dot.svg`（外部链接红点）、`public/Assets/Images/pano-360.svg`（本地 360° 全景点）
+- 代码映射位置：`src/components/MapView.vue` 顶部的 `PANO_ICON_CONFIG`
+  - external → 非 marzipano 类型
+  - marzipano → 使用内置全景查看器的点位
+- 更换方式：
+  1) 直接替换同名 SVG/PNG 文件；或
+  2) 修改 `PANO_ICON_CONFIG` 中的 `image/width/height` 指向你自己的图标路径
+
+注意：图标通过 Cesium Billboard 显示，尺寸单位为像素；远近缩放由 `scaleByDistance` 控制，如需更改请在同处微调。
+
+---
 ## 快速入口：操作手册（推荐给新同学）
 - 《操作手册（zh-CN）》：`docs/OPERATION_GUIDE.zh-CN.md`
   - 面向“怎么跑起来、怎么演示、出问题去哪看”的可操作指南

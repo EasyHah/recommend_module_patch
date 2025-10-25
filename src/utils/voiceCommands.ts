@@ -130,12 +130,13 @@ export function parseCommand(input: string): ParsedCommand {
   // 页面导航关键字 -> path 映射（可根据 router/index.ts 扩展）
   const pageMap: Record<string, { keywords: RegExp; path: string; page: string }> = {
     dashboard: { keywords: /(首页|主页|dashboard)/, path: '/', page: 'dashboard' },
-    route: { keywords: /(路线|路径|导航规划|路线规划|route)/, path: '/route', page: 'route' },
+    // route 页面已废弃：保留关键词但不提供导航路径，避免误跳转
+    // route: { keywords: /(路线|路径|导航规划|路线规划|route)/, path: '/route', page: 'route' },
     recommend: { keywords: /(推荐|商家推荐|供应商|vendor|recommend)/, path: '/recommend', page: 'recommend' },
     weather: { keywords: /(天气分析|天气|weather)/, path: '/weather', page: 'weather' },
     weatherTest: { keywords: /(天气测试|weather test|weather-test)/, path: '/weather-test', page: 'weather-test' },
     video: { keywords: /(视频识别|目标识别|video|video recognition)/, path: '/video-recognition', page: 'video-recognition' },
-  fire: { keywords: /(疏散|消防|演练|fire|evacuation)/, path: '/fire-evacuation', page: 'fire-evacuation' }
+    fire: { keywords: /(疏散|消防|演练|fire|evacuation)/, path: '/fire-evacuation', page: 'fire-evacuation' }
   }
   let navigation: ParsedCommand['navigation']
   for (const k in pageMap) {

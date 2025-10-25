@@ -57,6 +57,15 @@
             >
             <span>省份风险色彩</span>
           </label>
+
+          <label class="layer-toggle">
+            <input
+              type="checkbox"
+              v-model="showPublicCameras"
+              @change="togglePublicCameras"
+            >
+            <span>公开监控</span>
+          </label>
         </div>
 
         <!-- 地图容器 -->
@@ -362,6 +371,8 @@ import { weatherService } from '@/services/weather'
 import { disasterService } from '@/services/disaster'
 import type { ProvinceWeatherData, RouteWeatherAnalysis, WeatherAlert } from '@/types/weather'
 import { ensureAMapLoaded } from '@/utils/amapLoader'
+import { getRandomCameras, type PublicCamera } from '@/services/publicCameras'
+import Hls from 'hls.js'
 
 // 全局AMap类型声明
 declare global {
@@ -398,10 +409,12 @@ const silentMode = ref(false) // 静默模式，不显示提示
 // 地图相关状态
 const showWeatherLayer = ref(true)
 const showProvinceColors = ref(true)
+const showPublicCameras = ref(true)
 const mapFullscreen = ref(false)
 let routeMap: any = null
 let routePath: any = null
 let weatherMarkers: any[] = []
+let cameraMarkers: any[] = []
 
 // 悬浮窗状态
 const tooltipVisible = ref(false)
@@ -653,6 +666,16 @@ function toggleWeatherLayer() {
 function toggleProvinceColors() {
   showProvinceColors.value = !showProvinceColors.value
   updateMapLayers()
+}
+
+function togglePublicCameras() {
+  // 仅控制摄像头覆盖层的显示/隐藏
+  if (!showPublicCameras.value) {
+    clearPublicCameraMarkers()
+  } else if (currentRoute.value) {
+    // 重新挂载
+    addRoutePublicCameras(currentRoute.value)
+  }
 }
 
 function toggleFullscreen() {
@@ -1069,6 +1092,10 @@ async function searchRoute() {
       // 延迟添加沿途天气信息，确保路线渲染完成
       setTimeout(() => {
         addRouteWeatherInfo(currentRoute.value)
+        // 根据用户设置，附加公开监控标签
+        if (showPublicCameras.value) {
+          addRoutePublicCameras(currentRoute.value)
+        }
       }, 1000)
       
       // 显示路线信息
@@ -1114,6 +1141,8 @@ function clearRoute() {
     marker.setMap(null)
   })
   weatherMarkers.length = 0
+  // 清除摄像头标记
+  clearPublicCameraMarkers()
   
   // 清除当前路线
   currentRoute.value = null
@@ -1228,6 +1257,107 @@ function addRouteWeatherInfo(route: any) {
     } catch (error) {
       console.error(`获取路径点${index}天气失败:`, error)
     }
+  })
+}
+
+// 清理摄像头标记
+function clearPublicCameraMarkers() {
+  cameraMarkers.forEach(m => {
+    try { m.setMap && m.setMap(null) } catch {}
+  })
+  cameraMarkers = []
+}
+
+// 在路线节点处附加公开监控标签（随机来源，与路径几何无关）
+async function addRoutePublicCameras(route: any) {
+  if (!routeMap || !route?.steps || !Array.isArray(route.steps)) return
+  // 先清除旧的
+  clearPublicCameraMarkers()
+
+  const steps = route.steps
+  // 选择若干节点（均匀抽取），3~6 个之间
+  const targetCount = Math.min(6, Math.max(3, Math.floor(steps.length / 5) || 3))
+  const gap = Math.max(1, Math.floor(steps.length / targetCount))
+  const nodes: { lng: number; lat: number; label: string }[] = []
+  for (let i = 0; i < steps.length && nodes.length < targetCount; i += gap) {
+    const st = steps[i]
+    if (st?.start_location) {
+      nodes.push({
+        lng: st.start_location.lng,
+        lat: st.start_location.lat,
+        label: st.instruction || `路径节点 ${i + 1}`
+      })
+    }
+  }
+
+  if (!nodes.length) return
+  const cameras: PublicCamera[] = await getRandomCameras(nodes.length)
+  if (!cameras.length) return
+
+  nodes.forEach((node, idx) => {
+    const cam = cameras[idx % cameras.length]
+    const content = `
+      <div class="public-camera-label" title="公开监控">
+        <span class="icon">📷</span>
+        <span class="text">公开监控</span>
+      </div>
+    `
+    const marker = new window.AMap.Marker({
+      position: [node.lng, node.lat],
+      content,
+      offset: new window.AMap.Pixel(-18, -22),
+      extData: { cam, node }
+    })
+    marker.setMap(routeMap)
+    cameraMarkers.push(marker)
+
+    // 点击弹出信息窗（内嵌播放器）
+    marker.on('click', () => {
+      const vidId = `cam-video-${(cam.id || 'x').replace(/[^a-zA-Z0-9_-]/g,'')}`
+      const isHls = !!cam.streamUrl && /\.m3u8(\?|$)/i.test(cam.streamUrl)
+      const isMp4 = !!cam.streamUrl && /\.mp4(\?|$)/i.test(cam.streamUrl)
+      const html = `
+        <div class="camera-infowin">
+          <div class="title">${cam.name || '公开监控'}</div>
+          ${cam.city ? `<div class="meta">城市：${cam.city}</div>` : ''}
+          ${(isHls || isMp4) ? `<video id="${vidId}" class="player" controls playsinline style="width:100%;border-radius:6px;max-height:200px;background:#000"></video>` : ''}
+          ${cam.snapshotUrl ? `<img class="snapshot" src="${cam.snapshotUrl}" alt="snapshot" />` : ''}
+          <div class="links">
+            ${cam.streamUrl ? `<a href="${cam.streamUrl}" target="_blank" rel="noopener">在新窗口打开</a>` : ''}
+            ${cam.infoUrl ? `<a href="${cam.infoUrl}" target="_blank" rel="noopener">详情</a>` : ''}
+          </div>
+          <div class="tip">提示：点击视频控件播放；部分流可能受跨域或浏览器策略限制。</div>
+        </div>
+      `
+      const info = new window.AMap.InfoWindow({
+        content: html,
+        offset: new window.AMap.Pixel(0, -28)
+      })
+      info.open(routeMap, marker.getPosition())
+
+      // 初始化视频（HLS 或 MP4）
+      setTimeout(() => {
+        try {
+          if (!cam.streamUrl) return
+          const videoEl = document.getElementById(vidId)
+          if (!videoEl) return
+          const v = videoEl as HTMLVideoElement
+          if (/\.m3u8(\?|$)/i.test(cam.streamUrl)) {
+            if (Hls.isSupported()) {
+              const hls = new Hls({ maxBufferLength: 10 })
+              hls.loadSource(cam.streamUrl)
+              hls.attachMedia(v)
+            } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+              v.src = cam.streamUrl
+            }
+          } else if (/\.mp4(\?|$)/i.test(cam.streamUrl)) {
+            v.src = cam.streamUrl
+          }
+        } catch (err) {
+          console.warn('初始化视频失败', err)
+        }
+      }, 50)
+    })
   })
 }
 
@@ -1913,6 +2043,31 @@ onMounted(() => {
 :global(.route-point-marker.end-marker .marker-label) {
   background: #ef4444;
 }
+
+/* 公开监控标记样式 */
+:global(.public-camera-label) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #111827;
+  color: #fff;
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+:global(.public-camera-label .icon){ font-size: 14px; }
+:global(.public-camera-label .text){ line-height: 1; }
+
+:global(.camera-infowin) { max-width: 260px; }
+:global(.camera-infowin .title){ font-weight:700; margin-bottom:6px; color:#111; }
+:global(.camera-infowin .meta){ font-size:12px; color:#555; margin-bottom:8px; }
+:global(.camera-infowin .snapshot){ width:100%; max-height:160px; object-fit:cover; border-radius:6px; margin:6px 0; }
+:global(.camera-infowin .links){ display:flex; gap:10px; margin-top:6px; }
+:global(.camera-infowin .links a){ color:#2563eb; text-decoration:none; font-weight:600; }
+:global(.camera-infowin .links a:hover){ text-decoration:underline; }
+:global(.camera-infowin .tip){ margin-top:6px; color:#6b7280; font-size:11px; }
 
 /* 路线规划地图样式 */
 .route-map-section {

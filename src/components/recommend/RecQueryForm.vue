@@ -291,6 +291,24 @@ type VoiceRecommendPayload = {
   toDetail?: string
 }
 
+// 名称归一化：去除常见后缀，便于“新疆/新疆维吾尔自治区”等匹配
+function normalizeName(name: string): string {
+  return (name || '')
+    .replace(/\s+/g, '')
+    .replace(/省|市|地区|自治州|特别行政区|自治区|回族自治区|壮族自治区|维吾尔自治区/g, '')
+}
+
+// 常见省级行政区的首府城市名（可覆盖成你数据里的具体命名）
+const CAPITALS: Record<string, string> = {
+  '新疆维吾尔自治区': '乌鲁木齐市',
+  '西藏自治区': '拉萨市',
+  '内蒙古自治区': '呼和浩特市',
+  '广西壮族自治区': '南宁市',
+  '宁夏回族自治区': '银川市',
+  '香港特别行政区': '香港',
+  '澳门特别行政区': '澳门',
+}
+
 async function applyVoiceCommand(payload: VoiceRecommendPayload) {
   try {
     if (payload.fromText) {
@@ -305,9 +323,13 @@ async function applyVoiceCommand(payload: VoiceRecommendPayload) {
     const tryFillCity = (name: string|undefined, which:'from'|'to') => {
       if (!name) return
       const provs = Object.keys(root.value || {})
+      const nameClean = normalizeName(name)
       for (const p of provs) {
         const citiesOfP = Object.keys((root.value as any)[p] || {})
-        const foundCity = citiesOfP.find(c => c.includes(name) || name.includes(c))
+        const foundCity = citiesOfP.find(c => {
+          const cClean = normalizeName(c)
+          return cClean.includes(nameClean) || nameClean.includes(cClean)
+        })
         if (foundCity) {
           if (which==='from') {
             from.province = p
@@ -319,6 +341,35 @@ async function applyVoiceCommand(payload: VoiceRecommendPayload) {
             cities.to = citiesOfP
             to.city = foundCity
             districts.to = ((root.value as any)[p] || {})[foundCity] || []
+          }
+          break
+        }
+        // 若未匹配到城市，尝试匹配省级名称（如“新疆”）
+        const pClean = normalizeName(p)
+        if (pClean.includes(nameClean) || nameClean.includes(pClean)) {
+          if (which==='from') {
+            from.province = p
+            cities.from = citiesOfP
+            // 选首府或留空
+            const cap = CAPITALS[p]
+            if (cap && citiesOfP.includes(cap)) {
+              from.city = cap
+              districts.from = ((root.value as any)[p] || {})[cap] || []
+            } else {
+              from.city = ''
+              districts.from = []
+            }
+          } else {
+            to.province = p
+            cities.to = citiesOfP
+            const cap = CAPITALS[p]
+            if (cap && citiesOfP.includes(cap)) {
+              to.city = cap
+              districts.to = ((root.value as any)[p] || {})[cap] || []
+            } else {
+              to.city = ''
+              districts.to = []
+            }
           }
           break
         }

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "demo-hls-1",
+    "name": "示例公路监控 #1 (HLS)",
+    "city": "Demo City",
+    "streamUrl": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    "infoUrl": "https://test-streams.mux.dev/"
+  },
+  {
+    "id": "demo-hls-2",
+    "name": "示例公路监控 #2 (HLS)",
+    "city": "Demo City",
+    "streamUrl": "https://test-streams.mux.dev/pts_shift/master.m3u8",
+    "infoUrl": "https://test-streams.mux.dev/"
+  },
+  {
+    "id": "demo-mp4-1",
+    "name": "示例公路监控 #3 (MP4)",
+    "city": "Demo City",
+    "streamUrl": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+    "infoUrl": "https://test-videos.co.uk/"
+  },
+  {
+    "id": "demo-mp4-2",
+    "name": "示例公路监控 #4 (MP4)",
+    "city": "Demo City",
+    "streamUrl": "https://filesamples.com/samples/video/mp4/sample_640x360.mp4",
+    "infoUrl": "https://filesamples.com/"
+  },
+  {
+    "id": "demo-info-1",
+    "name": "示例公路监控 #5 (网页)",
+    "city": "Demo City",
+    "infoUrl": "https://www.seattle.gov/transportation/projects-and-programs/programs/travelers-information" 
+  },
+  {
+    "id": "demo-info-2",
+    "name": "示例公路监控 #6 (网页)",
+    "city": "Demo City",
+    "infoUrl": "https://511.org/"
+  }
+]

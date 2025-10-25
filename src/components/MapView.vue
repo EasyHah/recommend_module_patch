@@ -213,13 +213,22 @@ const FACTORY_MODEL_CONFIG = {
   rotationAxis: 'x',
   liftMeters: 12,
   openAngleDeg: 70,
-  animationDurationMs: 1200
+  animationDurationMs: 1200,
+  // 统一降级为平移动画
+  mode: 'translate',
+  fallbackLiftMeters: 30
 }
 const OFFICE_MODEL_ID = 'office-building'
 const CESIUM_ION_TOKEN = import.meta.env.VITE_CESIUM_ION_TOKEN || ''
 const CESIUM_ION_IMAGERY_ASSET_ID = Number.parseInt(import.meta.env.VITE_CESIUM_IMAGERY_ASSET_ID || '', 10)
 
 window.CESIUM_BASE_URL = '/'
+
+// 全景红点图标配置（可直接替换为自定义 SVG/PNG）
+const PANO_ICON_CONFIG = {
+  external: { image: '/Assets/Images/pano-dot.svg', width: 28, height: 28 },
+  marzipano: { image: '/Assets/Images/pano-360.svg', width: 30, height: 30 }
+}
 
 // 全局 Viewer 引用与安全重绘辅助（requestRender）
 const viewerRef = ref(null)
@@ -458,6 +467,7 @@ const warehouseEntities = new Set()
 
 // 厂房 / 新大楼模型引用与动画状态
 let factoryRoofTileset = null
+let factoryRoofAnimatorOverrides = null
 let factoryRoofState = null
 let factoryRoofDesiredOpen = false
 let factoryRoofAnimationId = null
@@ -1025,7 +1035,9 @@ function initFloorDrawer(viewer, floors, distance = 35.0) {
 }
 
 function factoryConfigWithOverrides(overrides = {}) {
-  return { ...FACTORY_MODEL_CONFIG, ...overrides }
+  const base = { ...FACTORY_MODEL_CONFIG, ...overrides }
+  if (!base.mode) base.mode = 'hinge'
+  return base
 }
 
 function computeHingeOffsetCartesian(offset = []) {
@@ -1046,30 +1058,41 @@ function applyFactoryRoofProgress(progress, { forceRender = false } = {}) {
   if (!factoryRoofState) return
   const clamped = Cesium.Math.clamp(progress, 0, 1)
   const { target, root, baseMatrix, hingeFrame, hingeFrameInverse, config } = factoryRoofState
-  const angleRad = Cesium.Math.toRadians((config.openAngleDeg ?? 70) * clamped)
-  const lift = (config.liftMeters ?? 10) * clamped
+  const mode = (config?.mode || 'hinge').toLowerCase()
 
-  let rotationMatrix3
-  switch ((config.rotationAxis || 'x').toLowerCase()) {
-    case 'y':
-      rotationMatrix3 = Cesium.Matrix3.fromRotationY(angleRad)
-      break
-    case 'z':
-      rotationMatrix3 = Cesium.Matrix3.fromRotationZ(angleRad)
-      break
-    default:
-      rotationMatrix3 = Cesium.Matrix3.fromRotationX(angleRad)
-      break
+  if (mode === 'translate') {
+    const lift = (config.fallbackLiftMeters ?? config.liftMeters ?? 10) * clamped
+    const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, lift))
+    const finalMatrix = Cesium.Matrix4.multiply(translation, baseMatrix, new Cesium.Matrix4())
+    if (root) root.transform = finalMatrix
+    else target.modelMatrix = finalMatrix
+  } else {
+    if (!hingeFrame || !hingeFrameInverse) return
+    const angleRad = Cesium.Math.toRadians((config.openAngleDeg ?? 70) * clamped)
+    const lift = (config.liftMeters ?? 10) * clamped
+
+    let rotationMatrix3
+    switch ((config.rotationAxis || 'x').toLowerCase()) {
+      case 'y':
+        rotationMatrix3 = Cesium.Matrix3.fromRotationY(angleRad)
+        break
+      case 'z':
+        rotationMatrix3 = Cesium.Matrix3.fromRotationZ(angleRad)
+        break
+      default:
+        rotationMatrix3 = Cesium.Matrix3.fromRotationX(angleRad)
+        break
+    }
+    const rotation = Cesium.Matrix4.fromRotationTranslation(rotationMatrix3)
+    const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, lift))
+    const localTransform = Cesium.Matrix4.multiply(translation, rotation, new Cesium.Matrix4())
+    const hingeLocal = Cesium.Matrix4.multiply(hingeFrame, localTransform, new Cesium.Matrix4())
+    const worldTransform = Cesium.Matrix4.multiply(hingeLocal, hingeFrameInverse, new Cesium.Matrix4())
+    const finalMatrix = Cesium.Matrix4.multiply(worldTransform, baseMatrix, new Cesium.Matrix4())
+
+    if (root) root.transform = finalMatrix
+    else target.modelMatrix = finalMatrix
   }
-  const rotation = Cesium.Matrix4.fromRotationTranslation(rotationMatrix3)
-  const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, lift))
-  const localTransform = Cesium.Matrix4.multiply(translation, rotation, new Cesium.Matrix4())
-  const hingeLocal = Cesium.Matrix4.multiply(hingeFrame, localTransform, new Cesium.Matrix4())
-  const worldTransform = Cesium.Matrix4.multiply(hingeLocal, hingeFrameInverse, new Cesium.Matrix4())
-  const finalMatrix = Cesium.Matrix4.multiply(worldTransform, baseMatrix, new Cesium.Matrix4())
-
-  if (root) root.transform = finalMatrix
-  else target.modelMatrix = finalMatrix
 
   factoryRoofState.progress = clamped
   if (!forceRender) requestRender()
@@ -1084,10 +1107,24 @@ function setupFactoryRoofAnimator(target, overrides = {}) {
     (root?.transform && Cesium.Matrix4.clone(root.transform, new Cesium.Matrix4())) ||
     (target.modelMatrix && Cesium.Matrix4.clone(target.modelMatrix, new Cesium.Matrix4())) ||
     Cesium.Matrix4.clone(Cesium.Matrix4.IDENTITY, new Cesium.Matrix4())
+  const options = factoryConfigWithOverrides(overrides)
+  if ((options.mode || 'hinge').toLowerCase() === 'translate') {
+    factoryRoofState = {
+      target,
+      root,
+      baseMatrix,
+      hingeFrame: null,
+      hingeFrameInverse: null,
+      config: options,
+      progress: 0
+    }
+    applyFactoryRoofProgress(factoryRoofDesiredOpen ? 1 : 0, { forceRender: true })
+    return
+  }
+
   const center = target.boundingSphere?.center
   if (!center) return
 
-  const options = factoryConfigWithOverrides(overrides)
   const hingeOffset = computeHingeOffsetCartesian(options.hingeOffsetENU)
   const enuAtCenter = Cesium.Transforms.eastNorthUpToFixedFrame(center)
   let hingePosition = Cesium.Cartesian3.clone(center)
@@ -1104,7 +1141,7 @@ function setupFactoryRoofAnimator(target, overrides = {}) {
   }
 
   factoryRoofState = {
-  target,
+    target,
     root,
     baseMatrix,
     hingeFrame,
@@ -1318,10 +1355,16 @@ onMounted(async () => {
     viewer.zoomTo(osgb)
   }
 
-  factoryRoofTileset = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId) || null
+  // 仅使用 factory-base 做平移动画（删去其它逻辑与 roof 依赖）
+  const factoryBaseModel = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId) || null
+  factoryRoofTileset = factoryBaseModel
+  factoryRoofAnimatorOverrides = {
+    mode: 'translate',
+    fallbackLiftMeters: FACTORY_MODEL_CONFIG.fallbackLiftMeters ?? FACTORY_MODEL_CONFIG.liftMeters
+  }
   factoryRoofDesiredOpen = !!ui.factoryRoofOpen
   if (factoryRoofTileset) {
-    setupFactoryRoofAnimator(factoryRoofTileset)
+    setupFactoryRoofAnimator(factoryRoofTileset, factoryRoofAnimatorOverrides || {})
   }
   
   // 设置管线图例
@@ -1524,6 +1567,27 @@ onMounted(async () => {
     if (sectionMode.value || excavationMode.value) return
     const picked = viewer.scene.pick(movement.position)
 
+    // ========= 厂房掀盖：若当前为“开启”状态且点击目标不是厂房模型，则先收回并中止后续逻辑 =========
+    if (ui.factory && ui.factoryRoofOpen) {
+      let isClickOnFactory = false
+      try {
+        const prim = picked && (picked.primitive || picked.model || null)
+        const ts = picked && picked.tileset
+        if (prim && (prim === factoryRoofTileset)) isClickOnFactory = true
+        // 当采用 fallback（以基础模型充当 roof 动画目标）时，同样接受点击基础模型
+        if (!isClickOnFactory && prim && factoryRoofTileset && factoryRoofTileset.root == null && prim === factoryRoofTileset) {
+          isClickOnFactory = true
+        }
+        if (!isClickOnFactory && ts && (ts === factoryRoofTileset)) isClickOnFactory = true
+      } catch {}
+      if (!isClickOnFactory) {
+        ui.factoryRoofOpen = false
+        // 由 watch(ui.factoryRoofOpen) 触发动画收回；此处吞掉事件，避免与仓库点击高亮冲突
+        poke()
+        return
+      }
+    }
+
     // ========= 楼层抽屉逻辑（优先处理） =========
     if (ui.floors && floorInfos.length) {
       // 兼容 Cesium 不同版本 pick 结果：primitive 或 tileset
@@ -1666,22 +1730,7 @@ onMounted(async () => {
     poke()
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-  // 5) 全景红点（共享纹理 + 距离裁剪 + 聚合）
-  function createDot() {
-    const canvas = document.createElement('canvas')
-    canvas.width = 16
-    canvas.height = 16
-    const ctx = canvas.getContext('2d')
-    ctx.beginPath()
-    ctx.arc(8, 8, 6, 0, 2 * Math.PI)
-    ctx.fillStyle = 'red'
-    ctx.fill()
-    ctx.strokeStyle = 'white'
-    ctx.lineWidth = 0.3
-    ctx.stroke()
-    return canvas
-  }
-  const sharedDot = createDot()
+  // 5) 全景红点（支持自定义图标 + 距离裁剪 + 聚合）
 
 const redPoints = [
     { lon: 118.22840000032071, lat: 35.10694586947898, url: '/Assets/data/project-title/', type: 'marzipano' },
@@ -1813,48 +1862,21 @@ const redPoints = [
     { lon: 118.22935000032071, lat: 35.10277526147898, url: 'http://192.168.2.9:3095 ' }
   ]
 
-  // 创建不同类型的点标记
-  function createPanoDot(type = 'external') {
-    const canvas = document.createElement('canvas')
-    canvas.width = 20
-    canvas.height = 20
-    const ctx = canvas.getContext('2d')
-    ctx.beginPath()
-    ctx.arc(10, 10, 8, 0, 2 * Math.PI)
-    
-    if (type === 'marzipano') {
-      // 本地全景点：蓝色带360°标识
-      ctx.fillStyle = '#007acc'
-      ctx.fill()
-      ctx.strokeStyle = 'white'
-      ctx.lineWidth = 2
-      ctx.stroke()
-      // 添加360°标识
-      ctx.fillStyle = 'white'
-      ctx.font = '8px Arial'
-      ctx.textAlign = 'center'
-      ctx.fillText('360', 10, 13)
-    } else {
-      // 外部链接：传统红色
-      ctx.fillStyle = 'red'
-      ctx.fill()
-      ctx.strokeStyle = 'white'
-      ctx.lineWidth = 2
-      ctx.stroke()
-    }
-    
-    return canvas
+  // 获取图标配置
+  function getPanoIcon(type = 'external') {
+    return PANO_ICON_CONFIG[type] || PANO_ICON_CONFIG.external
   }
 
   const panoDS = new Cesium.CustomDataSource('pano-dots')
   redPoints.forEach((pt) => {
+    const icon = getPanoIcon(pt.type)
     panoDS.entities.add({
       // 将全景红点高度从 0 调整为 50 米，避免贴地被建筑或地形遮挡
       position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 100),
       billboard: {
-        image: createPanoDot(pt.type),
-        width: 28,
-        height: 28,
+        image: icon.image,
+        width: icon.width,
+        height: icon.height,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 6000, 0.3),
         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 6500),
@@ -2274,8 +2296,7 @@ const redPoints = [
     if (dataSourceManager) {
   dataSourceManager.toggleDataSource('osgb', ui.osgb)
       dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.baseId, ui.factory)
-      dataSourceManager.toggleDataSource(FACTORY_MODEL_CONFIG.roofId, ui.factory)
-      dataSourceManager.toggleDataSource(OFFICE_MODEL_ID, ui.office)
+  // 仅控制基础工厂模型显示
       dataSourceManager.toggleDataSource('warehouse', ui.geo)
       
       // 管线图层显示控制
@@ -2357,19 +2378,7 @@ const redPoints = [
         })
       }
 
-      const factoryRoof = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId)
-      if (factoryRoof instanceof Cesium.Cesium3DTileset) {
-        factoryRoof.style = new Cesium.Cesium3DTileStyle({
-          color: `rgba(255,255,255, ${alpha})`
-        })
-      }
 
-      const office = dataSourceManager.getDataSource(OFFICE_MODEL_ID)
-      if (office instanceof Cesium.Cesium3DTileset) {
-        office.style = new Cesium.Cesium3DTileStyle({
-          color: `rgba(255,255,255, ${alpha})`
-        })
-      }
     }
     
     poke()
@@ -2395,15 +2404,7 @@ const redPoints = [
         factoryBase.maximumScreenSpaceError = v
       }
 
-      const factoryRoof = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.roofId)
-      if (factoryRoof && typeof factoryRoof.maximumScreenSpaceError !== 'undefined') {
-        factoryRoof.maximumScreenSpaceError = v
-      }
-
-      const office = dataSourceManager.getDataSource(OFFICE_MODEL_ID)
-      if (office && typeof office.maximumScreenSpaceError !== 'undefined') {
-        office.maximumScreenSpaceError = v
-      }
+      // 已移除 roof/office 的细粒度控制
     }
     poke()
   })
@@ -2412,7 +2413,7 @@ const redPoints = [
     factoryRoofDesiredOpen = !!open
     if (!ui.factory) return
     if (!factoryRoofState && factoryRoofTileset) {
-      setupFactoryRoofAnimator(factoryRoofTileset)
+      setupFactoryRoofAnimator(factoryRoofTileset, factoryRoofAnimatorOverrides || {})
     }
     if (factoryRoofState) {
       animateFactoryRoof(open)
@@ -2429,7 +2430,7 @@ const redPoints = [
       }
     } else {
       if (!factoryRoofState && factoryRoofTileset) {
-        setupFactoryRoofAnimator(factoryRoofTileset)
+        setupFactoryRoofAnimator(factoryRoofTileset, factoryRoofAnimatorOverrides || {})
       }
       if (factoryRoofState) {
         applyFactoryRoofProgress(ui.factoryRoofOpen ? 1 : 0, { forceRender: true })

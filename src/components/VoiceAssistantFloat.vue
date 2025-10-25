@@ -305,8 +305,8 @@ const handleFinalVoice = async (rawText: string, parsed?: any) => {
     }
   }
 
-  // 2) 其它页面导航（保留）
-  if (parsed?.navigation?.path) {
+  // 2) 其它页面导航（route 页面已废弃：忽略）
+  if (parsed?.navigation?.path && parsed.navigation.page !== 'route') {
     try {
       router.push(parsed.navigation.path)
       speak(`已跳转到${parsed.navigation.page}页面`)
@@ -464,8 +464,8 @@ onMounted(() => {
         return
       }
       
-      // 其他页面导航也无需唤醒
-      if (p?.navigation?.path && p.navigation.page !== 'recommend') {
+      // 其他页面导航也无需唤醒（排除已废弃的 route）
+      if (p?.navigation?.path && p.navigation.page !== 'recommend' && p.navigation.page !== 'route') {
         handleFinalVoice(text, p)
         return
       }

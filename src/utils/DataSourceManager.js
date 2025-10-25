@@ -343,26 +343,7 @@ export class DataSourceManager {
           scale: 1
         }
       },
-      {
-        type: 'model',
-        id: 'factory-roof',
-        url: '/Assets/data/factoryOBJ/Roof.glb',
-        options: {
-          position: [118.229307, 35.106653, 0],
-          headingPitchRollDegrees: [180, 0, 0],
-          scale: 1
-        }
-      },
-      {
-        type: 'model',
-        id: 'office-building',
-        url: '/Assets/data/buldingOBJ/Floor1.glb',
-        options: {
-          position: [118.229842, 35.107103, 0],
-          headingPitchRollDegrees: [180, 0, 0],
-          scale: 1
-        }
-      },
+      // 注：移除 factory-roof 与 office-building 加载，统一采用 factory-base 模型进行平移动画降级
       // GeoJSON 数据
       {
         type: 'geojson',
@@ -598,7 +579,7 @@ export class DataSourceManager {
    * 获取数据源
    */
   getDataSource(id) {
-    return this.dataSources.get(id) || this.tilesets.get(id) || this.models.get(id)
+    return this.models.get(id) || this.tilesets.get(id) || this.dataSources.get(id)
   }
 
   /**
