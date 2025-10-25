@@ -277,6 +277,13 @@
 
       <!-- 实时预警 -->
       <FluentCard title="实时预警" class="warnings-card">
+        <!-- 天气云图（雷达叠加） -->
+        <div class="warnings-cloud">
+          <div class="cloud-title">☁️ 天气云图 / 雷达</div>
+          <div id="warningCloudMap" class="cloud-map"></div>
+          <div class="cloud-source">数据来源：RainViewer Radar（示例）</div>
+        </div>
+
         <div v-if="warnings.length > 0" class="warnings-list">
           <div 
             v-for="warning in warnings" 
@@ -415,6 +422,10 @@ let routeMap: any = null
 let routePath: any = null
 let weatherMarkers: any[] = []
 let cameraMarkers: any[] = []
+// 实时预警云图小地图实例
+let warningCloudMap: any = null
+let warningCloudLayer: any = null
+let warningCloudTimer: any = null
 
 // 悬浮窗状态
 const tooltipVisible = ref(false)
@@ -1260,6 +1271,64 @@ function addRouteWeatherInfo(route: any) {
   })
 }
 
+// 初始化“实时预警”卡片中的云图小地图
+async function initWarningCloudMap() {
+  const AMap = await ensureAMapLoaded(false)
+  const container = document.getElementById('warningCloudMap')
+  if (!AMap || !container) return
+
+  // 如已有实例，先销毁
+  if (warningCloudMap) {
+    try { warningCloudMap.destroy() } catch {}
+    warningCloudMap = null
+  }
+
+  warningCloudMap = new window.AMap.Map('warningCloudMap', {
+    zoom: 5,
+    center: [105.0, 35.0],
+    mapStyle: 'amap://styles/whitesmoke',
+    dragEnable: false,
+    zoomEnable: false,
+    doubleClickZoom: false,
+    keyboardEnable: false
+  })
+
+  // Radar/Cloud 瓦片：优先使用和风QWeather雷达瓦片（需配置 VITE_QWEATHER_RADAR_TILE 与 VITE_QWEATHER_KEY），否则回退示例 RainViewer
+  const qTile: string | undefined = (import.meta as any).env?.VITE_QWEATHER_RADAR_TILE
+  const qKey: string | undefined = (import.meta as any).env?.VITE_QWEATHER_KEY
+  let tileTemplate = ''
+  if (qTile && qKey) {
+    // 瓦片模板应包含 {z}/{x}/{y}，例如：
+    // https://mapapi.qweather.com/map/v2/radar/{z}/{x}/{y}.png
+    // 若模板未带 key 参数，这里自动追加
+    tileTemplate = qTile.includes('key=') ? qTile : `${qTile}${qTile.includes('?') ? '&' : '?'}key=${encodeURIComponent(qKey)}`
+  } else {
+    console.warn('[CloudMap] 未检测到 VITE_QWEATHER_RADAR_TILE 或 VITE_QWEATHER_KEY，将使用 RainViewer 示例瓦片')
+    tileTemplate = 'https://tilecache.rainviewer.com/v2/radar/nowcast/0/256/{z}/{x}/{y}/2/1_1.png'
+  }
+
+  const tileUrl = `${tileTemplate}${tileTemplate.includes('?') ? '&' : '?'}_=${Date.now()}`
+  warningCloudLayer = new window.AMap.TileLayer({
+    tileUrl,
+    zIndex: 110,
+    zooms: [3, 12]
+  })
+  warningCloudLayer.setMap(warningCloudMap)
+
+  // 定时轻量刷新（避免缓存）
+  warningCloudTimer && clearInterval(warningCloudTimer)
+  warningCloudTimer = setInterval(() => {
+    try {
+      if (warningCloudLayer) warningCloudLayer.setMap(null)
+      const url = `${tileTemplate}${tileTemplate.includes('?') ? '&' : '?'}_=${Date.now()}`
+      warningCloudLayer = new window.AMap.TileLayer({ tileUrl: url, zIndex: 110, zooms: [3, 12] })
+      warningCloudLayer.setMap(warningCloudMap)
+    } catch (e) {
+      console.warn('刷新云图失败', e)
+    }
+  }, 5 * 60 * 1000)
+}
+
 // 清理摄像头标记
 function clearPublicCameraMarkers() {
   cameraMarkers.forEach(m => {
@@ -1491,6 +1560,9 @@ onMounted(async () => {
 
   // 添加键盘事件监听
   document.addEventListener('keydown', handleKeydown)
+  // 初始化预警云图小地图
+  await nextTick()
+  initWarningCloudMap().catch(err => console.warn('初始化云图失败', err))
 })
 
 // 组件卸载时清理事件监听
@@ -1498,6 +1570,9 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   // 恢复body样式
   document.body.style.overflow = ''
+  // 销毁预警云图地图
+  try { warningCloudTimer && clearInterval(warningCloudTimer) } catch {}
+  try { warningCloudMap && warningCloudMap.destroy && warningCloudMap.destroy() } catch {}
 })
 // 订阅全局语音命令
 onMounted(() => {
@@ -1754,6 +1829,12 @@ onMounted(() => {
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* 云图区域 */
+.warnings-cloud { margin-bottom: 12px; }
+.warnings-cloud .cloud-title { font-weight: 600; color: #0ea5e9; margin-bottom: 6px; }
+.warnings-cloud .cloud-source { color: #6b7280; font-size: 12px; margin-top: 6px; }
+.cloud-map { width: 100%; height: 220px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); border: 1px solid #e5e7eb; }
 
 .warning-item {
   padding: 12px;
