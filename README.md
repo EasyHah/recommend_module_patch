@@ -124,6 +124,8 @@ VITE_APPFLOW_INTEGRATE_ID=cit-xxxxxxxxxxxxxxxxxxxx
 
 ## 📚 深入阅读
 
+- 项目展示文档（含示例与截图位）：`docs/PROJECT_SHOWCASE.zh-CN.md`
+- 技术方案 / 架构 / 功能设计：`docs/SOLUTION_ARCHITECTURE_DESIGN.zh-CN.md`
 - 天气集成完成报告：`README_INTEGRATION_COMPLETE.md`
 - Appflow Chat 集成方案（含使用、调试与降级）：`APPFLOW_CHAT_INTEGRATION_COMPLETE.md`、`APPFLOW_CHAT_USAGE_GUIDE.md`、`APPFLOW_TEST_GUIDE.md`
 - 视频识别演示说明：`VIDEO_RECOGNITION_DEMO.md`

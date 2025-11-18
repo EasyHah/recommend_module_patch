@@ -6,6 +6,8 @@
 ## 1. 总览 / 入口
 | 场景 | 首选阅读 | 补充/深入 | 快速演示页面 | 相关路由 |
 |------|----------|-----------|--------------|----------|
+| 技术方案 / 架构 / 功能设计 | `SOLUTION_ARCHITECTURE_DESIGN.zh-CN.md` | `OPERATION_GUIDE.zh-CN.md` | （无） | 多路由 |
+| 一键用于演示/录屏的展示文档 | `PROJECT_SHOWCASE.zh-CN.md` | `OPERATION_GUIDE.zh-CN.md` | 参见文档内截图位 | 多路由 |
 | 项目整体功能一览 | `README.md` | `INTEGRATION_PROJECT_COMPLETE.md` | （无） | `/` |
 | 集成交付成果（整体验收） | `INTEGRATION_PROJECT_COMPLETE.md` | `README_INTEGRATION_COMPLETE.md` | （无） | `/` |
 | 运行/构建指引 | `README.md` | （无） | （无） | `/` |

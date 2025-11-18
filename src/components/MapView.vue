@@ -56,6 +56,23 @@
 
           <div class="row sep"></div>
 
+          <!-- 园区路线（抛物线） -->
+          <label class="row">
+            <input type="checkbox" v-model="ui.vendorCurves"> 园区→目的地曲线
+          </label>
+          <template v-if="ui.vendorCurves">
+            <div class="row small">数量上限：
+              <input type="number" min="1" max="500" step="1" v-model.number="ui.vendorCurvesMax" style="width:80px;margin-left:6px;"> 条
+              <button class="btn small" style="margin-left:8px;" @click="drawVendorCurvesForSelected">重绘</button>
+            </div>
+            <div class="row small">分段（越大越顺滑）：{{ ui.vendorCurvesStep }}</div>
+            <input class="slider" type="range" min="8" max="120" step="2" v-model.number="ui.vendorCurvesStep" />
+            <div class="row small">高度比例：{{ (ui.vendorCurvesHeight*100).toFixed(0) }}%</div>
+            <input class="slider" type="range" min="0.05" max="0.3" step="0.01" v-model.number="ui.vendorCurvesHeight" />
+          </template>
+
+          <div class="row sep"></div>
+
           <div class="row small">Tiles 细节（SSE）：{{ ui.sse }}</div>
           <input class="slider" type="range" min="8" max="24" step="1" v-model.number="ui.sse" />
         </div>
@@ -250,13 +267,12 @@ const ui = reactive({
   osgb: true,
   factory: true,
   factoryRoofOpen: false,
-  office: true,
   geo: true,
   floors: true,
   facilities: true,
   fireExtinguishers: true,
   pano: true,
-  demoParabola: true,
+  demoParabola: false,
   pipelines: true,
   terrainAlpha: 0.35,  // 地形透明度
   cluster: true,
@@ -270,7 +286,12 @@ const ui = reactive({
   warnings: true,
   weatherOpacity: 70,
   // 剖面分析缓冲距离（米）
-  sectionBuffer: 50
+  sectionBuffer: 50,
+  // 园区 -> 物流目的地 曲线
+  vendorCurves: true,
+  vendorCurvesMax: 80,
+  vendorCurvesStep: 40,
+  vendorCurvesHeight: 0.12
 })
 
 // 面板折叠状态
@@ -460,6 +481,7 @@ let sectionTempEntities = []
 let excavationTempEntities = []
 let dataSourceManager = null
 let warehouseDebugDS = null
+let vendorCurvesDS = null
 let lastWarehouseHighlight = null
 let redecorateTimer = null
 // 仓库实体集合，用于区分与普通 polygon 高亮
@@ -1311,6 +1333,111 @@ onMounted(async () => {
     animatedParabola(twoPoints)
   }
 
+  // ===== 园区 -> 物流目的地 曲线（批量绘制） =====
+  function ensureVendorCurvesDS(){
+    const viewer = viewerRef.value
+    if(!viewer) return null
+    if(!vendorCurvesDS){
+      vendorCurvesDS = new Cesium.CustomDataSource('vendor-curves')
+      viewer.dataSources.add(vendorCurvesDS)
+    }
+    return vendorCurvesDS
+  }
+  function clearVendorCurves(){
+    const viewer = viewerRef.value
+    if(vendorCurvesDS && viewer){
+      try{ viewer.dataSources.remove(vendorCurvesDS) }catch{}
+      vendorCurvesDS = null
+      requestRender()
+    }
+  }
+  function drawParabolaToDS(ds, startLng, startLat, endLng, endLat, attrs = {}){
+    if(!ds) return
+    const start = [startLng, startLat, 0]
+    const step = Math.max(4, Math.floor(ui.vendorCurvesStep || 40))
+    const heightProportion = ui.vendorCurvesHeight || 0.12
+    const dLon = (endLng - start[0]) / step
+    const dLat = (endLat - start[1]) / step
+    const deltaLon = dLon * Math.abs(111000 * Math.cos(start[1]))
+    const deltaLat = dLat * 111000
+    const end = [0,0,0]
+    const heigh = Math.floor(step * Math.sqrt(deltaLon ** 2 + deltaLat ** 2) * heightProportion)
+    const x2 = 10000 * Math.sqrt(dLon ** 2 + dLat ** 2)
+    const a = heigh / (x2 * x2)
+    const y = x => Math.floor(heigh - a * x * x)
+    for (let i=1;i<=step;i++){
+      end[0] = start[0] + dLon
+      end[1] = start[1] + dLat
+      const x = x2 * ((2 * i) / step - 1)
+      end[2] = y(x)
+      const positions = Cesium.Cartesian3.fromDegreesArrayHeights([...start, ...end])
+      ds.entities.add({
+        polyline: {
+          positions,
+          width: 2,
+          material: new Cesium.PolylineOutlineMaterialProperty({
+            color: Cesium.Color.GOLD,
+            outlineWidth: 0.25
+          })
+        },
+        properties: {
+          type: 'vendor-curve',
+          ...attrs
+        }
+      })
+      start[0] = end[0]; start[1] = end[1]; start[2] = end[2]
+    }
+  }
+  // 解析 route 字段中的城市列表（去重、去空）
+  function parseRouteCities(route){
+    if(!route) return []
+    const s = String(route)
+    // 将连接符与标点替换为空格，然后按空白切分
+    const norm = s.replace(/[↔<＞>←→\-–—~～→⇒▶️➡️至到、，,;；|]/g, ' ')
+    const parts = norm.split(/\s+/).map(t=>t.trim()).filter(Boolean)
+    // 过滤掉太短的词（如单个符号），保留中文/字母/市/州等常见后缀
+    const cleaned = parts.map(p=>p.replace(/^[^\p{L}\p{Script=Han}]+|[^\p{L}\p{Script=Han}]+$/gu, ''))
+      .filter(p=>p && p.length>=2)
+    // 去重，保持顺序
+    const seen = new Set()
+    const result = []
+    for(const c of cleaned){ if(!seen.has(c)){ seen.add(c); result.push(c) } }
+    return result
+  }
+  async function drawVendorCurvesForSelected(){
+    const viewer = viewerRef.value
+    if(!viewer) return
+    const w = currentWarehouseDetail.value
+    if(!w || w.lon==null || w.lat==null) return
+    const ds = ensureVendorCurvesDS()
+    if(!ds) return
+    try{ ds.entities.removeAll() }catch{}
+    const vendors = currentCenterVendors.value || []
+    if(!vendors.length) return
+    const maxCount = Math.max(1, Math.floor(ui.vendorCurvesMax || 80))
+    console.info('[VendorCurves] 准备绘制: center="'+(w.groupName||'')+'" vendors='+vendors.length+' 上限='+maxCount)
+    let count = 0
+    for(const v of vendors){
+      if(count >= maxCount) break
+      const loc = v.location || {}
+      const lng = Number(loc.lng ?? loc.lon)
+      const lat = Number(loc.lat)
+      if(Number.isFinite(lng) && Number.isFinite(lat)){
+        const attrs = {
+          vendorId: v.id,
+          vendorName: v.logisticsName || v.name || '',
+          centerName: w.groupName || v.centerName || '',
+          routeRaw: v.route || '',
+          routeCities: parseRouteCities(v.route || '')
+        }
+        drawParabolaToDS(ds, w.lon, w.lat, lng, lat, attrs)
+        count++
+      }
+    }
+    console.info('[VendorCurves] 已绘制曲线数量=', count)
+    requestRender()
+  }
+
   // ===== 全景红点 (pano) =====
   const redEntities = []
   function createScaledRedDot(){
@@ -1431,6 +1558,14 @@ onMounted(async () => {
     await viewer.dataSources.add(warehouseDebugDS)
     warehouseDebugDS.show = warehousesMeta.showLabels
     console.log('[仓库调试] 标签已建立:', warehouseDebugDS.entities.values.length)
+    // 若开启了园区曲线且尚未选中园区，则默认选中第一个有坐标的园区并绘制
+    if (ui.vendorCurves) {
+      if (!warehousesMeta.selectedFid) {
+        const candidate = (warehousesMeta.list||[]).find(m => Number.isFinite(m.lon) && Number.isFinite(m.lat))
+        if (candidate) warehousesMeta.selectedFid = candidate.fid
+      }
+      try { await drawVendorCurvesForSelected() } catch (e) { console.warn('[VendorCurves] 初次绘制失败:', e) }
+    }
     // （已合并至主点击 handler 中，这里不再单独注册仓库拾取）
   } catch (e) {
     console.warn('装饰仓库 CSV 失败:', e)
@@ -2356,7 +2491,7 @@ const redPoints = [
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.factory, ui.office, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
+  watch(() => [ui.osgb, ui.factory, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
 
   // 地形透明度监听
   watch(() => ui.terrainAlpha, (alpha) => {
@@ -2449,6 +2584,18 @@ const redPoints = [
     poke()
   })
 
+  // 园区 -> 目的地曲线：开关与选中仓库变化时重绘
+  watch(() => ui.vendorCurves, (on) => {
+    if (on) {
+      drawVendorCurvesForSelected()
+    } else {
+      clearVendorCurves()
+    }
+  })
+  watch(currentWarehouseDetail, () => {
+    if (ui.vendorCurves) drawVendorCurvesForSelected()
+  })
+
   // 分组跨度变化 -> 防抖重建
   watch(() => warehousesMeta.fidGroupSize, (val) => {
     clearTimeout(redecorateTimer)
@@ -2494,6 +2641,8 @@ onUnmounted(() => {
     try { dataSourceManager.destroy() } catch {}
     dataSourceManager = null
   }
+  // 清理园区曲线数据源
+  try { clearVendorCurves() } catch {}
   window.removeEventListener('keydown', onKeydown)
 })
 
@@ -2774,7 +2923,7 @@ function onVendorFloatUp(){
 <style>
 * { box-sizing: border-box; padding: 0; margin: 0; }
 #app { margin: 0; padding: 0; }
-.map-root { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.map-root { position: relative; width: 100%; height: 100%; overflow: hidden; }
 #cesiumContainer { width: 100%; height: 100%; }
 
 /* Fluent 设计风格图层面板（右上角） */

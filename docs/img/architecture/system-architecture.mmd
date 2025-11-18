@@ -1,0 +1,71 @@
+flowchart LR
+  %% 分层：前端、服务、第三方
+  subgraph Client[前端 Web 应用（Vue 3 + Vite）]
+    Router[Vue Router]
+    Store[Pinia Store]
+    UI[Views & Components]
+    Home[主页/推荐侧栏导航]
+    Map[地图与三维可视化]
+    Weather[天气模块]
+    Voice[语音助手]
+    Chat[AI 聊天（LKE / Appflow）]
+    Video[视频识别]
+    Evac[火灾疏散模拟]
+    Workers[Web Workers]
+    subgraph MapFeatures[地图图层与工具]
+      Pipelines[地下管线/剖面/挖方/导出]
+  Floor[楼层抽屉]
+      Facilities[设施/灭火器]
+      Pano[全景红点]
+      Curves[园区→目的地曲线]
+    end
+  end
+
+  subgraph Services[本地/后台服务]
+    TokenSrv[Token 签发服务\nserver/lke-token-server.mjs]
+    LogisticsSrv[物流数据服务\nserver/logistics-server.mjs]
+  end
+
+  subgraph Integrations[第三方 / 外部系统]
+    QWeather[(和风天气 API)]
+    AMapJS[高德 JS SDK]
+    AMapREST[(高德 REST)]
+    LKE[(LKE 平台 WS / SSE)]
+    Appflow[(Appflow Chat)]
+    MediaAssets[(模型 / 运行时资源\nMediaPipe / ONNX Runtime Web)]
+  end
+
+  Dev[(Vite Dev / Build)] --> Client
+
+  UI --> Router
+  UI --> Store
+  UI --> Map
+  UI --> Weather
+  UI --> Voice
+  UI --> Chat
+  UI --> Video
+  UI --> Home
+  UI --> Evac
+  Home -- 入口导航 --> Weather
+
+  Weather --> QWeather
+  Map --> AMapJS
+  Map --> AMapREST
+
+  Chat --> LKE
+  Chat --> Appflow
+  Chat --> TokenSrv
+
+  Voice --> Chat
+
+  Video --> Workers
+  Workers --> MediaAssets
+  Evac --> MediaAssets
+
+  LogisticsSrv -- 数据供给 --> UI
+  Map --> MapFeatures
+
+  subgraph Data[本地/静态数据]
+    StaticData[(JSON/GeoJSON/CSV)]
+  end
+  MapFeatures --> StaticData

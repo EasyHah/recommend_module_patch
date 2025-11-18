@@ -31,6 +31,15 @@
 				"$tsc"
 			],
 			"group": "build"
+		},
+		{
+			"label": "gen:route-cities",
+			"type": "shell",
+			"command": "npm run gen:route-cities",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }

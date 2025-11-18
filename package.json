@@ -9,13 +9,15 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "test": "vitest run",
+    "gen:arch": "mmdc -i docs/img/architecture/system-architecture.mmd -o docs/img/architecture/system-architecture.png -b transparent -s 1.2",
     "lke:server": "node server/lke-token-server.mjs",
     "logistics:server": "node server/logistics-server.mjs",
     "parse:logistics": "node scripts/parse-logistics.mjs ./副本仓库名.csv ./src/data/logistics.json",
     "parse:centers": "node scripts/parse-logistics-by-center.mjs ./副本仓库名.csv ./src/data/logistics-by-center.json",
     "gen:vendors": "node scripts/create-vendors-from-csv.mjs",
     "merge:warehouse-vendors": "node scripts/merge-warehouse-vendors.mjs",
-    "convert:obj": "node scripts/convert-obj-to-gltf.mjs"
+    "convert:obj": "node scripts/convert-obj-to-gltf.mjs",
+    "gen:route-cities": "node scripts/extract-route-cities.mjs"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
@@ -32,6 +34,7 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.9.1",
     "@types/node": "^20.11.19",
     "@vitejs/plugin-vue": "^5.0.4",
     "obj2gltf": "^3.1.6",

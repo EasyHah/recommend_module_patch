@@ -1,5 +1,7 @@
 # 语音助手模块说明
 
+> 迁移提示：本模块的权威与完整文档已整合至 `docs/modules/voice.md`（架构/契约/集成/测试/排障）。本文件保留一段时间以兼容历史链接。
+
 ## 组成文件
 | 文件 | 作用 |
 |------|------|
@@ -30,3 +32,5 @@ npm run test
 
 ## 扩展建议
 1. LLM 语义增强  2. 多语种  3. 去重防抖  4. Pinia 全局状态。
+
+更多内容请参见：`docs/modules/voice.md` 与 `docs/troubleshooting/voice.md`。

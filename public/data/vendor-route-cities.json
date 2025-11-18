@@ -1,0 +1,3548 @@
+{
+  "generatedAt": "2025-10-26T15:07:31.488Z",
+  "total": 232,
+  "uniqueCityCount": 563,
+  "uniqueCities": [
+    "余姚",
+    "慈溪",
+    "临沂",
+    "义务",
+    "张家口",
+    "乌兰察布",
+    "锡林浩特市",
+    "呼市",
+    "包头",
+    "巴彦卓尔",
+    "赤峰",
+    "通辽",
+    "呼和浩特",
+    "昆明",
+    "贵阳",
+    "新疆全境",
+    "诸城",
+    "五莲",
+    "莱阳",
+    "邹城",
+    "葫朝锦阜",
+    "岛阳州新",
+    "盘营鞍",
+    "锦口山",
+    "拉萨",
+    "日喀则",
+    "山南",
+    "那曲",
+    "阿里",
+    "西藏全境",
+    "博乐",
+    "双河",
+    "阿拉山口",
+    "新疆",
+    "乌鲁木齐",
+    "伊宁",
+    "霍尔果斯",
+    "货分拣中心",
+    "松白洮镇通乌延珲敦",
+    "原城南贲榆特吉春化",
+    "吉磐桦蛟舒永林",
+    "市石甸河兰吉",
+    "长农榆德扶辽通白梅",
+    "春安树惠余源化山河",
+    "延边专线",
+    "敦化",
+    "延吉",
+    "珲春",
+    "哈肇肇肇富望同海",
+    "滨源东州锦奎江伦",
+    "哈嫩依巴安兰绥明",
+    "滨江兰彦达西化水",
+    "哈呼尚双鹤黑伊大",
+    "滨兰志山岗河春安",
+    "牡绥东鸡七",
+    "丹芬",
+    "江河宁西河",
+    "齐龙泰扎",
+    "尔江来旗",
+    "大同区",
+    "红岗区",
+    "杜尔伯特蒙古自治县",
+    "林甸",
+    "安达",
+    "林源镇",
+    "泰康镇",
+    "太阳升镇",
+    "海满牙扎",
+    "拉洲克兰",
+    "尔里石屯",
+    "蒙利泗",
+    "城辛县",
+    "赤通",
+    "峰辽",
+    "四公双梨",
+    "平岭辽数",
+    "沈抚本辽铁鞍阜",
+    "阳顺溪阳岭山新",
+    "沈抚本辽铁鞍",
+    "阳顺溪阳岭山",
+    "大庄丹普瓦",
+    "兰房",
+    "连河东店点",
+    "杭州",
+    "临平",
+    "萧山",
+    "富阳",
+    "临安",
+    "桐庐",
+    "建德",
+    "湖州",
+    "长兴",
+    "南浔",
+    "安吉",
+    "德清",
+    "嘉兴",
+    "桐乡海宁",
+    "嘉善",
+    "绍兴",
+    "柯桥",
+    "新昌",
+    "嵊州",
+    "宁波",
+    "奉化",
+    "宁海",
+    "象山",
+    "北仑",
+    "舟山",
+    "永康",
+    "兰溪",
+    "诸暨",
+    "义乌",
+    "东阳",
+    "衢州",
+    "龙游",
+    "台州",
+    "天台",
+    "临海",
+    "温岭",
+    "苍南",
+    "龙港",
+    "丽水",
+    "缙云",
+    "分拨中心23号",
+    "温州",
+    "乐清",
+    "永嘉",
+    "瑞安",
+    "福州",
+    "泉州",
+    "厦门",
+    "漳州",
+    "六号分拣苏州",
+    "吴江",
+    "常熟",
+    "六号分拣无锡",
+    "江阴",
+    "宜兴",
+    "张家港",
+    "六号分拣常州",
+    "金坛",
+    "溧阳",
+    "丹阳",
+    "六号分拣上海全境",
+    "昆山",
+    "太仓",
+    "涟水专线",
+    "淮安专线",
+    "宿迁",
+    "睢宁",
+    "新沂",
+    "枣强",
+    "冀州",
+    "故城",
+    "大营",
+    "清河",
+    "南宫",
+    "淄博全境",
+    "往返",
+    "沈阳",
+    "长春",
+    "哈尔滨",
+    "东北三省全境",
+    "昌邑",
+    "寒亭",
+    "清池",
+    "坊子",
+    "每日往返",
+    "专线直达",
+    "眉村",
+    "石埠",
+    "潍坊高新区",
+    "汇晟平安",
+    "大成",
+    "阜草",
+    "霸州",
+    "服务",
+    "文安",
+    "新镇",
+    "宁德",
+    "莆田",
+    "三明",
+    "南平",
+    "龙岩",
+    "晋江",
+    "福清",
+    "南安",
+    "中大运和",
+    "临朐",
+    "青州",
+    "寿光",
+    "日照",
+    "莒县",
+    "沂南",
+    "沂水",
+    "蒙阴",
+    "平邑",
+    "费县",
+    "兰陵",
+    "郯城临沭",
+    "莒南",
+    "成都",
+    "达州",
+    "重庆",
+    "西安",
+    "银川",
+    "兰州",
+    "西宁",
+    "哈密",
+    "南昌",
+    "赣州",
+    "南宁",
+    "桂林",
+    "海口",
+    "三亚",
+    "武汉",
+    "荆州",
+    "宜昌",
+    "长沙",
+    "常德",
+    "永州",
+    "潍坊",
+    "高密",
+    "泰安",
+    "金乡",
+    "山东鑫鲁顺",
+    "广州",
+    "东莞",
+    "深圳",
+    "佛山",
+    "辐射全境：中山",
+    "珠海",
+    "惠州",
+    "滇远",
+    "品关",
+    "湛江",
+    "茂名",
+    "阳江",
+    "肇江",
+    "云浮",
+    "湖南全境",
+    "福建全境",
+    "四川全境",
+    "重庆全境",
+    "攀枝花直达",
+    "西昌直达",
+    "城前",
+    "田黄",
+    "尚河",
+    "接庄镇",
+    "山西全境",
+    "太原",
+    "晋中",
+    "吕梁",
+    "朔州",
+    "忻州",
+    "阳泉",
+    "长治",
+    "晋城",
+    "临汾",
+    "洪洞",
+    "运城",
+    "苏州",
+    "无锡",
+    "乌鲁木齐（新疆全境",
+    "湳城",
+    "建阳",
+    "邵武",
+    "建瓯",
+    "沙县",
+    "云和",
+    "龙泉",
+    "松溪",
+    "政和",
+    "直达/往返",
+    "石家庄",
+    "廊坊",
+    "沧州",
+    "行唐",
+    "无极",
+    "新乐",
+    "正定",
+    "献县（诸城直达",
+    "任丘",
+    "河间",
+    "米各庄",
+    "献县（专线往返",
+    "保定",
+    "高阳",
+    "庞口",
+    "肃宁",
+    "雄安",
+    "徐水（专线往返",
+    "万里物流",
+    "郑州",
+    "中牟",
+    "华南城（内部中转各市县",
+    "原万里）河南全境",
+    "崇明",
+    "上海全境",
+    "南京专线",
+    "东平",
+    "阿克苏",
+    "业务查询",
+    "库尔勒",
+    "崂山",
+    "胶州",
+    "接货",
+    "监督",
+    "青岛李沧",
+    "城阳",
+    "分拣中心",
+    "邯郸",
+    "馆陶",
+    "大名",
+    "魏县",
+    "鸡泽",
+    "广平",
+    "河古庙",
+    "冠县",
+    "华南城",
+    "南四环",
+    "伊滨",
+    "老城",
+    "关林",
+    "洛阳",
+    "分拣",
+    "济南",
+    "港南",
+    "蚌埠",
+    "毫州",
+    "宿州",
+    "淮北",
+    "阜阳",
+    "合肥",
+    "泗县",
+    "黄岛",
+    "胶南",
+    "平度",
+    "徐州",
+    "岚山",
+    "汾水",
+    "致胜",
+    "临沂往返",
+    "淮南",
+    "凤台",
+    "寿县",
+    "怀远",
+    "凤阳",
+    "芜湖",
+    "宣城",
+    "安庆",
+    "六安",
+    "舒城",
+    "濉溪",
+    "金寨",
+    "霍邱",
+    "滁州",
+    "全椒",
+    "连云港",
+    "海州",
+    "赣榆",
+    "承德全境",
+    "承德",
+    "隆化",
+    "围场",
+    "丰宁",
+    "宽城",
+    "兴隆",
+    "滦平",
+    "平泉",
+    "双滦",
+    "营子",
+    "宁城",
+    "凌源",
+    "许昌",
+    "长葛",
+    "党山",
+    "振玉物流",
+    "临沂往返莱州",
+    "沙河",
+    "晋源",
+    "迎泽",
+    "尖草坪",
+    "榆林",
+    "神木",
+    "大同",
+    "高平",
+    "看不清",
+    "新绛",
+    "侯马",
+    "三门峡",
+    "三方落地分拣中心",
+    "吴忠",
+    "固原",
+    "乌海",
+    "客服",
+    "宝鸡",
+    "庆阳",
+    "武威",
+    "三财讯诚",
+    "乌鲁木齐（南区沙依巴克",
+    "乌鲁木齐（北区米东",
+    "新华凌",
+    "哈密米伊犁",
+    "喀什",
+    "石河子",
+    "奎屯",
+    "嘉祥",
+    "威海高区",
+    "张村",
+    "威海环翠",
+    "经区",
+    "家家悦",
+    "外运",
+    "海联",
+    "临港区",
+    "海阳",
+    "乳山",
+    "文登",
+    "蔄山",
+    "荣成",
+    "石岛",
+    "广州往返临沂",
+    "鄄城",
+    "巨野",
+    "郓城",
+    "三财龙腾",
+    "滕州",
+    "三财翔霖",
+    "枣庄",
+    "薛城",
+    "三财海赋",
+    "微山",
+    "台儿庄",
+    "滨州",
+    "大汶口",
+    "文成物流",
+    "德州",
+    "文成物流：有个看不清",
+    "新泰",
+    "黑风快运",
+    "临沂分拣中心",
+    "临沂往返烟台",
+    "芝罘",
+    "福山",
+    "莱山",
+    "牟平",
+    "莱州",
+    "招远",
+    "聊城全境",
+    "安徽全境",
+    "临沂往来聊城",
+    "分拣栖霞",
+    "桃村",
+    "原虹源",
+    "高唐",
+    "禹城",
+    "齐河",
+    "桑梓店",
+    "分拨12号",
+    "临沂往返胶南",
+    "王台",
+    "泊里",
+    "济宁",
+    "汶上",
+    "梁山",
+    "临沂往返淄博",
+    "张店",
+    "淄川",
+    "周村",
+    "邹平",
+    "桓台",
+    "临淄",
+    "博山",
+    "分拨配送中心",
+    "临沭",
+    "郯城兰陵",
+    "蓝村",
+    "菏泽",
+    "曹县",
+    "单县",
+    "成武",
+    "定陶",
+    "东明",
+    "鱼台",
+    "贾汪",
+    "丰县",
+    "沛县",
+    "澳龙",
+    "扬州",
+    "蓬菜",
+    "龙口",
+    "黄城",
+    "长岛",
+    "临沂往返宁阳",
+    "磁窑",
+    "临沂领泰",
+    "宁波金星",
+    "越城",
+    "上虞",
+    "定海",
+    "海曙",
+    "江北",
+    "北仓",
+    "鄞州",
+    "安丘",
+    "昌乐",
+    "临沂久泰",
+    "临沂往返魏县",
+    "临沂往返永年",
+    "曲周",
+    "临沂往返邯郸",
+    "临沂往返呼市",
+    "东胜",
+    "集宁",
+    "临河",
+    "临沂往返赤峰",
+    "锡林浩特",
+    "乌兰浩特",
+    "临沂往返莱阳",
+    "夏邑",
+    "临沂往返永城",
+    "东阳往返临沂",
+    "义乌往返临沂",
+    "捷达物流",
+    "临沂往返柬埔寨全境",
+    "合作电",
+    "收货电",
+    "临沂往返浦江",
+    "临沂往返金华",
+    "临沂往返义鸟",
+    "广东全境",
+    "梅州",
+    "河源",
+    "海南",
+    "番禺",
+    "清远",
+    "江门",
+    "韶关",
+    "肇庆",
+    "中山",
+    "苏州分拨处",
+    "宁波红城",
+    "宏伟物流",
+    "河北白沟分拔处",
+    "河北大城分拨处",
+    "宁海象山",
+    "临浙市兰山区茶丰货衡市西中心",
+    "临沂往返海州",
+    "新浦",
+    "临沂往返灌云灌南",
+    "城坤",
+    "连云区",
+    "白沟",
+    "高碑店",
+    "雄县",
+    "辛寨",
+    "淮安",
+    "楚州",
+    "汇通",
+    "常州",
+    "镇江"
+  ],
+  "byVendor": {
+    "vl0001": {
+      "vendorId": "vl0001",
+      "centerName": "2号中心",
+      "sequence": "20号",
+      "logisticsName": "姚江物流",
+      "routeRaw": "余姚 慈溪->临沂",
+      "routeCities": [
+        "余姚",
+        "慈溪",
+        "临沂"
+      ]
+    },
+    "vl0002": {
+      "vendorId": "vl0002",
+      "centerName": "2号中心",
+      "sequence": "22号",
+      "logisticsName": "益恒大洋物流",
+      "routeRaw": "义务<->临沂",
+      "routeCities": [
+        "义务",
+        "临沂"
+      ]
+    },
+    "vl0003": {
+      "vendorId": "vl0003",
+      "centerName": "2号中心",
+      "sequence": "26号",
+      "logisticsName": "荣顺物流",
+      "routeRaw": "张家口 乌兰察布 锡林浩特市",
+      "routeCities": [
+        "张家口",
+        "乌兰察布",
+        "锡林浩特市"
+      ]
+    },
+    "vl0004": {
+      "vendorId": "vl0004",
+      "centerName": "2号中心",
+      "sequence": "27号",
+      "logisticsName": "荣顺物流",
+      "routeRaw": "呼市 包头 巴彦卓尔",
+      "routeCities": [
+        "呼市",
+        "包头",
+        "巴彦卓尔"
+      ]
+    },
+    "vl0005": {
+      "vendorId": "vl0005",
+      "centerName": "2号中心",
+      "sequence": "28号",
+      "logisticsName": "荣顺物流",
+      "routeRaw": "赤峰 通辽 呼和浩特",
+      "routeCities": [
+        "赤峰",
+        "通辽",
+        "呼和浩特"
+      ]
+    },
+    "vl0006": {
+      "vendorId": "vl0006",
+      "centerName": "2号中心",
+      "sequence": "29号",
+      "logisticsName": "荣顺物流",
+      "routeRaw": "昆明 贵阳",
+      "routeCities": [
+        "昆明",
+        "贵阳"
+      ]
+    },
+    "vl0007": {
+      "vendorId": "vl0007",
+      "centerName": "2号中心",
+      "sequence": "30号",
+      "logisticsName": "荣顺物流",
+      "routeRaw": "新疆全境",
+      "routeCities": [
+        "新疆全境"
+      ]
+    },
+    "vl0008": {
+      "vendorId": "vl0008",
+      "centerName": "2号中心",
+      "sequence": "31号",
+      "logisticsName": "长运物流",
+      "routeRaw": "诸城 五莲",
+      "routeCities": [
+        "诸城",
+        "五莲"
+      ]
+    },
+    "vl0009": {
+      "vendorId": "vl0009",
+      "centerName": "2号中心",
+      "sequence": "33号",
+      "logisticsName": "海鹏（平顺）物流",
+      "routeRaw": "莱阳 邹城",
+      "routeCities": [
+        "莱阳",
+        "邹城"
+      ]
+    },
+    "vl0010": {
+      "vendorId": "vl0010",
+      "centerName": "2号中心",
+      "sequence": "35号",
+      "logisticsName": "海鹏（平顺）物流",
+      "routeRaw": "",
+      "routeCities": []
+    },
+    "vl0011": {
+      "vendorId": "vl0011",
+      "centerName": "4号中心",
+      "sequence": "32号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "葫朝锦阜 芦 岛阳州新",
+      "routeCities": [
+        "葫朝锦阜",
+        "岛阳州新"
+      ]
+    },
+    "vl0012": {
+      "vendorId": "vl0012",
+      "centerName": "4号中心",
+      "sequence": "31号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "盘营鞍 锦口山",
+      "routeCities": [
+        "盘营鞍",
+        "锦口山"
+      ]
+    },
+    "vl0013": {
+      "vendorId": "vl0013",
+      "centerName": "4号中心",
+      "sequence": "30号",
+      "logisticsName": "国力物流",
+      "routeRaw": "临沂<->拉萨 日喀则 山南 那曲 阿里",
+      "routeCities": [
+        "临沂",
+        "拉萨",
+        "日喀则",
+        "山南",
+        "那曲",
+        "阿里"
+      ]
+    },
+    "vl0014": {
+      "vendorId": "vl0014",
+      "centerName": "4号中心",
+      "sequence": "29号",
+      "logisticsName": "国力物流",
+      "routeRaw": "西藏全境",
+      "routeCities": [
+        "西藏全境"
+      ]
+    },
+    "vl0015": {
+      "vendorId": "vl0015",
+      "centerName": "4号中心",
+      "sequence": "28号",
+      "logisticsName": "国力物流",
+      "routeRaw": "临沂-->博乐 双河 ？？阿拉山口",
+      "routeCities": [
+        "临沂",
+        "博乐",
+        "双河",
+        "阿拉山口"
+      ]
+    },
+    "vl0016": {
+      "vendorId": "vl0016",
+      "centerName": "4号中心",
+      "sequence": "27号",
+      "logisticsName": "国力物流",
+      "routeRaw": "新疆 乌鲁木齐 伊宁 霍尔果斯",
+      "routeCities": [
+        "新疆",
+        "乌鲁木齐",
+        "伊宁",
+        "霍尔果斯"
+      ]
+    },
+    "vl0017": {
+      "vendorId": "vl0017",
+      "centerName": "4号中心",
+      "sequence": "19号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "到货分拣中心",
+      "routeCities": [
+        "货分拣中心"
+      ]
+    },
+    "vl0018": {
+      "vendorId": "vl0018",
+      "centerName": "4号中心",
+      "sequence": "23号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "松白洮镇通乌延珲敦 兰 浩 原城南贲榆特吉春化",
+      "routeCities": [
+        "松白洮镇通乌延珲敦",
+        "原城南贲榆特吉春化"
+      ]
+    },
+    "vl0019": {
+      "vendorId": "vl0019",
+      "centerName": "4号中心",
+      "sequence": "22号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "吉磐桦蛟舒永林 市石甸河兰吉",
+      "routeCities": [
+        "吉磐桦蛟舒永林",
+        "市石甸河兰吉"
+      ]
+    },
+    "vl0020": {
+      "vendorId": "vl0020",
+      "centerName": "4号中心",
+      "sequence": "20号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "长农榆德扶辽通白梅 春安树惠余源化山河 口",
+      "routeCities": [
+        "长农榆德扶辽通白梅",
+        "春安树惠余源化山河"
+      ]
+    },
+    "vl0021": {
+      "vendorId": "vl0021",
+      "centerName": "4号中心",
+      "sequence": "21号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "长农榆德扶辽通白梅 春安树惠余源化山河 口",
+      "routeCities": [
+        "长农榆德扶辽通白梅",
+        "春安树惠余源化山河"
+      ]
+    },
+    "vl0022": {
+      "vendorId": "vl0022",
+      "centerName": "4号中心",
+      "sequence": "19号",
+      "logisticsName": "飞腾物流",
+      "routeRaw": "延边专线 敦化 延吉 珲春",
+      "routeCities": [
+        "延边专线",
+        "敦化",
+        "延吉",
+        "珲春"
+      ]
+    },
+    "vl0023": {
+      "vendorId": "vl0023",
+      "centerName": "4号中心",
+      "sequence": "16号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "哈肇肇肇富望同海 尔 滨源东州锦奎江伦",
+      "routeCities": [
+        "哈肇肇肇富望同海",
+        "滨源东州锦奎江伦"
+      ]
+    },
+    "vl0024": {
+      "vendorId": "vl0024",
+      "centerName": "4号中心",
+      "sequence": "15号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "哈嫩依巴安兰绥明 尔 滨江兰彦达西化水",
+      "routeCities": [
+        "哈嫩依巴安兰绥明",
+        "滨江兰彦达西化水"
+      ]
+    },
+    "vl0025": {
+      "vendorId": "vl0025",
+      "centerName": "4号中心",
+      "sequence": "14号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "哈呼尚双鹤黑伊大 尔 鸭 兴 滨兰志山岗河春安 岭",
+      "routeCities": [
+        "哈呼尚双鹤黑伊大",
+        "滨兰志山岗河春安"
+      ]
+    },
+    "vl0026": {
+      "vendorId": "vl0026",
+      "centerName": "4号中心",
+      "sequence": "13号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "佳 尔 斯",
+      "routeCities": []
+    },
+    "vl0027": {
+      "vendorId": "vl0027",
+      "centerName": "4号中心",
+      "sequence": "12号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "牡绥东鸡七 丹芬 台 江河宁西河",
+      "routeCities": [
+        "牡绥东鸡七",
+        "丹芬",
+        "江河宁西河"
+      ]
+    },
+    "vl0028": {
+      "vendorId": "vl0028",
+      "centerName": "4号中心",
+      "sequence": "11号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "牡绥东鸡七 丹芬 台 江河宁西河",
+      "routeCities": [
+        "牡绥东鸡七",
+        "丹芬",
+        "江河宁西河"
+      ]
+    },
+    "vl0029": {
+      "vendorId": "vl0029",
+      "centerName": "4号中心",
+      "sequence": "10号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "齐龙泰扎 齐 赉 哈 特 尔江来旗",
+      "routeCities": [
+        "齐龙泰扎",
+        "尔江来旗"
+      ]
+    },
+    "vl0030": {
+      "vendorId": "vl0030",
+      "centerName": "4号中心",
+      "sequence": "9号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "大 大同区 红岗区 杜尔伯特蒙古自治县 庆 林甸 安达 林源镇 泰康镇 太阳升镇",
+      "routeCities": [
+        "大同区",
+        "红岗区",
+        "杜尔伯特蒙古自治县",
+        "林甸",
+        "安达",
+        "林源镇",
+        "泰康镇",
+        "太阳升镇"
+      ]
+    },
+    "vl0031": {
+      "vendorId": "vl0031",
+      "centerName": "4号中心",
+      "sequence": "8号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "海满牙扎 拉洲克兰 尔里石屯",
+      "routeCities": [
+        "海满牙扎",
+        "拉洲克兰",
+        "尔里石屯"
+      ]
+    },
+    "vl0032": {
+      "vendorId": "vl0032",
+      "centerName": "4号中心",
+      "sequence": "7号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "蒙利泗 城辛县",
+      "routeCities": [
+        "蒙利泗",
+        "城辛县"
+      ]
+    },
+    "vl0033": {
+      "vendorId": "vl0033",
+      "centerName": "4号中心",
+      "sequence": "6号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "赤通 峰辽",
+      "routeCities": [
+        "赤通",
+        "峰辽"
+      ]
+    },
+    "vl0034": {
+      "vendorId": "vl0034",
+      "centerName": "4号中心",
+      "sequence": "5号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "四公双梨 主 平岭辽数",
+      "routeCities": [
+        "四公双梨",
+        "平岭辽数"
+      ]
+    },
+    "vl0035": {
+      "vendorId": "vl0035",
+      "centerName": "4号中心",
+      "sequence": "4号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "沈抚本辽铁鞍阜 阳顺溪阳岭山新",
+      "routeCities": [
+        "沈抚本辽铁鞍阜",
+        "阳顺溪阳岭山新"
+      ]
+    },
+    "vl0036": {
+      "vendorId": "vl0036",
+      "centerName": "4号中心",
+      "sequence": "3号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "沈抚本辽铁鞍 阳顺溪阳岭山",
+      "routeCities": [
+        "沈抚本辽铁鞍",
+        "阳顺溪阳岭山"
+      ]
+    },
+    "vl0037": {
+      "vendorId": "vl0037",
+      "centerName": "4号中心",
+      "sequence": "2号",
+      "logisticsName": "双龙物流",
+      "routeRaw": "大庄丹普瓦 兰房 连河东店点",
+      "routeCities": [
+        "大庄丹普瓦",
+        "兰房",
+        "连河东店点"
+      ]
+    },
+    "vl0038": {
+      "vendorId": "vl0038",
+      "centerName": "6号中心",
+      "sequence": "34号",
+      "logisticsName": "中大运和",
+      "routeRaw": "杭州 临平 萧山 富阳 ：",
+      "routeCities": [
+        "杭州",
+        "临平",
+        "萧山",
+        "富阳"
+      ]
+    },
+    "vl0039": {
+      "vendorId": "vl0039",
+      "centerName": "6号中心",
+      "sequence": "33号",
+      "logisticsName": "中大运和",
+      "routeRaw": "临安 桐庐 建德 湖州 ：",
+      "routeCities": [
+        "临安",
+        "桐庐",
+        "建德",
+        "湖州"
+      ]
+    },
+    "vl0040": {
+      "vendorId": "vl0040",
+      "centerName": "6号中心",
+      "sequence": "32号",
+      "logisticsName": "中大运和",
+      "routeRaw": "长兴 南浔 安吉 德清 ：",
+      "routeCities": [
+        "长兴",
+        "南浔",
+        "安吉",
+        "德清"
+      ]
+    },
+    "vl0041": {
+      "vendorId": "vl0041",
+      "centerName": "6号中心",
+      "sequence": "31号",
+      "logisticsName": "中大运和",
+      "routeRaw": "嘉兴 桐乡海宁 嘉善 ：",
+      "routeCities": [
+        "嘉兴",
+        "桐乡海宁",
+        "嘉善"
+      ]
+    },
+    "vl0042": {
+      "vendorId": "vl0042",
+      "centerName": "6号中心",
+      "sequence": "30号",
+      "logisticsName": "中大运和",
+      "routeRaw": "绍兴 柯桥 新昌 嵊州 ：",
+      "routeCities": [
+        "绍兴",
+        "柯桥",
+        "新昌",
+        "嵊州"
+      ]
+    },
+    "vl0043": {
+      "vendorId": "vl0043",
+      "centerName": "6号中心",
+      "sequence": "29号",
+      "logisticsName": "中大运和",
+      "routeRaw": "宁波 奉化 宁海 象山 ：",
+      "routeCities": [
+        "宁波",
+        "奉化",
+        "宁海",
+        "象山"
+      ]
+    },
+    "vl0044": {
+      "vendorId": "vl0044",
+      "centerName": "6号中心",
+      "sequence": "28号",
+      "logisticsName": "中大运和",
+      "routeRaw": "慈溪 余姚 北仑 舟山 ：",
+      "routeCities": [
+        "慈溪",
+        "余姚",
+        "北仑",
+        "舟山"
+      ]
+    },
+    "vl0045": {
+      "vendorId": "vl0045",
+      "centerName": "6号中心",
+      "sequence": "27号",
+      "logisticsName": "中大运和",
+      "routeRaw": "永康 兰溪 诸暨 ：",
+      "routeCities": [
+        "永康",
+        "兰溪",
+        "诸暨"
+      ]
+    },
+    "vl0046": {
+      "vendorId": "vl0046",
+      "centerName": "6号中心",
+      "sequence": "26号",
+      "logisticsName": "中大运和",
+      "routeRaw": "义乌 东阳 衢州 龙游 ：",
+      "routeCities": [
+        "义乌",
+        "东阳",
+        "衢州",
+        "龙游"
+      ]
+    },
+    "vl0047": {
+      "vendorId": "vl0047",
+      "centerName": "6号中心",
+      "sequence": "25号",
+      "logisticsName": "中大运和",
+      "routeRaw": "台州 天台 临海 温岭 ：",
+      "routeCities": [
+        "台州",
+        "天台",
+        "临海",
+        "温岭"
+      ]
+    },
+    "vl0048": {
+      "vendorId": "vl0048",
+      "centerName": "6号中心",
+      "sequence": "24号",
+      "logisticsName": "中大运和",
+      "routeRaw": "苍南 龙港 丽水 缙云 ：",
+      "routeCities": [
+        "苍南",
+        "龙港",
+        "丽水",
+        "缙云"
+      ]
+    },
+    "vl0049": {
+      "vendorId": "vl0049",
+      "centerName": "6号中心",
+      "sequence": "23号",
+      "logisticsName": "中大运和",
+      "routeRaw": "分拨中心23号 温州 乐清 永嘉 瑞安 ：",
+      "routeCities": [
+        "分拨中心23号",
+        "温州",
+        "乐清",
+        "永嘉",
+        "瑞安"
+      ]
+    },
+    "vl0050": {
+      "vendorId": "vl0050",
+      "centerName": "6号中心",
+      "sequence": "22号",
+      "logisticsName": "中大运和",
+      "routeRaw": "福州 泉州 厦门 漳州 ：",
+      "routeCities": [
+        "福州",
+        "泉州",
+        "厦门",
+        "漳州"
+      ]
+    },
+    "vl0051": {
+      "vendorId": "vl0051",
+      "centerName": "6号中心",
+      "sequence": "21号",
+      "logisticsName": "泽笙物流",
+      "routeRaw": "六号分拣苏州 吴江 常熟 ：",
+      "routeCities": [
+        "六号分拣苏州",
+        "吴江",
+        "常熟"
+      ]
+    },
+    "vl0052": {
+      "vendorId": "vl0052",
+      "centerName": "6号中心",
+      "sequence": "20号",
+      "logisticsName": "泽笙物流",
+      "routeRaw": "六号分拣无锡 江阴 宜兴 张家港 ：",
+      "routeCities": [
+        "六号分拣无锡",
+        "江阴",
+        "宜兴",
+        "张家港"
+      ]
+    },
+    "vl0053": {
+      "vendorId": "vl0053",
+      "centerName": "6号中心",
+      "sequence": "19号",
+      "logisticsName": "泽笙物流",
+      "routeRaw": "六号分拣常州 金坛 溧阳 丹阳 ：",
+      "routeCities": [
+        "六号分拣常州",
+        "金坛",
+        "溧阳",
+        "丹阳"
+      ]
+    },
+    "vl0054": {
+      "vendorId": "vl0054",
+      "centerName": "6号中心",
+      "sequence": "18号",
+      "logisticsName": "泽笙物流",
+      "routeRaw": "六号分拣上海全境 昆山 太仓 ：",
+      "routeCities": [
+        "六号分拣上海全境",
+        "昆山",
+        "太仓"
+      ]
+    },
+    "vl0055": {
+      "vendorId": "vl0055",
+      "centerName": "6号中心",
+      "sequence": "1-2号",
+      "logisticsName": "建成物流",
+      "routeRaw": "涟水专线 ：",
+      "routeCities": [
+        "涟水专线"
+      ]
+    },
+    "vl0056": {
+      "vendorId": "vl0056",
+      "centerName": "6号中心",
+      "sequence": "1-2号",
+      "logisticsName": "世佳物流",
+      "routeRaw": "淮安专线",
+      "routeCities": [
+        "淮安专线"
+      ]
+    },
+    "vl0057": {
+      "vendorId": "vl0057",
+      "centerName": "6号中心",
+      "sequence": "3-4号",
+      "logisticsName": "凯莱物流",
+      "routeRaw": "临沂<->宿迁 睢宁 新沂 ：8022261",
+      "routeCities": [
+        "临沂",
+        "宿迁",
+        "睢宁",
+        "新沂"
+      ]
+    },
+    "vl0058": {
+      "vendorId": "vl0058",
+      "centerName": "6号中心",
+      "sequence": "3-4号",
+      "logisticsName": "巨航物流",
+      "routeRaw": "枣强 冀州 故城 大营 清河 南宫 ：",
+      "routeCities": [
+        "枣强",
+        "冀州",
+        "故城",
+        "大营",
+        "清河",
+        "南宫"
+      ]
+    },
+    "vl0059": {
+      "vendorId": "vl0059",
+      "centerName": "6号中心",
+      "sequence": "5-6号",
+      "logisticsName": "易通物流",
+      "routeRaw": "临沂->淄博全境 往返<->? 沈阳-长春-哈尔滨",
+      "routeCities": [
+        "临沂",
+        "淄博全境",
+        "往返",
+        "沈阳",
+        "长春",
+        "哈尔滨"
+      ]
+    },
+    "vl0060": {
+      "vendorId": "vl0060",
+      "centerName": "6号中心",
+      "sequence": "5-6号",
+      "logisticsName": "易通物流",
+      "routeRaw": "东北三省全境 沈阳-长春-哈尔滨",
+      "routeCities": [
+        "东北三省全境",
+        "沈阳",
+        "长春",
+        "哈尔滨"
+      ]
+    },
+    "vl0061": {
+      "vendorId": "vl0061",
+      "centerName": "6号中心",
+      "sequence": "7-8号",
+      "logisticsName": "九九物流",
+      "routeRaw": "昌邑 寒亭 清池 坊子 ： 每日往返 专线直达",
+      "routeCities": [
+        "昌邑",
+        "寒亭",
+        "清池",
+        "坊子",
+        "每日往返",
+        "专线直达"
+      ]
+    },
+    "vl0062": {
+      "vendorId": "vl0062",
+      "centerName": "6号中心",
+      "sequence": "7-8号",
+      "logisticsName": "九九物流",
+      "routeRaw": "眉村 石埠 潍坊高新区 ： 每日往返 专线直达",
+      "routeCities": [
+        "眉村",
+        "石埠",
+        "潍坊高新区",
+        "每日往返",
+        "专线直达"
+      ]
+    },
+    "vl0063": {
+      "vendorId": "vl0063",
+      "centerName": "6号中心",
+      "sequence": "9号",
+      "logisticsName": "未命名物流",
+      "routeRaw": "汇晟平安 临沂 大成 阜草 霸州 服务：",
+      "routeCities": [
+        "汇晟平安",
+        "临沂",
+        "大成",
+        "阜草",
+        "霸州",
+        "服务"
+      ]
+    },
+    "vl0064": {
+      "vendorId": "vl0064",
+      "centerName": "6号中心",
+      "sequence": "10号",
+      "logisticsName": "未命名物流",
+      "routeRaw": "汇晟平安 临沂 文安 新镇 服务：",
+      "routeCities": [
+        "汇晟平安",
+        "临沂",
+        "文安",
+        "新镇",
+        "服务"
+      ]
+    },
+    "vl0065": {
+      "vendorId": "vl0065",
+      "centerName": "6号中心",
+      "sequence": "11号",
+      "logisticsName": "山东中大开亮物流",
+      "routeRaw": "宁德 莆田 三明 南平 ：",
+      "routeCities": [
+        "宁德",
+        "莆田",
+        "三明",
+        "南平"
+      ]
+    },
+    "vl0066": {
+      "vendorId": "vl0066",
+      "centerName": "6号中心",
+      "sequence": "12号",
+      "logisticsName": "山东中大开亮物流",
+      "routeRaw": "福州 泉州 厦门 漳州 ：",
+      "routeCities": [
+        "福州",
+        "泉州",
+        "厦门",
+        "漳州"
+      ]
+    },
+    "vl0067": {
+      "vendorId": "vl0067",
+      "centerName": "6号中心",
+      "sequence": "13号",
+      "logisticsName": "山东中大开亮物流",
+      "routeRaw": "龙岩 晋江 福清 南安 ：",
+      "routeCities": [
+        "龙岩",
+        "晋江",
+        "福清",
+        "南安"
+      ]
+    },
+    "vl0068": {
+      "vendorId": "vl0068",
+      "centerName": "6号中心",
+      "sequence": "14号",
+      "logisticsName": "佰帆物流",
+      "routeRaw": "中大运和 临朐 青州 寿光 ：",
+      "routeCities": [
+        "中大运和",
+        "临朐",
+        "青州",
+        "寿光"
+      ]
+    },
+    "vl0069": {
+      "vendorId": "vl0069",
+      "centerName": "6号中心",
+      "sequence": "15号",
+      "logisticsName": "未命名物流",
+      "routeRaw": "中大运和 日照 五莲 莒县 沂南 沂水 蒙阴 平邑 费县 兰陵 郯城临沭 莒南 ：",
+      "routeCities": [
+        "中大运和",
+        "日照",
+        "五莲",
+        "莒县",
+        "沂南",
+        "沂水",
+        "蒙阴",
+        "平邑",
+        "费县",
+        "兰陵",
+        "郯城临沭",
+        "莒南"
+      ]
+    },
+    "vl0070": {
+      "vendorId": "vl0070",
+      "centerName": "6号中心",
+      "sequence": "19号",
+      "logisticsName": "未命名物流",
+      "routeRaw": "中大运和 成都 达州 重庆 昆明 贵阳 拉萨 西安 银川 兰州 西宁 乌鲁木齐 哈密 ：",
+      "routeCities": [
+        "中大运和",
+        "成都",
+        "达州",
+        "重庆",
+        "昆明",
+        "贵阳",
+        "拉萨",
+        "西安",
+        "银川",
+        "兰州",
+        "西宁",
+        "乌鲁木齐",
+        "哈密"
+      ]
+    },
+    "vl0071": {
+      "vendorId": "vl0071",
+      "centerName": "6号中心",
+      "sequence": "18号",
+      "logisticsName": "未命名物流",
+      "routeRaw": "中大运和 南昌 赣州 南宁 桂林 海口 三亚 武汉 荆州 宜昌 长沙 常德 永州 ：",
+      "routeCities": [
+        "中大运和",
+        "南昌",
+        "赣州",
+        "南宁",
+        "桂林",
+        "海口",
+        "三亚",
+        "武汉",
+        "荆州",
+        "宜昌",
+        "长沙",
+        "常德",
+        "永州"
+      ]
+    },
+    "vl0072": {
+      "vendorId": "vl0072",
+      "centerName": "8号中心",
+      "sequence": "34号",
+      "logisticsName": "远征物流",
+      "routeRaw": "临沂<->潍坊 青州 寿光 高密 诸城 泰安 金乡 ： 1392605123",
+      "routeCities": [
+        "临沂",
+        "潍坊",
+        "青州",
+        "寿光",
+        "高密",
+        "诸城",
+        "泰安",
+        "金乡"
+      ]
+    },
+    "vl0073": {
+      "vendorId": "vl0073",
+      "centerName": "8号中心",
+      "sequence": "33号",
+      "logisticsName": "远征物流",
+      "routeRaw": "山东鑫鲁顺 临沂<->广州 东莞 深圳 佛山 辐射全境：中山 珠海 惠州 滇远 品关 湛江 茂名 阳江 肇江 云浮 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂",
+        "广州",
+        "东莞",
+        "深圳",
+        "佛山",
+        "辐射全境：中山",
+        "珠海",
+        "惠州",
+        "滇远",
+        "品关",
+        "湛江",
+        "茂名",
+        "阳江",
+        "肇江",
+        "云浮"
+      ]
+    },
+    "vl0074": {
+      "vendorId": "vl0074",
+      "centerName": "8号中心",
+      "sequence": "29-30号",
+      "logisticsName": "连盛物流",
+      "routeRaw": "湖南全境 长沙",
+      "routeCities": [
+        "湖南全境",
+        "长沙"
+      ]
+    },
+    "vl0075": {
+      "vendorId": "vl0075",
+      "centerName": "8号中心",
+      "sequence": "30号",
+      "logisticsName": "致胜物流",
+      "routeRaw": "福建全境 福州 泉州 漳州 厦门 龙岩 南平 三明 宁德 ：",
+      "routeCities": [
+        "福建全境",
+        "福州",
+        "泉州",
+        "漳州",
+        "厦门",
+        "龙岩",
+        "南平",
+        "三明",
+        "宁德"
+      ]
+    },
+    "vl0076": {
+      "vendorId": "vl0076",
+      "centerName": "8号中心",
+      "sequence": "29号",
+      "logisticsName": "致胜物流",
+      "routeRaw": "四川全境 成都 服务：",
+      "routeCities": [
+        "四川全境",
+        "成都",
+        "服务"
+      ]
+    },
+    "vl0077": {
+      "vendorId": "vl0077",
+      "centerName": "8号中心",
+      "sequence": "28号",
+      "logisticsName": "致胜物流",
+      "routeRaw": "重庆全境 服务：",
+      "routeCities": [
+        "重庆全境",
+        "服务"
+      ]
+    },
+    "vl0078": {
+      "vendorId": "vl0078",
+      "centerName": "8号中心",
+      "sequence": "28号",
+      "logisticsName": "致胜物流",
+      "routeRaw": "攀枝花直达 西昌直达 服务：",
+      "routeCities": [
+        "攀枝花直达",
+        "西昌直达",
+        "服务"
+      ]
+    },
+    "vl0079": {
+      "vendorId": "vl0079",
+      "centerName": "8号中心",
+      "sequence": "25号",
+      "logisticsName": "济邹物流",
+      "routeRaw": "邹城 城前 田黄 尚河 接庄镇 ：",
+      "routeCities": [
+        "邹城",
+        "城前",
+        "田黄",
+        "尚河",
+        "接庄镇"
+      ]
+    },
+    "vl0080": {
+      "vendorId": "vl0080",
+      "centerName": "8号中心",
+      "sequence": "24号",
+      "logisticsName": "聚鲁物流",
+      "routeRaw": "23-24 山西全境 太原 晋中 吕梁 朔州 忻州 ：",
+      "routeCities": [
+        "山西全境",
+        "太原",
+        "晋中",
+        "吕梁",
+        "朔州",
+        "忻州"
+      ]
+    },
+    "vl0081": {
+      "vendorId": "vl0081",
+      "centerName": "8号中心",
+      "sequence": "23号",
+      "logisticsName": "聚鲁物流",
+      "routeRaw": "23-24 山西全境 阳泉 长治 晋城 临汾 洪洞 运城 ：",
+      "routeCities": [
+        "山西全境",
+        "阳泉",
+        "长治",
+        "晋城",
+        "临汾",
+        "洪洞",
+        "运城"
+      ]
+    },
+    "vl0082": {
+      "vendorId": "vl0082",
+      "centerName": "8号中心",
+      "sequence": "22号",
+      "logisticsName": "亿丰物流",
+      "routeRaw": "昆山 太仓 吴江 ：",
+      "routeCities": [
+        "昆山",
+        "太仓",
+        "吴江"
+      ]
+    },
+    "vl0083": {
+      "vendorId": "vl0083",
+      "centerName": "8号中心",
+      "sequence": "21号",
+      "logisticsName": "亿丰物流",
+      "routeRaw": "苏州 无锡 ：",
+      "routeCities": [
+        "苏州",
+        "无锡"
+      ]
+    },
+    "vl0084": {
+      "vendorId": "vl0084",
+      "centerName": "8号中心",
+      "sequence": "18-20号",
+      "logisticsName": "来龙货运（浙闽物流",
+      "routeRaw": "） 乌鲁木齐（新疆全境） ：",
+      "routeCities": [
+        "乌鲁木齐（新疆全境"
+      ]
+    },
+    "vl0085": {
+      "vendorId": "vl0085",
+      "centerName": "8号中心",
+      "sequence": "18-20号",
+      "logisticsName": "来龙货运（浙闽物流",
+      "routeRaw": "） 丽水 福州 南平 三明 龙岩 ：",
+      "routeCities": [
+        "丽水",
+        "福州",
+        "南平",
+        "三明",
+        "龙岩"
+      ]
+    },
+    "vl0086": {
+      "vendorId": "vl0086",
+      "centerName": "8号中心",
+      "sequence": "18-20号",
+      "logisticsName": "来龙货运（浙闽物流",
+      "routeRaw": "） 临沂<->湳城 建阳 邵武 建瓯 三明 沙县 临沂<->丽水 云和 龙泉 松溪 政和 ：",
+      "routeCities": [
+        "临沂",
+        "湳城",
+        "建阳",
+        "邵武",
+        "建瓯",
+        "三明",
+        "沙县",
+        "丽水",
+        "云和",
+        "龙泉",
+        "松溪",
+        "政和"
+      ]
+    },
+    "vl0087": {
+      "vendorId": "vl0087",
+      "centerName": "8号中心",
+      "sequence": "1号",
+      "logisticsName": "路正通达（原宋亿物流",
+      "routeRaw": "） 临沂 直达/往返 石家庄 廊坊 沧州 行唐 无极 新乐 正定 献县（诸城直达） ： 2988770",
+      "routeCities": [
+        "临沂",
+        "直达/往返",
+        "石家庄",
+        "廊坊",
+        "沧州",
+        "行唐",
+        "无极",
+        "新乐",
+        "正定",
+        "献县（诸城直达"
+      ]
+    },
+    "vl0088": {
+      "vendorId": "vl0088",
+      "centerName": "8号中心",
+      "sequence": "2号",
+      "logisticsName": "路正通达（原宋亿物流",
+      "routeRaw": "） 沧州 任丘 河间 米各庄 献县（专线往返） ： 2988770",
+      "routeCities": [
+        "沧州",
+        "任丘",
+        "河间",
+        "米各庄",
+        "献县（专线往返"
+      ]
+    },
+    "vl0089": {
+      "vendorId": "vl0089",
+      "centerName": "8号中心",
+      "sequence": "3号",
+      "logisticsName": "路正通达（原宋亿物流",
+      "routeRaw": "） 保定 高阳 庞口 肃宁 雄安 徐水（专线往返） ： 2988770",
+      "routeCities": [
+        "保定",
+        "高阳",
+        "庞口",
+        "肃宁",
+        "雄安",
+        "徐水（专线往返"
+      ]
+    },
+    "vl0090": {
+      "vendorId": "vl0090",
+      "centerName": "8号中心",
+      "sequence": "4-5号",
+      "logisticsName": "临郑物流",
+      "routeRaw": "万里物流 郑州 中牟 华南城（内部中转各市县） ：",
+      "routeCities": [
+        "万里物流",
+        "郑州",
+        "中牟",
+        "华南城（内部中转各市县"
+      ]
+    },
+    "vl0091": {
+      "vendorId": "vl0091",
+      "centerName": "8号中心",
+      "sequence": "4-5号",
+      "logisticsName": "临郑物流",
+      "routeRaw": "（原万里）河南全境 ：",
+      "routeCities": [
+        "原万里）河南全境"
+      ]
+    },
+    "vl0092": {
+      "vendorId": "vl0092",
+      "centerName": "8号中心",
+      "sequence": "6号",
+      "logisticsName": "标强物流",
+      "routeRaw": "崇明 太仓 昆山 ：",
+      "routeCities": [
+        "崇明",
+        "太仓",
+        "昆山"
+      ]
+    },
+    "vl0093": {
+      "vendorId": "vl0093",
+      "centerName": "8号中心",
+      "sequence": "7号",
+      "logisticsName": "标强物流",
+      "routeRaw": "：",
+      "routeCities": []
+    },
+    "vl0094": {
+      "vendorId": "vl0094",
+      "centerName": "8号中心",
+      "sequence": "8号",
+      "logisticsName": "标强物流",
+      "routeRaw": "上海全境 ：",
+      "routeCities": [
+        "上海全境"
+      ]
+    },
+    "vl0095": {
+      "vendorId": "vl0095",
+      "centerName": "8号中心",
+      "sequence": "9号",
+      "logisticsName": "通达物流",
+      "routeRaw": "南京专线 ：",
+      "routeCities": [
+        "南京专线"
+      ]
+    },
+    "vl0096": {
+      "vendorId": "vl0096",
+      "centerName": "8号中心",
+      "sequence": "10号",
+      "logisticsName": "通达物流",
+      "routeRaw": "泰安 东平 ：",
+      "routeCities": [
+        "泰安",
+        "东平"
+      ]
+    },
+    "vl0097": {
+      "vendorId": "vl0097",
+      "centerName": "8号中心",
+      "sequence": "11号",
+      "logisticsName": "通达物流",
+      "routeRaw": "：",
+      "routeCities": []
+    },
+    "vl0098": {
+      "vendorId": "vl0098",
+      "centerName": "8号中心",
+      "sequence": "12号",
+      "logisticsName": "永疆供应链",
+      "routeRaw": "阿克苏 ： 业务查询：",
+      "routeCities": [
+        "阿克苏",
+        "业务查询"
+      ]
+    },
+    "vl0099": {
+      "vendorId": "vl0099",
+      "centerName": "8号中心",
+      "sequence": "13号",
+      "logisticsName": "永疆供应链",
+      "routeRaw": "乌鲁木齐 ： 业务查询：",
+      "routeCities": [
+        "乌鲁木齐",
+        "业务查询"
+      ]
+    },
+    "vl0100": {
+      "vendorId": "vl0100",
+      "centerName": "8号中心",
+      "sequence": "14号",
+      "logisticsName": "永疆供应链",
+      "routeRaw": "库尔勒 ： 业务查询：",
+      "routeCities": [
+        "库尔勒",
+        "业务查询"
+      ]
+    },
+    "vl0101": {
+      "vendorId": "vl0101",
+      "centerName": "8号中心",
+      "sequence": "15-17号",
+      "logisticsName": "福甜物流",
+      "routeRaw": "崂山 胶州 日照 ： 8065716 接货： 监督：",
+      "routeCities": [
+        "崂山",
+        "胶州",
+        "日照",
+        "接货",
+        "监督"
+      ]
+    },
+    "vl0102": {
+      "vendorId": "vl0102",
+      "centerName": "8号中心",
+      "sequence": "15-17号",
+      "logisticsName": "福甜物流",
+      "routeRaw": "青岛李沧 城阳 ： 8065716 接货： 监督：",
+      "routeCities": [
+        "青岛李沧",
+        "城阳",
+        "接货",
+        "监督"
+      ]
+    },
+    "vl0103": {
+      "vendorId": "vl0103",
+      "centerName": "9号中心",
+      "sequence": "27-28号",
+      "logisticsName": "致胜物流",
+      "routeRaw": "分拣中心",
+      "routeCities": [
+        "分拣中心"
+      ]
+    },
+    "vl0104": {
+      "vendorId": "vl0104",
+      "centerName": "9号中心",
+      "sequence": "29号",
+      "logisticsName": "东飞物流",
+      "routeRaw": "邯郸 馆陶 大名 魏县 鸡泽 广平 河古庙 冠县 ：",
+      "routeCities": [
+        "邯郸",
+        "馆陶",
+        "大名",
+        "魏县",
+        "鸡泽",
+        "广平",
+        "河古庙",
+        "冠县"
+      ]
+    },
+    "vl0105": {
+      "vendorId": "vl0105",
+      "centerName": "9号中心",
+      "sequence": "30号",
+      "logisticsName": "永川物流",
+      "routeRaw": "中牟 华南城 南四环 郑州 伊滨 老城 关林 洛阳 分拣 济南 港南 蚌埠 毫州 宿州 淮北 阜阳 合肥",
+      "routeCities": [
+        "中牟",
+        "华南城",
+        "南四环",
+        "郑州",
+        "伊滨",
+        "老城",
+        "关林",
+        "洛阳",
+        "分拣",
+        "济南",
+        "港南",
+        "蚌埠",
+        "毫州",
+        "宿州",
+        "淮北",
+        "阜阳",
+        "合肥"
+      ]
+    },
+    "vl0106": {
+      "vendorId": "vl0106",
+      "centerName": "9号中心",
+      "sequence": "31号",
+      "logisticsName": "安旭物流",
+      "routeRaw": "分拣 泗县",
+      "routeCities": [
+        "分拣",
+        "泗县"
+      ]
+    },
+    "vl0107": {
+      "vendorId": "vl0107",
+      "centerName": "9号中心",
+      "sequence": "32号",
+      "logisticsName": "顺平物流",
+      "routeRaw": "分拣 黄岛 胶南 胶州 平度 城阳 高密 徐州 岚山 汾水 ：",
+      "routeCities": [
+        "分拣",
+        "黄岛",
+        "胶南",
+        "胶州",
+        "平度",
+        "城阳",
+        "高密",
+        "徐州",
+        "岚山",
+        "汾水"
+      ]
+    },
+    "vl0108": {
+      "vendorId": "vl0108",
+      "centerName": "7号中心",
+      "sequence": "12号",
+      "logisticsName": "成飞物流",
+      "routeRaw": "致胜 分拣 临沂往返 宿州",
+      "routeCities": [
+        "致胜",
+        "分拣",
+        "临沂往返",
+        "宿州"
+      ]
+    },
+    "vl0109": {
+      "vendorId": "vl0109",
+      "centerName": "7号中心",
+      "sequence": "13号",
+      "logisticsName": "成飞物流",
+      "routeRaw": "致胜 分拣 淮南 淮北 凤台 寿县",
+      "routeCities": [
+        "致胜",
+        "分拣",
+        "淮南",
+        "淮北",
+        "凤台",
+        "寿县"
+      ]
+    },
+    "vl0110": {
+      "vendorId": "vl0110",
+      "centerName": "7号中心",
+      "sequence": "14号",
+      "logisticsName": "成飞物流",
+      "routeRaw": "致胜 分拣 蚌埠 怀远 凤阳",
+      "routeCities": [
+        "致胜",
+        "分拣",
+        "蚌埠",
+        "怀远",
+        "凤阳"
+      ]
+    },
+    "vl0111": {
+      "vendorId": "vl0111",
+      "centerName": "7号中心",
+      "sequence": "15号",
+      "logisticsName": "成飞物流",
+      "routeRaw": "致胜 分拣 合肥 芜湖 宣城 安庆 六安 舒城 淮北 濉溪 金寨 霍邱 滁州 全椒",
+      "routeCities": [
+        "致胜",
+        "分拣",
+        "合肥",
+        "芜湖",
+        "宣城",
+        "安庆",
+        "六安",
+        "舒城",
+        "淮北",
+        "濉溪",
+        "金寨",
+        "霍邱",
+        "滁州",
+        "全椒"
+      ]
+    },
+    "vl0112": {
+      "vendorId": "vl0112",
+      "centerName": "7号中心",
+      "sequence": "16号",
+      "logisticsName": "成飞物流",
+      "routeRaw": "分拣中心12-16号 ：",
+      "routeCities": [
+        "分拣中心"
+      ]
+    },
+    "vl0113": {
+      "vendorId": "vl0113",
+      "centerName": "7号中心",
+      "sequence": "11号",
+      "logisticsName": "祥和物流",
+      "routeRaw": "致胜 连云港 海州 赣榆 ：3886788 ：1875123999",
+      "routeCities": [
+        "致胜",
+        "连云港",
+        "海州",
+        "赣榆"
+      ]
+    },
+    "vl0114": {
+      "vendorId": "vl0114",
+      "centerName": "7号中心",
+      "sequence": "10号",
+      "logisticsName": "佳泽物流",
+      "routeRaw": "承德全境 临沂：",
+      "routeCities": [
+        "承德全境",
+        "临沂"
+      ]
+    },
+    "vl0115": {
+      "vendorId": "vl0115",
+      "centerName": "7号中心",
+      "sequence": "9号",
+      "logisticsName": "佳泽物流",
+      "routeRaw": "承德 隆化 围场 丰宁 宽城 兴隆 滦平 临沂：",
+      "routeCities": [
+        "承德",
+        "隆化",
+        "围场",
+        "丰宁",
+        "宽城",
+        "兴隆",
+        "滦平",
+        "临沂"
+      ]
+    },
+    "vl0116": {
+      "vendorId": "vl0116",
+      "centerName": "7号中心",
+      "sequence": "8号",
+      "logisticsName": "佳泽物流",
+      "routeRaw": "平泉 双滦 营子 宁城 凌源 ：",
+      "routeCities": [
+        "平泉",
+        "双滦",
+        "营子",
+        "宁城",
+        "凌源"
+      ]
+    },
+    "vl0117": {
+      "vendorId": "vl0117",
+      "centerName": "7号中心",
+      "sequence": "4-7号",
+      "logisticsName": "龙虎物流",
+      "routeRaw": "郑州 许昌 长葛 ：1677480666",
+      "routeCities": [
+        "郑州",
+        "许昌",
+        "长葛"
+      ]
+    },
+    "vl0118": {
+      "vendorId": "vl0118",
+      "centerName": "7号中心",
+      "sequence": "1-2号",
+      "logisticsName": "汇通物流",
+      "routeRaw": "党山",
+      "routeCities": [
+        "党山"
+      ]
+    },
+    "vl0119": {
+      "vendorId": "vl0119",
+      "centerName": "7号中心",
+      "sequence": "15号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "振玉物流",
+      "routeCities": [
+        "振玉物流"
+      ]
+    },
+    "vl0120": {
+      "vendorId": "vl0120",
+      "centerName": "7号中心",
+      "sequence": "16号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "临沂往返莱州、沙河",
+      "routeCities": [
+        "临沂往返莱州",
+        "沙河"
+      ]
+    },
+    "vl0121": {
+      "vendorId": "vl0121",
+      "centerName": "7号中心",
+      "sequence": "17号",
+      "logisticsName": "正迎物流",
+      "routeRaw": "太原 晋源 晋中 迎泽 尖草坪 分拣",
+      "routeCities": [
+        "太原",
+        "晋源",
+        "晋中",
+        "迎泽",
+        "尖草坪",
+        "分拣"
+      ]
+    },
+    "vl0122": {
+      "vendorId": "vl0122",
+      "centerName": "7号中心",
+      "sequence": "18号",
+      "logisticsName": "正迎物流",
+      "routeRaw": "榆林 神木 大同 朔州 忻州 吕梁 分拣",
+      "routeCities": [
+        "榆林",
+        "神木",
+        "大同",
+        "朔州",
+        "忻州",
+        "吕梁",
+        "分拣"
+      ]
+    },
+    "vl0123": {
+      "vendorId": "vl0123",
+      "centerName": "7号中心",
+      "sequence": "19号",
+      "logisticsName": "正迎物流",
+      "routeRaw": "长治 晋城 高平 临汾 分拣 看不清",
+      "routeCities": [
+        "长治",
+        "晋城",
+        "高平",
+        "临汾",
+        "分拣",
+        "看不清"
+      ]
+    },
+    "vl0124": {
+      "vendorId": "vl0124",
+      "centerName": "7号中心",
+      "sequence": "20号",
+      "logisticsName": "正迎物流",
+      "routeRaw": "运城 新绛 侯马 三门峡 分拣",
+      "routeCities": [
+        "运城",
+        "新绛",
+        "侯马",
+        "三门峡",
+        "分拣"
+      ]
+    },
+    "vl0125": {
+      "vendorId": "vl0125",
+      "centerName": "7号中心",
+      "sequence": "21号",
+      "logisticsName": "正迎物流",
+      "routeRaw": "三方落地分拣中心 分拣",
+      "routeCities": [
+        "三方落地分拣中心",
+        "分拣"
+      ]
+    },
+    "vl0126": {
+      "vendorId": "vl0126",
+      "centerName": "7号中心",
+      "sequence": "26号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "银川 吴忠 固原 乌海 客服：",
+      "routeCities": [
+        "银川",
+        "吴忠",
+        "固原",
+        "乌海",
+        "客服"
+      ]
+    },
+    "vl0127": {
+      "vendorId": "vl0127",
+      "centerName": "7号中心",
+      "sequence": "27号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "西安 宝鸡 榆林 庆阳 客服：",
+      "routeCities": [
+        "西安",
+        "宝鸡",
+        "榆林",
+        "庆阳",
+        "客服"
+      ]
+    },
+    "vl0128": {
+      "vendorId": "vl0128",
+      "centerName": "7号中心",
+      "sequence": "28号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "兰州 武威 西宁 拉萨 客服：",
+      "routeCities": [
+        "兰州",
+        "武威",
+        "西宁",
+        "拉萨",
+        "客服"
+      ]
+    },
+    "vl0129": {
+      "vendorId": "vl0129",
+      "centerName": "7号中心",
+      "sequence": "29号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "三财讯诚 乌鲁木齐（南区沙依巴克） 客服：",
+      "routeCities": [
+        "三财讯诚",
+        "乌鲁木齐（南区沙依巴克",
+        "客服"
+      ]
+    },
+    "vl0130": {
+      "vendorId": "vl0130",
+      "centerName": "7号中心",
+      "sequence": "30号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "三财讯诚 乌鲁木齐（北区米东 新华凌） 客服：",
+      "routeCities": [
+        "三财讯诚",
+        "乌鲁木齐（北区米东",
+        "新华凌",
+        "客服"
+      ]
+    },
+    "vl0131": {
+      "vendorId": "vl0131",
+      "centerName": "7号中心",
+      "sequence": "31号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "三财讯诚 哈密米伊犁 喀什 客服：",
+      "routeCities": [
+        "三财讯诚",
+        "哈密米伊犁",
+        "喀什",
+        "客服"
+      ]
+    },
+    "vl0132": {
+      "vendorId": "vl0132",
+      "centerName": "7号中心",
+      "sequence": "32号",
+      "logisticsName": "思鸿物流",
+      "routeRaw": "三财讯诚 石河子 奎屯 博乐 库尔勒 客服：",
+      "routeCities": [
+        "三财讯诚",
+        "石河子",
+        "奎屯",
+        "博乐",
+        "库尔勒",
+        "客服"
+      ]
+    },
+    "vl0133": {
+      "vendorId": "vl0133",
+      "centerName": "5号中心",
+      "sequence": "20号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 嘉祥 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "嘉祥"
+      ]
+    },
+    "vl0134": {
+      "vendorId": "vl0134",
+      "centerName": "5号中心",
+      "sequence": "21号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 威海高区 张村 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "威海高区",
+        "张村"
+      ]
+    },
+    "vl0135": {
+      "vendorId": "vl0135",
+      "centerName": "5号中心",
+      "sequence": "22号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 威海环翠 经区 ： 家家悦 外运 海联 临港区",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "威海环翠",
+        "经区",
+        "家家悦",
+        "外运",
+        "海联",
+        "临港区"
+      ]
+    },
+    "vl0136": {
+      "vendorId": "vl0136",
+      "centerName": "5号中心",
+      "sequence": "23号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 海阳 乳山 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "海阳",
+        "乳山"
+      ]
+    },
+    "vl0137": {
+      "vendorId": "vl0137",
+      "centerName": "5号中心",
+      "sequence": "24号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 文登 蔄山 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "文登",
+        "蔄山"
+      ]
+    },
+    "vl0138": {
+      "vendorId": "vl0138",
+      "centerName": "5号中心",
+      "sequence": "25号",
+      "logisticsName": "骏盛驰物流",
+      "routeRaw": "山东鑫鲁顺 荣成 石岛 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "荣成",
+        "石岛"
+      ]
+    },
+    "vl0139": {
+      "vendorId": "vl0139",
+      "centerName": "5号中心",
+      "sequence": "26号",
+      "logisticsName": "邦讯物流",
+      "routeRaw": "广州往返临沂 ：",
+      "routeCities": [
+        "广州往返临沂"
+      ]
+    },
+    "vl0140": {
+      "vendorId": "vl0140",
+      "centerName": "5号中心",
+      "sequence": "27号",
+      "logisticsName": "福顺物流",
+      "routeRaw": "山东鑫鲁顺 临沂 鄄城 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂",
+        "鄄城"
+      ]
+    },
+    "vl0141": {
+      "vendorId": "vl0141",
+      "centerName": "5号中心",
+      "sequence": "28号",
+      "logisticsName": "百川物流",
+      "routeRaw": "山东鑫鲁顺 嘉祥 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "嘉祥"
+      ]
+    },
+    "vl0142": {
+      "vendorId": "vl0142",
+      "centerName": "5号中心",
+      "sequence": "29号",
+      "logisticsName": "百川物流",
+      "routeRaw": "山东鑫鲁顺 巨野 郓城 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "巨野",
+        "郓城"
+      ]
+    },
+    "vl0143": {
+      "vendorId": "vl0143",
+      "centerName": "5号中心",
+      "sequence": "30号",
+      "logisticsName": "百川物流",
+      "routeRaw": "山东鑫鲁顺 三财龙腾 日照 滕州 ：8070277",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "三财龙腾",
+        "日照",
+        "滕州"
+      ]
+    },
+    "vl0144": {
+      "vendorId": "vl0144",
+      "centerName": "5号中心",
+      "sequence": "31号",
+      "logisticsName": "百川物流",
+      "routeRaw": "山东鑫鲁顺 三财翔霖 枣庄 薛城 ：8070277",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "三财翔霖",
+        "枣庄",
+        "薛城"
+      ]
+    },
+    "vl0145": {
+      "vendorId": "vl0145",
+      "centerName": "5号中心",
+      "sequence": "32号",
+      "logisticsName": "百川物流",
+      "routeRaw": "山东鑫鲁顺 三财海赋 微山 台儿庄 ：8070277",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "三财海赋",
+        "微山",
+        "台儿庄"
+      ]
+    },
+    "vl0146": {
+      "vendorId": "vl0146",
+      "centerName": "5号中心",
+      "sequence": "33号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "山东鑫鲁顺 滨州 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "滨州"
+      ]
+    },
+    "vl0147": {
+      "vendorId": "vl0147",
+      "centerName": "5号中心",
+      "sequence": "34-36号",
+      "logisticsName": "大雁物流",
+      "routeRaw": "山东鑫鲁顺 泰安 大汶口 ： 文成物流：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "泰安",
+        "大汶口",
+        "文成物流"
+      ]
+    },
+    "vl0148": {
+      "vendorId": "vl0148",
+      "centerName": "5号中心",
+      "sequence": "34-36号",
+      "logisticsName": "大雁物流",
+      "routeRaw": "山东鑫鲁顺 薛城 德州 莒县 ： 文成物流：有个看不清",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "薛城",
+        "德州",
+        "莒县",
+        "文成物流：有个看不清"
+      ]
+    },
+    "vl0149": {
+      "vendorId": "vl0149",
+      "centerName": "5号中心",
+      "sequence": "34-36号",
+      "logisticsName": "大雁物流",
+      "routeRaw": "山东鑫鲁顺 新泰 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "新泰"
+      ]
+    },
+    "vl0150": {
+      "vendorId": "vl0150",
+      "centerName": "5号中心",
+      "sequence": "37-38号",
+      "logisticsName": "大雁物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 温州至临沂分拣中心 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "温州",
+        "临沂分拣中心"
+      ]
+    },
+    "vl0151": {
+      "vendorId": "vl0151",
+      "centerName": "5号中心",
+      "sequence": "37-38号",
+      "logisticsName": "大雁物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 温州至临沂分拣中心 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "温州",
+        "临沂分拣中心"
+      ]
+    },
+    "vl0152": {
+      "vendorId": "vl0152",
+      "centerName": "3号中心",
+      "sequence": "21号",
+      "logisticsName": "健捷物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返烟台 7033222",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返烟台"
+      ]
+    },
+    "vl0153": {
+      "vendorId": "vl0153",
+      "centerName": "3号中心",
+      "sequence": "20号",
+      "logisticsName": "健捷物流",
+      "routeRaw": "山东鑫鲁顺 芝罘 福山 莱山 7033222",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "芝罘",
+        "福山",
+        "莱山"
+      ]
+    },
+    "vl0154": {
+      "vendorId": "vl0154",
+      "centerName": "3号中心",
+      "sequence": "19号",
+      "logisticsName": "健捷物流",
+      "routeRaw": "山东鑫鲁顺 牟平 莱州 招远 7033222",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "牟平",
+        "莱州",
+        "招远"
+      ]
+    },
+    "vl0155": {
+      "vendorId": "vl0155",
+      "centerName": "3号中心",
+      "sequence": "18号",
+      "logisticsName": "龙驰快运(澳运物流",
+      "routeRaw": ") 聊城全境 安徽全境 临沂往来聊城",
+      "routeCities": [
+        "聊城全境",
+        "安徽全境",
+        "临沂往来聊城"
+      ]
+    },
+    "vl0156": {
+      "vendorId": "vl0156",
+      "centerName": "3号中心",
+      "sequence": "17号",
+      "logisticsName": "乐宇物流",
+      "routeRaw": "山东鑫鲁顺 03分拣栖霞 桃村",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "分拣栖霞",
+        "桃村"
+      ]
+    },
+    "vl0157": {
+      "vendorId": "vl0157",
+      "centerName": "3号中心",
+      "sequence": "13号",
+      "logisticsName": "虹海物流",
+      "routeRaw": "山东鑫鲁顺 (原虹源) 高唐 禹城. 3129587",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "原虹源",
+        "高唐",
+        "禹城"
+      ]
+    },
+    "vl0158": {
+      "vendorId": "vl0158",
+      "centerName": "3号中心",
+      "sequence": "14号",
+      "logisticsName": "虹海物流",
+      "routeRaw": "山东鑫鲁顺 (原虹源) 齐河 桑梓店 3129587",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "原虹源",
+        "齐河",
+        "桑梓店"
+      ]
+    },
+    "vl0159": {
+      "vendorId": "vl0159",
+      "centerName": "3号中心",
+      "sequence": "12号",
+      "logisticsName": "米迪金镖物流",
+      "routeRaw": "山东鑫鲁顺 分拨12号 临沂往返胶南 黄岛",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "分拨12号",
+        "临沂往返胶南",
+        "黄岛"
+      ]
+    },
+    "vl0160": {
+      "vendorId": "vl0160",
+      "centerName": "3号中心",
+      "sequence": "11号",
+      "logisticsName": "宏盾物流",
+      "routeRaw": "山东鑫鲁顺 王台 泊里",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "王台",
+        "泊里"
+      ]
+    },
+    "vl0161": {
+      "vendorId": "vl0161",
+      "centerName": "3号中心",
+      "sequence": "08-09号",
+      "logisticsName": "振山物流",
+      "routeRaw": "山东鑫鲁顺 济宁 汶上 梁山",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "济宁",
+        "汶上",
+        "梁山"
+      ]
+    },
+    "vl0162": {
+      "vendorId": "vl0162",
+      "centerName": "3号中心",
+      "sequence": "08-09号",
+      "logisticsName": "振山物流",
+      "routeRaw": "山东鑫鲁顺 济宁 汶上 梁山",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "济宁",
+        "汶上",
+        "梁山"
+      ]
+    },
+    "vl0163": {
+      "vendorId": "vl0163",
+      "centerName": "3号中心",
+      "sequence": "07号",
+      "logisticsName": "伟兴物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返淄博 张店",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返淄博",
+        "张店"
+      ]
+    },
+    "vl0164": {
+      "vendorId": "vl0164",
+      "centerName": "3号中心",
+      "sequence": "06号",
+      "logisticsName": "伟兴物流",
+      "routeRaw": "山东鑫鲁顺 淄川 周村 邹平",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "淄川",
+        "周村",
+        "邹平"
+      ]
+    },
+    "vl0165": {
+      "vendorId": "vl0165",
+      "centerName": "3号中心",
+      "sequence": "05号",
+      "logisticsName": "伟兴物流",
+      "routeRaw": "山东鑫鲁顺 桓台 临淄 博山",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "桓台",
+        "临淄",
+        "博山"
+      ]
+    },
+    "vl0166": {
+      "vendorId": "vl0166",
+      "centerName": "3号中心",
+      "sequence": "4号",
+      "logisticsName": "一站式物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 分拨配送中心 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "分拨配送中心"
+      ]
+    },
+    "vl0167": {
+      "vendorId": "vl0167",
+      "centerName": "3号中心",
+      "sequence": "3号",
+      "logisticsName": "一站式物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 济南 潍坊 青州 寿光 日照 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "济南",
+        "潍坊",
+        "青州",
+        "寿光",
+        "日照"
+      ]
+    },
+    "vl0168": {
+      "vendorId": "vl0168",
+      "centerName": "3号中心",
+      "sequence": "2号",
+      "logisticsName": "一站式物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 费县 蒙阴 莒南 临沭 莒县 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "费县",
+        "蒙阴",
+        "莒南",
+        "临沭",
+        "莒县"
+      ]
+    },
+    "vl0169": {
+      "vendorId": "vl0169",
+      "centerName": "3号中心",
+      "sequence": "1号",
+      "logisticsName": "一站式物流",
+      "routeRaw": "山东鑫鲁顺 黑风快运 郯城兰陵 沂水 沂南 平邑 ：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "黑风快运",
+        "郯城兰陵",
+        "沂水",
+        "沂南",
+        "平邑"
+      ]
+    },
+    "vl0170": {
+      "vendorId": "vl0170",
+      "centerName": "3号中心",
+      "sequence": "22号",
+      "logisticsName": "一站式物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返 蓝村 城阳",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返",
+        "蓝村",
+        "城阳"
+      ]
+    },
+    "vl0171": {
+      "vendorId": "vl0171",
+      "centerName": "3号中心",
+      "sequence": "23号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 菏泽",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "菏泽"
+      ]
+    },
+    "vl0172": {
+      "vendorId": "vl0172",
+      "centerName": "3号中心",
+      "sequence": "24号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 曹县 单县",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "曹县",
+        "单县"
+      ]
+    },
+    "vl0173": {
+      "vendorId": "vl0173",
+      "centerName": "3号中心",
+      "sequence": "25号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 巨野 郓城",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "巨野",
+        "郓城"
+      ]
+    },
+    "vl0174": {
+      "vendorId": "vl0174",
+      "centerName": "3号中心",
+      "sequence": "26号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 成武 定陶",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "成武",
+        "定陶"
+      ]
+    },
+    "vl0175": {
+      "vendorId": "vl0175",
+      "centerName": "3号中心",
+      "sequence": "27号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 东明 枣庄",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "东明",
+        "枣庄"
+      ]
+    },
+    "vl0176": {
+      "vendorId": "vl0176",
+      "centerName": "3号中心",
+      "sequence": "28号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 济宁 金乡",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "济宁",
+        "金乡"
+      ]
+    },
+    "vl0177": {
+      "vendorId": "vl0177",
+      "centerName": "3号中心",
+      "sequence": "29号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 鱼台 鄄城",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "鱼台",
+        "鄄城"
+      ]
+    },
+    "vl0178": {
+      "vendorId": "vl0178",
+      "centerName": "3号中心",
+      "sequence": "30号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 潍坊",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "潍坊"
+      ]
+    },
+    "vl0179": {
+      "vendorId": "vl0179",
+      "centerName": "3号中心",
+      "sequence": "31号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 徐州",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "徐州"
+      ]
+    },
+    "vl0180": {
+      "vendorId": "vl0180",
+      "centerName": "3号中心",
+      "sequence": "32号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 贾汪",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "贾汪"
+      ]
+    },
+    "vl0181": {
+      "vendorId": "vl0181",
+      "centerName": "3号中心",
+      "sequence": "33号",
+      "logisticsName": "中立物流",
+      "routeRaw": "山东鑫鲁顺 丰县 沛县",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "丰县",
+        "沛县"
+      ]
+    },
+    "vl0182": {
+      "vendorId": "vl0182",
+      "centerName": "3号中心",
+      "sequence": "34号",
+      "logisticsName": "路风物流",
+      "routeRaw": "山东鑫鲁顺 澳龙 扬州",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "澳龙",
+        "扬州"
+      ]
+    },
+    "vl0183": {
+      "vendorId": "vl0183",
+      "centerName": "3号中心",
+      "sequence": "35号",
+      "logisticsName": "路风物流",
+      "routeRaw": "山东鑫鲁顺 日照 岚山",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "日照",
+        "岚山"
+      ]
+    },
+    "vl0184": {
+      "vendorId": "vl0184",
+      "centerName": "3号中心",
+      "sequence": "36号",
+      "logisticsName": "凯明物流",
+      "routeRaw": "山东鑫鲁顺 蓬菜 龙口 黄城 长岛 8331822",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "蓬菜",
+        "龙口",
+        "黄城",
+        "长岛"
+      ]
+    },
+    "vl0185": {
+      "vendorId": "vl0185",
+      "centerName": "3号中心",
+      "sequence": "37号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返宁阳 磁窑",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返宁阳",
+        "磁窑"
+      ]
+    },
+    "vl0186": {
+      "vendorId": "vl0186",
+      "centerName": "3号中心",
+      "sequence": "38号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返宁阳 磁窑",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返宁阳",
+        "磁窑"
+      ]
+    },
+    "vl0187": {
+      "vendorId": "vl0187",
+      "centerName": "3号中心",
+      "sequence": "39号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "临沂领泰 宁波金星 宁波→临沂",
+      "routeCities": [
+        "临沂领泰",
+        "宁波金星",
+        "宁波",
+        "临沂"
+      ]
+    },
+    "vl0188": {
+      "vendorId": "vl0188",
+      "centerName": "3号中心",
+      "sequence": "40号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "临沂领泰 宁波金星 绍兴 越城 上虞 嵊州 新昌 就、诸暨",
+      "routeCities": [
+        "临沂领泰",
+        "宁波金星",
+        "绍兴",
+        "越城",
+        "上虞",
+        "嵊州",
+        "新昌",
+        "诸暨"
+      ]
+    },
+    "vl0189": {
+      "vendorId": "vl0189",
+      "centerName": "3号中心",
+      "sequence": "40号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "临沂领泰 宁波金星 慈溪 余姚 宁海 象山 舟山 定海",
+      "routeCities": [
+        "临沂领泰",
+        "宁波金星",
+        "慈溪",
+        "余姚",
+        "宁海",
+        "象山",
+        "舟山",
+        "定海"
+      ]
+    },
+    "vl0190": {
+      "vendorId": "vl0190",
+      "centerName": "3号中心",
+      "sequence": "40号",
+      "logisticsName": "捷通物流",
+      "routeRaw": "临沂领泰 宁波金星 宁波 海曙 江北 奉化 北仓 鄞州",
+      "routeCities": [
+        "临沂领泰",
+        "宁波金星",
+        "宁波",
+        "海曙",
+        "江北",
+        "奉化",
+        "北仓",
+        "鄞州"
+      ]
+    },
+    "vl0191": {
+      "vendorId": "vl0191",
+      "centerName": "1号中心",
+      "sequence": "1号",
+      "logisticsName": "仁果物流",
+      "routeRaw": "山东鑫鲁顺 潍坊 昌邑",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "潍坊",
+        "昌邑"
+      ]
+    },
+    "vl0192": {
+      "vendorId": "vl0192",
+      "centerName": "1号中心",
+      "sequence": "2号",
+      "logisticsName": "仁果物流",
+      "routeRaw": "山东鑫鲁顺 诸城 安丘 高密",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "诸城",
+        "安丘",
+        "高密"
+      ]
+    },
+    "vl0193": {
+      "vendorId": "vl0193",
+      "centerName": "1号中心",
+      "sequence": "3号",
+      "logisticsName": "仁果物流",
+      "routeRaw": "山东鑫鲁顺 寿光 昌乐",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "寿光",
+        "昌乐"
+      ]
+    },
+    "vl0194": {
+      "vendorId": "vl0194",
+      "centerName": "1号中心",
+      "sequence": "4号",
+      "logisticsName": "仁果物流",
+      "routeRaw": "山东鑫鲁顺 临朐 青州",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临朐",
+        "青州"
+      ]
+    },
+    "vl0195": {
+      "vendorId": "vl0195",
+      "centerName": "1号中心",
+      "sequence": "7号",
+      "logisticsName": "三鑫物流",
+      "routeRaw": "临沂久泰 临沂往返魏县",
+      "routeCities": [
+        "临沂久泰",
+        "临沂往返魏县"
+      ]
+    },
+    "vl0196": {
+      "vendorId": "vl0196",
+      "centerName": "1号中心",
+      "sequence": "7号",
+      "logisticsName": "三鑫物流",
+      "routeRaw": "临沂久泰 临沂往返永年 曲周",
+      "routeCities": [
+        "临沂久泰",
+        "临沂往返永年",
+        "曲周"
+      ]
+    },
+    "vl0197": {
+      "vendorId": "vl0197",
+      "centerName": "1号中心",
+      "sequence": "7号",
+      "logisticsName": "三鑫物流",
+      "routeRaw": "临沂久泰 临沂往返邯郸",
+      "routeCities": [
+        "临沂久泰",
+        "临沂往返邯郸"
+      ]
+    },
+    "vl0198": {
+      "vendorId": "vl0198",
+      "centerName": "1号中心",
+      "sequence": "8号",
+      "logisticsName": "永顺物流",
+      "routeRaw": "临沂往返呼市 包头 东胜 集宁 临河 乌海",
+      "routeCities": [
+        "临沂往返呼市",
+        "包头",
+        "东胜",
+        "集宁",
+        "临河",
+        "乌海"
+      ]
+    },
+    "vl0199": {
+      "vendorId": "vl0199",
+      "centerName": "1号中心",
+      "sequence": "9号",
+      "logisticsName": "永顺物流",
+      "routeRaw": "临沂往返赤峰 通辽 锡林浩特 乌兰浩特",
+      "routeCities": [
+        "临沂往返赤峰",
+        "通辽",
+        "锡林浩特",
+        "乌兰浩特"
+      ]
+    },
+    "vl0200": {
+      "vendorId": "vl0200",
+      "centerName": "1号中心",
+      "sequence": "10号",
+      "logisticsName": "永顺物流",
+      "routeRaw": "山东鑫鲁顺 临沂往返莱阳 临沂 莱阳：",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "临沂往返莱阳",
+        "临沂",
+        "莱阳"
+      ]
+    },
+    "vl0201": {
+      "vendorId": "vl0201",
+      "centerName": "1号中心",
+      "sequence": "11号",
+      "logisticsName": "东胜永厦物流",
+      "routeRaw": "夏邑 毫州",
+      "routeCities": [
+        "夏邑",
+        "毫州"
+      ]
+    },
+    "vl0202": {
+      "vendorId": "vl0202",
+      "centerName": "1号中心",
+      "sequence": "12号",
+      "logisticsName": "东胜永厦物流",
+      "routeRaw": "临沂往返永城",
+      "routeCities": [
+        "临沂往返永城"
+      ]
+    },
+    "vl0203": {
+      "vendorId": "vl0203",
+      "centerName": "1号中心",
+      "sequence": "13号",
+      "logisticsName": "其根物流",
+      "routeRaw": "永康→临沂 7672858",
+      "routeCities": [
+        "永康",
+        "临沂"
+      ]
+    },
+    "vl0204": {
+      "vendorId": "vl0204",
+      "centerName": "1号中心",
+      "sequence": "14号",
+      "logisticsName": "其根物流",
+      "routeRaw": "永康→临沂 7672858",
+      "routeCities": [
+        "永康",
+        "临沂"
+      ]
+    },
+    "vl0205": {
+      "vendorId": "vl0205",
+      "centerName": "1号中心",
+      "sequence": "15号",
+      "logisticsName": "其根物流",
+      "routeRaw": "永康→临沂 7672858",
+      "routeCities": [
+        "永康",
+        "临沂"
+      ]
+    },
+    "vl0206": {
+      "vendorId": "vl0206",
+      "centerName": "1号中心",
+      "sequence": "16号",
+      "logisticsName": "领泰物流",
+      "routeRaw": "东阳往返临沂",
+      "routeCities": [
+        "东阳往返临沂"
+      ]
+    },
+    "vl0207": {
+      "vendorId": "vl0207",
+      "centerName": "1号中心",
+      "sequence": "17号",
+      "logisticsName": "领泰物流",
+      "routeRaw": "义乌往返临沂",
+      "routeCities": [
+        "义乌往返临沂"
+      ]
+    },
+    "vl0208": {
+      "vendorId": "vl0208",
+      "centerName": "1号中心",
+      "sequence": "18号",
+      "logisticsName": "宝港物流",
+      "routeRaw": "捷达物流 临沂往返柬埔寨全境 合作电 话: 收货电 话:",
+      "routeCities": [
+        "捷达物流",
+        "临沂往返柬埔寨全境",
+        "合作电",
+        "收货电"
+      ]
+    },
+    "vl0209": {
+      "vendorId": "vl0209",
+      "centerName": "1号中心",
+      "sequence": "19号",
+      "logisticsName": "领泰物流",
+      "routeRaw": "临沂往返浦江 兰溪",
+      "routeCities": [
+        "临沂往返浦江",
+        "兰溪"
+      ]
+    },
+    "vl0210": {
+      "vendorId": "vl0210",
+      "centerName": "1号中心",
+      "sequence": "20号",
+      "logisticsName": "领泰物流",
+      "routeRaw": "临沂往返金华 永康",
+      "routeCities": [
+        "临沂往返金华",
+        "永康"
+      ]
+    },
+    "vl0211": {
+      "vendorId": "vl0211",
+      "centerName": "1号中心",
+      "sequence": "21号",
+      "logisticsName": "领泰物流",
+      "routeRaw": "临沂往返义鸟 东阳",
+      "routeCities": [
+        "临沂往返义鸟",
+        "东阳"
+      ]
+    },
+    "vl0212": {
+      "vendorId": "vl0212",
+      "centerName": "1号中心",
+      "sequence": "42号",
+      "logisticsName": "建铧物流",
+      "routeRaw": "山东鑫鲁顺 广东全境 梅州 河源 茂名 湛江",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "广东全境",
+        "梅州",
+        "河源",
+        "茂名",
+        "湛江"
+      ]
+    },
+    "vl0213": {
+      "vendorId": "vl0213",
+      "centerName": "1号中心",
+      "sequence": "41号",
+      "logisticsName": "建铧物流",
+      "routeRaw": "山东鑫鲁顺 广东全境 海南 番禺 清远 江门",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "广东全境",
+        "海南",
+        "番禺",
+        "清远",
+        "江门"
+      ]
+    },
+    "vl0214": {
+      "vendorId": "vl0214",
+      "centerName": "1号中心",
+      "sequence": "40号",
+      "logisticsName": "建铧物流",
+      "routeRaw": "山东鑫鲁顺 广东全境 韶关 肇庆 珠海 惠州",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "广东全境",
+        "韶关",
+        "肇庆",
+        "珠海",
+        "惠州"
+      ]
+    },
+    "vl0215": {
+      "vendorId": "vl0215",
+      "centerName": "1号中心",
+      "sequence": "39号",
+      "logisticsName": "建铧物流",
+      "routeRaw": "山东鑫鲁顺 广东全境 佛山 中山 东莞 广州",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "广东全境",
+        "佛山",
+        "中山",
+        "东莞",
+        "广州"
+      ]
+    },
+    "vl0216": {
+      "vendorId": "vl0216",
+      "centerName": "1号中心",
+      "sequence": "38号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "山东鑫鲁顺 苏州分拨处",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "苏州分拨处"
+      ]
+    },
+    "vl0217": {
+      "vendorId": "vl0217",
+      "centerName": "1号中心",
+      "sequence": "37号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "山东鑫鲁顺 宁波红城 西安",
+      "routeCities": [
+        "山东鑫鲁顺",
+        "宁波红城",
+        "西安"
+      ]
+    },
+    "vl0218": {
+      "vendorId": "vl0218",
+      "centerName": "1号中心",
+      "sequence": "36号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 河北白沟分拔处",
+      "routeCities": [
+        "宏伟物流",
+        "河北白沟分拔处"
+      ]
+    },
+    "vl0219": {
+      "vendorId": "vl0219",
+      "centerName": "1号中心",
+      "sequence": "35号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 河北大城分拨处",
+      "routeCities": [
+        "宏伟物流",
+        "河北大城分拨处"
+      ]
+    },
+    "vl0220": {
+      "vendorId": "vl0220",
+      "centerName": "1号中心",
+      "sequence": "34号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 余姚 慈溪 舟山 柯桥 上虞",
+      "routeCities": [
+        "宏伟物流",
+        "余姚",
+        "慈溪",
+        "舟山",
+        "柯桥",
+        "上虞"
+      ]
+    },
+    "vl0221": {
+      "vendorId": "vl0221",
+      "centerName": "1号中心",
+      "sequence": "33号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 宁波 奉化 宁海象山 北仑",
+      "routeCities": [
+        "宏伟物流",
+        "宁波",
+        "奉化",
+        "宁海象山",
+        "北仑"
+      ]
+    },
+    "vl0222": {
+      "vendorId": "vl0222",
+      "centerName": "1号中心",
+      "sequence": "32号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "临浙市兰山区茶丰货衡市西中心 临沂往返海州 新浦 连云港",
+      "routeCities": [
+        "临浙市兰山区茶丰货衡市西中心",
+        "临沂往返海州",
+        "新浦",
+        "连云港"
+      ]
+    },
+    "vl0223": {
+      "vendorId": "vl0223",
+      "centerName": "1号中心",
+      "sequence": "31号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "临浙市兰山区茶丰货衡市西中心 临沂往返灌云灌南 城坤 连云区",
+      "routeCities": [
+        "临浙市兰山区茶丰货衡市西中心",
+        "临沂往返灌云灌南",
+        "城坤",
+        "连云区"
+      ]
+    },
+    "vl0224": {
+      "vendorId": "vl0224",
+      "centerName": "1号中心",
+      "sequence": "30号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 白沟 高碑店 雄县",
+      "routeCities": [
+        "宏伟物流",
+        "白沟",
+        "高碑店",
+        "雄县"
+      ]
+    },
+    "vl0225": {
+      "vendorId": "vl0225",
+      "centerName": "1号中心",
+      "sequence": "29号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 德州",
+      "routeCities": [
+        "宏伟物流",
+        "德州"
+      ]
+    },
+    "vl0226": {
+      "vendorId": "vl0226",
+      "centerName": "1号中心",
+      "sequence": "28号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 菏泽",
+      "routeCities": [
+        "宏伟物流",
+        "菏泽"
+      ]
+    },
+    "vl0227": {
+      "vendorId": "vl0227",
+      "centerName": "1号中心",
+      "sequence": "27号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 青州 辛寨 临朐",
+      "routeCities": [
+        "宏伟物流",
+        "青州",
+        "辛寨",
+        "临朐"
+      ]
+    },
+    "vl0228": {
+      "vendorId": "vl0228",
+      "centerName": "1号中心",
+      "sequence": "26号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 淮安 楚州 汇通 徐州",
+      "routeCities": [
+        "宏伟物流",
+        "淮安",
+        "楚州",
+        "汇通",
+        "徐州"
+      ]
+    },
+    "vl0229": {
+      "vendorId": "vl0229",
+      "centerName": "1号中心",
+      "sequence": "25号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 昆山 太仓",
+      "routeCities": [
+        "宏伟物流",
+        "昆山",
+        "太仓"
+      ]
+    },
+    "vl0230": {
+      "vendorId": "vl0230",
+      "centerName": "1号中心",
+      "sequence": "24号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 苏州 张家港 常熟",
+      "routeCities": [
+        "宏伟物流",
+        "苏州",
+        "张家港",
+        "常熟"
+      ]
+    },
+    "vl0231": {
+      "vendorId": "vl0231",
+      "centerName": "1号中心",
+      "sequence": "23号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 常州 溧阳 镇江 丹阳",
+      "routeCities": [
+        "宏伟物流",
+        "常州",
+        "溧阳",
+        "镇江",
+        "丹阳"
+      ]
+    },
+    "vl0232": {
+      "vendorId": "vl0232",
+      "centerName": "1号中心",
+      "sequence": "22号",
+      "logisticsName": "鲁驰供应链",
+      "routeRaw": "宏伟物流 无锡 江阴 宜兴",
+      "routeCities": [
+        "宏伟物流",
+        "无锡",
+        "江阴",
+        "宜兴"
+      ]
+    }
+  }
+}
