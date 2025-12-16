@@ -223,6 +223,7 @@ export default defineComponent({
   name: 'MapView',
   components: { PanoramaViewer },
   setup() {
+    let poke = null
 const FACTORY_MODEL_CONFIG = {
   baseId: 'factory-base',
   roofId: 'factory-roof',
@@ -1286,7 +1287,11 @@ onMounted(async () => {
   viewer.scene.moon.show = false
   viewer.resolutionScale = 0.75 // 视效与负载的折中
 
-  const poke = () => viewer.scene.requestRender()
+  poke = () => {
+    if (viewer && !viewer.isDestroyed()) {
+      viewer.scene.requestRender()
+    }
+  }
   viewer.camera.changed.addEventListener(poke)
   window.addEventListener('resize', poke)
   // 存下全局引用用于其他顶层方法
@@ -2644,6 +2649,17 @@ onUnmounted(() => {
   // 清理园区曲线数据源
   try { clearVendorCurves() } catch {}
   window.removeEventListener('keydown', onKeydown)
+  if (poke) window.removeEventListener('resize', poke)
+  window.removeEventListener('mousemove', onVendorFloatMove)
+  window.removeEventListener('mouseup', onVendorFloatUp)
+  if (viewerRef.value && !viewerRef.value.isDestroyed()) {
+    try {
+      viewerRef.value.destroy()
+    } catch (e) {
+      console.error('Viewer destroy failed:', e)
+    }
+    viewerRef.value = null
+  }
 })
 
 // 飞行到仓库实体（供调试面板调用）
