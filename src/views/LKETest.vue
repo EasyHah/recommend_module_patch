@@ -49,7 +49,24 @@ async function onSend() {
 </script>
 
 <style scoped>
-.lke-test { padding: 16px; }
-.row { margin: 8px 0; display: flex; align-items: center; gap: 8px; }
-pre { background: #f6f8fa; padding: 8px; border-radius: 6px; max-height: 300px; overflow: auto; }
+.lke-test {
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
+}
+.row { margin: 8px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+input {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 10px;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+}
+button {
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+pre { background: #f6f8fa; padding: 8px; border-radius: 8px; max-height: 300px; overflow: auto; }
 </style>

@@ -149,6 +149,7 @@ const errorMessage = ref<string>('')
 // 测试视频数据
 const testVideos = ref(TestVideoManager.getTestVideos())
 const selectedVideoId = ref<string>('')
+const DEFAULT_FIXED_VIDEO_SRC = '/Assets/data/b055d0c1228c117ae9f52286c92d706f.mp4'
 
 // 检测结果数据
 const detections = ref<DetectionResult[]>([])
@@ -189,6 +190,54 @@ const loadTestVideo = async () => {
   }
 }
 
+function waitVideoCanPlay(video: HTMLVideoElement) {
+  if (video.readyState >= 2) return Promise.resolve()
+  return new Promise<void>((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      cleanup()
+      resolve()
+    }, 8000)
+
+    const onCanPlay = () => {
+      cleanup()
+      resolve()
+    }
+
+    const onError = () => {
+      cleanup()
+      reject(new Error('视频加载失败'))
+    }
+
+    const cleanup = () => {
+      window.clearTimeout(timer)
+      video.removeEventListener('canplay', onCanPlay)
+      video.removeEventListener('error', onError)
+    }
+
+    video.addEventListener('canplay', onCanPlay, { once: true })
+    video.addEventListener('error', onError, { once: true })
+  })
+}
+
+const loadFixedVideo = async () => {
+  if (!videoRef.value) return
+  TestVideoManager.stopVideo(videoRef.value)
+
+  const currentSrc = videoRef.value.currentSrc || videoRef.value.src || ''
+  if (!currentSrc.endsWith(DEFAULT_FIXED_VIDEO_SRC)) {
+    videoRef.value.src = DEFAULT_FIXED_VIDEO_SRC
+    videoRef.value.load()
+  }
+
+  await waitVideoCanPlay(videoRef.value)
+
+  try {
+    await videoRef.value.play()
+  } catch {
+    // 某些浏览器策略下可能被阻止；忽略，识别仍可执行
+  }
+}
+
 const selectVideoFile = () => {
   const input = document.createElement('input')
   input.type = 'file'
@@ -207,29 +256,93 @@ const selectVideoFile = () => {
 }
 
 const toggleRecognition = async () => {
-  if (recognitionState.value === RecognitionState.UNINITIALIZED) {
-    await initializeRecognition()
-  }
-  
   if (isRecognizing.value) {
     stopRecognition()
   } else {
+    await ensureRecognitionInitialized()
     startRecognition()
   }
 }
 
-const initializeRecognition = async () => {
+let initPromise: Promise<void> | null = null
+
+function syncRecognitionState() {
   try {
-    errorMessage.value = ''
-    await recognitionService.initialize()
-    await recognitionService.warmup()
-  } catch (error) {
-    errorMessage.value = `初始化失败: ${error}`
-    console.error('Recognition initialization failed:', error)
+    recognitionState.value = recognitionService.getState()
+  } catch {}
+}
+
+function waitForRecognitionReady(timeoutMs = 12000) {
+  const current = recognitionService.getState()
+  if (current === RecognitionState.READY || current === RecognitionState.RUNNING) return Promise.resolve()
+
+  return new Promise<void>((resolve, reject) => {
+    const off = recognitionService.onStateChange((s) => {
+      recognitionState.value = s
+      if (s === RecognitionState.READY || s === RecognitionState.RUNNING) {
+        cleanup()
+        resolve()
+      }
+      if (s === RecognitionState.ERROR) {
+        cleanup()
+        reject(new Error('识别服务初始化失败'))
+      }
+    })
+
+    const timer = window.setTimeout(() => {
+      cleanup()
+      reject(new Error('识别服务初始化超时'))
+    }, timeoutMs)
+
+    const cleanup = () => {
+      window.clearTimeout(timer)
+      try { off?.() } catch {}
+    }
+  })
+}
+
+const ensureRecognitionInitialized = async () => {
+  syncRecognitionState()
+  const current = recognitionService.getState()
+
+  if (current === RecognitionState.READY || current === RecognitionState.RUNNING) return
+  if (current === RecognitionState.INITIALIZING || current === RecognitionState.WARMING_UP) {
+    await waitForRecognitionReady()
+    return
   }
+
+  if (initPromise) {
+    await initPromise
+    return
+  }
+
+  initPromise = (async () => {
+    try {
+      errorMessage.value = ''
+      const s = recognitionService.getState()
+      if (s === RecognitionState.UNINITIALIZED) {
+        await recognitionService.initialize()
+      }
+      // warmup 只允许 READY 状态
+      if (recognitionService.getState() === RecognitionState.READY) {
+        await recognitionService.warmup()
+      }
+      await waitForRecognitionReady()
+    } catch (error) {
+      errorMessage.value = `初始化失败: ${error instanceof Error ? error.message : String(error)}`
+      console.error('Recognition initialization failed:', error)
+      throw error
+    } finally {
+      initPromise = null
+      syncRecognitionState()
+    }
+  })()
+
+  await initPromise
 }
 
 const startRecognition = () => {
+  syncRecognitionState()
   if (recognitionState.value !== RecognitionState.READY) {
     errorMessage.value = '推理服务未就绪'
     return
@@ -437,6 +550,7 @@ const setupRecognitionListeners = () => {
   recognitionService.onStateChange((state) => {
     recognitionState.value = state
   })
+  syncRecognitionState()
   
   recognitionService.onResult((results, stats) => {
     detections.value = results
@@ -462,22 +576,25 @@ onMounted(() => {
   updateStats()
   // 如果通过 URL 参数指定了测试源（如 ?source=webcam），则自动加载并启动识别
   const source = (route.query.source as string | undefined)?.toString()
-  if (source) {
-    selectedVideoId.value = source
-    // 异步串行执行：加载视频/摄像头 -> 初始化/预热 -> 开始识别
-    ;(async () => {
-      try {
+
+  // 异步串行执行：加载视频/摄像头 -> 初始化/预热 -> 开始识别
+  ;(async () => {
+    try {
+      if (source) {
+        selectedVideoId.value = source
         await loadTestVideo()
-        if (recognitionState.value === RecognitionState.UNINITIALIZED) {
-          await initializeRecognition()
-        }
-        startRecognition()
-      } catch (e) {
-        console.error('自动摄像头/视频启动失败:', e)
-        errorMessage.value = e instanceof Error ? e.message : '自动启动失败'
+      } else {
+        // 默认固定视频：public/Assets/data/... -> /Assets/data/...
+        await loadFixedVideo()
       }
-    })()
-  }
+
+      await ensureRecognitionInitialized()
+      startRecognition()
+    } catch (e) {
+      console.error('自动启动失败:', e)
+      errorMessage.value = e instanceof Error ? e.message : '自动启动失败'
+    }
+  })()
 })
 
 onUnmounted(() => {
@@ -488,9 +605,13 @@ onUnmounted(() => {
 
 <style scoped>
 .screen {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .body {
@@ -547,13 +668,13 @@ onUnmounted(() => {
 
 .detection-label {
   position: absolute;
-  top: -25px;
+  top: -28px;
   left: 0;
   background: #4C8BF5;
   color: white;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
 }
 
@@ -563,6 +684,8 @@ onUnmounted(() => {
   padding: 16px;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .video-selector {
@@ -598,6 +721,7 @@ onUnmounted(() => {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 14px;
 }
 
 .control-btn:hover {
@@ -631,7 +755,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .status-label {
@@ -680,7 +804,7 @@ onUnmounted(() => {
   border: 1px solid rgba(244, 67, 54, 0.3);
   border-radius: 6px;
   color: #F44336;
-  font-size: 12px;
+  font-size: 13px;
   flex: 1;
   min-width: 200px;
 }
@@ -793,5 +917,21 @@ onUnmounted(() => {
 .panel {
   flex: 1;
   min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .video-controls {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .video-selector {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .status-indicator {
+    gap: 12px;
+  }
 }
 </style>

@@ -342,7 +342,7 @@ onUnmounted(() => {
 .detail-type {
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -367,7 +367,7 @@ onUnmounted(() => {
 }
 
 .detail-id {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.6;
   font-family: monospace;
 }
@@ -381,7 +381,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .info-row:last-child {

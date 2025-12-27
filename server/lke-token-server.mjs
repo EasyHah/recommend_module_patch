@@ -444,7 +444,7 @@ function loadParkData() {
 function selectRelevantVendors(all, query, limit = 12) {
   const q = String(query || '').trim().toLowerCase()
   if (!q) return []
-  const terms = Array.from(new Set(q.split(/[\s,，;；]+/).filter(Boolean))).slice(0, 8)
+  const terms = extractQueryTerms(q, 10)
   const scored = []
   for (const v of all) {
     let score = 0
@@ -463,10 +463,29 @@ function selectRelevantVendors(all, query, limit = 12) {
   return scored.slice(0, limit).map(x => x.v)
 }
 
+function extractQueryTerms(input, limit = 10) {
+  const q0 = String(input || '').trim().toLowerCase()
+  if (!q0) return []
+  // 去除常见“查询/电话/推荐”等噪声词，避免整句无法命中
+  const stop = [
+    '查询', '搜索', '查找', '查下', '帮我', '给我', '我要', '想要', '请', '一下',
+    '电话', '号码', '手机号', '联系', '联系方式',
+    '推荐', '有哪些', '哪些', '园区', '厂家', '厂商', '供应商'
+  ]
+  let q = q0
+  for (const w of stop) q = q.split(w).join(' ')
+  q = q.replace(/[^\u4e00-\u9fa5a-z0-9]+/g, ' ')
+  const tokens = q.split(/\s+/).filter(Boolean).filter(t => t.length >= 2)
+  const uniq = Array.from(new Set(tokens))
+  // 兜底：如果全被过滤，保留原始 query（用于完整包含匹配）
+  if (!uniq.length && q0.length >= 2) uniq.push(q0)
+  return uniq.slice(0, limit)
+}
+
 function selectRelevantFactories(all, query, limit = 10) {
   const q = String(query || '').trim().toLowerCase()
   if (!q) return []
-  const terms = Array.from(new Set(q.split(/[\s,，;；]+/).filter(Boolean))).slice(0, 10)
+  const terms = extractQueryTerms(q, 12)
   const scored = []
   for (const f of all) {
     let score = 0

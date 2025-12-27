@@ -49,12 +49,29 @@ export enum RecognitionState {
   ERROR = 'error'
 }
 
-// 默认模型与WASM地址（使用官方CDN，避免本地打包WASM/TFLite）
-const DEFAULT_MODEL_URL =
+// 默认模型与WASM地址：优先走本地 public 静态资源，避免 CDN 超时/不可达导致初始化失败
+// - WASM: 由 scripts/copy-mediapipe-assets.mjs 复制到 public/mediapipe/wasm
+// - Model: 由 scripts/copy-mediapipe-assets.mjs 下载到 public/mediapipe/models（可选）
+const DEFAULT_MODEL_URL_LOCAL = '/mediapipe/models/efficientdet_lite0.tflite'
+const DEFAULT_MODEL_URL_REMOTE =
   'https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite'
 // 注意：版本号需与 package.json 中安装的 @mediapipe/tasks-vision 对齐
-const DEFAULT_WASM_ROOT =
-  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm'
+const DEFAULT_WASM_ROOT_LOCAL = '/mediapipe/wasm'
+const DEFAULT_WASM_ROOT_REMOTE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm'
+
+function formatInitError(err: unknown) {
+  if (err instanceof Error) return err.message || String(err)
+  // MediaPipe 加载 wasm/js 失败时可能抛出 script error Event
+  if (err && typeof err === 'object' && 'type' in err) {
+    try {
+      const anyErr: any = err
+      const type = String(anyErr.type || 'error')
+      const src = anyErr?.target?.src || anyErr?.currentTarget?.src
+      return src ? `${type}: ${src}` : type
+    } catch {}
+  }
+  return String(err)
+}
 
 export class MediapipeRecognitionService {
   private state: RecognitionState = RecognitionState.UNINITIALIZED
@@ -77,10 +94,10 @@ export class MediapipeRecognitionService {
 
   constructor(options: RecognitionOptions = {}) {
     this.options = {
-      modelUrl: options.modelUrl ?? DEFAULT_MODEL_URL,
+      modelUrl: options.modelUrl ?? DEFAULT_MODEL_URL_LOCAL,
       confidenceThreshold: options.confidenceThreshold ?? 0.25,
       maxFPS: options.maxFPS ?? 12,
-      wasmRoot: options.wasmRoot ?? DEFAULT_WASM_ROOT,
+      wasmRoot: options.wasmRoot ?? DEFAULT_WASM_ROOT_LOCAL,
       iouThreshold: options.iouThreshold ?? 0.5,
       smoothingAlpha: options.smoothingAlpha ?? 0.6,
       maxTrackMisses: options.maxTrackMisses ?? 5,
@@ -94,6 +111,47 @@ export class MediapipeRecognitionService {
     })
   }
 
+  private async resolveVisionTasks() {
+    const candidates = Array.from(
+      new Set([this.options.wasmRoot, DEFAULT_WASM_ROOT_LOCAL, DEFAULT_WASM_ROOT_REMOTE].filter(Boolean)),
+    )
+    let lastErr: unknown
+    for (const root of candidates) {
+      try {
+        const vision = await FilesetResolver.forVisionTasks(root)
+        if (root !== this.options.wasmRoot) this.options.wasmRoot = root
+        return vision
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr
+  }
+
+  private async resolveDetector(vision: any, delegate: 'GPU' | 'CPU') {
+    const candidates = Array.from(
+      new Set([this.options.modelUrl, DEFAULT_MODEL_URL_LOCAL, DEFAULT_MODEL_URL_REMOTE].filter(Boolean)),
+    )
+    let lastErr: unknown
+    for (const modelUrl of candidates) {
+      try {
+        const detector = await ObjectDetector.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: modelUrl,
+            delegate,
+          },
+          scoreThreshold: this.options.confidenceThreshold,
+          runningMode: 'VIDEO',
+        })
+        if (modelUrl !== this.options.modelUrl) this.options.modelUrl = modelUrl
+        return detector
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr
+  }
+
   async initialize(): Promise<void> {
     if (this.state !== RecognitionState.UNINITIALIZED) {
       throw new Error(`无法初始化，当前状态: ${this.state}`)
@@ -101,26 +159,15 @@ export class MediapipeRecognitionService {
     this.setState(RecognitionState.INITIALIZING)
 
     try {
-      const vision = await FilesetResolver.forVisionTasks(this.options.wasmRoot)
-      this.detector = await this.createDetector(vision, this.delegate)
+      const vision = await this.resolveVisionTasks()
+      this.detector = await this.resolveDetector(vision, this.delegate)
 
       this.setState(RecognitionState.READY)
       console.log('MediaPipe 对象检测初始化完成')
     } catch (err) {
-      this.handleError(`初始化失败: ${(err as Error).message || err}`)
+      this.handleError(`初始化失败: ${formatInitError(err)}`)
       throw err
     }
-  }
-
-  private async createDetector(vision: any, delegate: 'GPU' | 'CPU') {
-    return await ObjectDetector.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: this.options.modelUrl,
-        delegate,
-      },
-      scoreThreshold: this.options.confidenceThreshold,
-      runningMode: 'VIDEO',
-    })
   }
 
   async warmup(): Promise<void> {
@@ -194,11 +241,11 @@ export class MediapipeRecognitionService {
       if (!this.cpuFallbackDone && this.delegate === 'GPU' && /texImage2D|cross-origin/i.test(msg)) {
         console.warn('检测到 WebGL 纹理错误，自动回退到 CPU 后端并重试一次...')
         try {
-          const vision = await FilesetResolver.forVisionTasks(this.options.wasmRoot)
+          const vision = await this.resolveVisionTasks()
           this.detector?.close?.()
           this.delegate = 'CPU'
           this.options.delegate = 'CPU'
-          this.detector = await this.createDetector(vision, 'CPU')
+          this.detector = await this.resolveDetector(vision, 'CPU')
           this.cpuFallbackDone = true
           // 立即重试当前帧（避免下一帧才生效）
           await this.inferFrame(video)
@@ -306,13 +353,13 @@ export class MediapipeRecognitionService {
       // 重建 detector 以切换 delegate
       ;(async () => {
         try {
-          const vision = await FilesetResolver.forVisionTasks(this.options.wasmRoot)
+          const vision = await this.resolveVisionTasks()
           this.detector?.close?.()
           this.delegate = newOptions.delegate as 'GPU' | 'CPU'
-          this.detector = await this.createDetector(vision, this.delegate)
+          this.detector = await this.resolveDetector(vision, this.delegate)
           this.cpuFallbackDone = this.delegate === 'CPU'
         } catch (e) {
-          this.handleError(`切换后端失败: ${(e as Error).message || e}`)
+          this.handleError(`切换后端失败: ${formatInitError(e)}`)
         }
       })()
     }

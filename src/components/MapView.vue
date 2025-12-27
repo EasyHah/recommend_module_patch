@@ -21,8 +21,8 @@
           <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
 
           <div class="row small">
-            <span style="min-width:48px;">底图</span>
-            <select v-model="ui.baseMap" style="flex:1; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); color:#fff; padding:0 8px;">
+            <span class="base-map-label">底图</span>
+            <select v-model="ui.baseMap" class="base-map-select">
               <option value="ion">Cesium Ion(推荐)</option>
               <option value="amap">高德影像</option>
               <option value="osm">OpenStreetMap</option>
@@ -74,8 +74,8 @@
           </label>
           <template v-if="ui.vendorCurves">
             <div class="row small">数量上限：
-              <input type="number" min="1" max="500" step="1" v-model.number="ui.vendorCurvesMax" style="width:80px;margin-left:6px;"> 条
-              <button class="btn small" style="margin-left:8px;" @click="drawVendorCurvesForSelected">重绘</button>
+              <input class="num-input" type="number" min="1" max="500" step="1" v-model.number="ui.vendorCurvesMax"> 条
+              <button class="btn small redraw-btn" @click="drawVendorCurvesForSelected">重绘</button>
             </div>
             <div class="row small">分段（越大越顺滑）：{{ ui.vendorCurvesStep }}</div>
             <input class="slider" type="range" min="8" max="120" step="2" v-model.number="ui.vendorCurvesStep" />
@@ -105,7 +105,7 @@
               <h3>{{ pipelineInfo.title }}</h3>
               <button @click="pipelineInfo.show = false" class="close-btn">×</button>
             </div>
-            <div class="control-group" v-if="pipelineInfo.pipelines.length > 0" style="margin-top: 8px;">
+            <div class="control-group with-top" v-if="pipelineInfo.pipelines.length > 0">
               <button @click="exportPipelinesGeoJSON">导出 GeoJSON</button>
               <button @click="exportPipelinesCSV">导出 CSV</button>
             </div>
@@ -114,7 +114,7 @@
                 未发现管线
               </div>
               <div v-else class="pipeline-list">
-                <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item" @click="focusPipeline(index)" style="cursor: pointer;">
+                <div v-for="(pipeline, index) in pipelineInfo.pipelines" :key="index" class="pipeline-item" @click="focusPipeline(index)">
                   <h4>管线 {{ index + 1 }}: {{ pipeline.name }}</h4>
                   <div class="properties">
                     <div v-for="(value, key) in pipeline.properties" :key="key" class="property">
@@ -157,7 +157,7 @@
               <button @click="startSectionAnalysis" :class="{ active: sectionMode }" title="剖面分析：依次点击两点生成剖面，并列出附近管线">
                 {{ sectionMode ? '取消剖面' : '剖面分析' }}
               </button>
-              <div class="row small" style="margin-left: 2px;">缓冲距离：{{ ui.sectionBuffer }} m</div>
+              <div class="row small indent-2">缓冲距离：{{ ui.sectionBuffer }} m</div>
               <input class="slider" type="range" min="10" max="200" step="5" v-model.number="ui.sectionBuffer" />
             </div>
           </div>
@@ -3512,13 +3512,39 @@ function onVendorFloatUp(){
 </script>
 
 <style>
-* { box-sizing: border-box; padding: 0; margin: 0; }
-#app { margin: 0; padding: 0; }
-.map-root { position: relative; width: 100%; height: 100%; overflow: hidden; }
-#cesiumContainer { width: 100%; height: 100%; }
+.map-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+
+  --mv-accent: #0078d4;
+  --mv-accent-2: #4cc2ff;
+  --mv-panel-bg: rgba(44, 44, 44, 0.95);
+  --mv-panel-border: rgba(255, 255, 255, 0.1);
+  --mv-panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --mv-panel-radius: 12px;
+}
+.map-root,
+.map-root * {
+  box-sizing: border-box;
+}
+.map-root button,
+.map-root input,
+.map-root select {
+  font: inherit;
+}
+.map-root #cesiumContainer {
+  width: 100%;
+  height: 100%;
+}
 
 /* 加载遮罩 */
-.loading-mask {
+.map-root .loading-mask {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background: radial-gradient(circle at center, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
@@ -3530,47 +3556,57 @@ function onVendorFloatUp(){
   color: #fff;
   backdrop-filter: blur(2px);
 }
-.loading-spinner {
+.map-root .loading-spinner {
   width: 40px;
   height: 40px;
   border: 4px solid rgba(255, 255, 255, 0.3);
   border-top: 4px solid #fff;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: mapview-spin 1s linear infinite;
   margin-bottom: 16px;
 }
-.loading-text {
+.map-root .loading-text {
   font-size: 16px;
   letter-spacing: 1px;
 }
-@keyframes spin {
+@keyframes mapview-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
 /* Fluent 设计风格图层面板（右上角） */
-.layer-panel {
+.map-root .layer-panel {
   position: absolute;
   right: 20px;
   top: 20px;
   z-index: 10;
-  background: rgba(44, 44, 44, 0.95);
+  background: var(--mv-panel-bg);
   color: #fff;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--mv-panel-radius);
   min-width: 240px;
   font-size: 13px;
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--mv-panel-border);
+  box-shadow: var(--mv-panel-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.layer-panel.collapsed { padding:12px 16px; }
-.layer-panel.collapsed .panel-body { display:none; }
-.collapse-btn { background:rgba(255,255,255,0.1);border:none;color:#fff;cursor:pointer;padding:2px 8px;font-size:14px;line-height:1;border-radius:6px; }
-.collapse-btn:hover { background:rgba(255,255,255,0.22); }
-.layer-panel .title { display:flex;justify-content:space-between;align-items:center; }
-.layer-panel .row { 
+.map-root .layer-panel.collapsed { padding: 12px 16px; }
+.map-root .layer-panel.collapsed .panel-body { display: none; }
+.map-root .collapse-btn { background:rgba(255,255,255,0.1);border:none;color:#fff;cursor:pointer;padding:2px 8px;font-size:14px;line-height:1;border-radius:6px; }
+.map-root .collapse-btn:hover { background:rgba(255,255,255,0.22); }
+.map-root .layer-panel .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--mv-accent);
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0, 120, 212, 0.3);
+}
+.map-root .layer-panel .row { 
   margin: 8px 0; 
   display: flex; 
   align-items: center; 
@@ -3580,32 +3616,23 @@ function onVendorFloatUp(){
   transition: background 0.2s ease;
 }
 
-.layer-panel .row:hover {
+.map-root .layer-panel .row:hover {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.layer-panel .title { 
-  font-weight: 600; 
-  font-size: 15px; 
-  color: #0078d4;
-  margin-bottom: 4px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid rgba(0, 120, 212, 0.3);
-}
-
-.layer-panel .small { 
+.map-root .layer-panel .small { 
   opacity: 0.85;
   font-size: 12px;
   font-weight: 400;
 }
 
-.layer-panel .sep { 
+.map-root .layer-panel .sep { 
   height: 1px; 
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); 
   margin: 12px 0; 
 }
 
-.layer-panel .slider { 
+.map-root .layer-panel .slider { 
   width: 100%; 
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
@@ -3614,74 +3641,98 @@ function onVendorFloatUp(){
   transition: all 0.2s ease;
 }
 
-.layer-panel .slider::-webkit-slider-thumb {
+.map-root .layer-panel .slider::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
-  background: linear-gradient(135deg, #0078d4, #106ebe);
+  background: linear-gradient(135deg, var(--mv-accent), #106ebe);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
   transition: all 0.2s ease;
 }
 
-.layer-panel .slider::-webkit-slider-thumb:hover {
+.map-root .layer-panel .slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
   box-shadow: 0 3px 10px rgba(0, 120, 212, 0.6);
 }
 
-.layer-panel input[type="checkbox"] {
+.map-root .layer-panel input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #0078d4;
+  accent-color: var(--mv-accent);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.layer-panel label {
+.map-root .layer-panel label {
   cursor: pointer;
   font-weight: 500;
   transition: color 0.2s ease;
   flex: 1;
 }
 
-.layer-panel label:hover {
-  color: #4cc2ff;
+.map-root .layer-panel label:hover {
+  color: var(--mv-accent-2);
 }
 
 /* 天气图层样式增强 */
-.layer-panel .row.small {
+.map-root .layer-panel .row.small {
   font-size: 11px;
-  margin-left: 12px;
   margin: 3px 0 3px 12px;
 }
 
-.layer-panel .row.small input[type="checkbox"] {
+.map-root .layer-panel .row.small input[type="checkbox"] {
   transform: scale(0.9);
 }
 
+.map-root .base-map-label {
+  min-width: 48px;
+  opacity: 0.9;
+}
+.map-root .base-map-select {
+  flex: 1;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 0 8px;
+}
+.map-root .num-input {
+  width: 88px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+.map-root .redraw-btn {
+  margin-left: 8px;
+}
+
 /* 管线分析面板样式 - Fluent 设计风格 */
-.analysis-panel {
+.map-root .analysis-panel {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(44, 44, 44, 0.95);
+  background: var(--mv-panel-bg);
   color: white;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--mv-panel-radius);
   min-width: 280px;
   max-height: 60vh;
   overflow-y: auto;
   z-index: 10; /* 让外部“信息栏”展开时可覆盖在此面板之上 */
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--mv-panel-border);
+  box-shadow: var(--mv-panel-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.analysis-panel.collapsed { max-height:none; padding:12px 16px; }
-.analysis-panel.collapsed .panel-collapse-body { display:none; }
+.map-root .analysis-panel.collapsed { max-height: none; padding: 12px 16px; }
+.map-root .analysis-panel.collapsed .panel-collapse-body { display: none; }
 
-.analysis-panel .panel-header {
+.map-root .analysis-panel .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3690,13 +3741,13 @@ function onVendorFloatUp(){
   border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
-.analysis-panel h3 {
+.map-root .analysis-panel h3 {
   margin: 0;
   font-size: 16px;
   color: #fefefe;
 }
 
-.analysis-panel .close-btn {
+.map-root .analysis-panel .close-btn {
   background: none;
   border: none;
   color: #fff;
@@ -3710,19 +3761,23 @@ function onVendorFloatUp(){
   justify-content: center;
 }
 
-.analysis-panel .close-btn:hover {
+.map-root .analysis-panel .close-btn:hover {
   background: rgba(255,255,255,0.1);
   border-radius: 50%;
 }
 
-.control-group {
+.map-root .control-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 15px;
 }
 
-.control-group button {
+.map-root .control-group.with-top {
+  margin-top: 8px;
+}
+
+.map-root .control-group button {
   background: linear-gradient(135deg, #0078d4, #106ebe);
   color: white;
   border: none;
@@ -3737,7 +3792,7 @@ function onVendorFloatUp(){
   overflow: hidden;
 }
 
-.control-group button::before {
+.map-root .control-group button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -3748,34 +3803,34 @@ function onVendorFloatUp(){
   transition: left 0.5s;
 }
 
-.control-group button:hover {
+.map-root .control-group button:hover {
   background: linear-gradient(135deg, #106ebe, #005a9e);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 120, 212, 0.3);
 }
 
-.control-group button:hover::before {
+.map-root .control-group button:hover::before {
   left: 100%;
 }
 
-.control-group button.active {
+.map-root .control-group button.active {
   background: linear-gradient(135deg, #ff6b35, #f7931e);
   box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
 }
 
-.control-group button:active {
+.map-root .control-group button:active {
   transform: translateY(0);
 }
 
-.subsection { margin-bottom: 10px; }
-.sub-title {
+.map-root .subsection { margin-bottom: 10px; }
+.map-root .sub-title {
   font-size: 13px;
   font-weight: 600;
   color: #a8d8ff;
   margin: 6px 0 6px 2px;
 }
 
-.info-panel {
+.map-root .info-panel {
   background: rgba(32, 32, 32, 0.96);
   border-radius: 10px;
   padding: 16px;
@@ -3784,28 +3839,28 @@ function onVendorFloatUp(){
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.info-content {
+.map-root .info-content {
   max-height: 320px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #0078d4 rgba(255, 255, 255, 0.1);
+  scrollbar-color: var(--mv-accent) rgba(255, 255, 255, 0.1);
 }
 
-.info-content::-webkit-scrollbar {
+.map-root .info-content::-webkit-scrollbar {
   width: 6px;
 }
 
-.info-content::-webkit-scrollbar-track {
+.map-root .info-content::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 
-.info-content::-webkit-scrollbar-thumb {
-  background: #0078d4;
+.map-root .info-content::-webkit-scrollbar-thumb {
+  background: var(--mv-accent);
   border-radius: 3px;
 }
 
-.no-data {
+.map-root .no-data {
   color: #a0a0a0;
   text-align: center;
   padding: 32px 20px;
@@ -3816,13 +3871,13 @@ function onVendorFloatUp(){
   border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
-.pipeline-list {
+.map-root .pipeline-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.pipeline-item {
+.map-root .pipeline-item {
   background: linear-gradient(135deg, rgba(0, 120, 212, 0.1), rgba(16, 110, 190, 0.1));
   padding: 16px;
   border-radius: 8px;
@@ -3830,9 +3885,10 @@ function onVendorFloatUp(){
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
-.pipeline-item::before {
+.map-root .pipeline-item::before {
   content: '';
   position: absolute;
   top: 0;
@@ -3842,13 +3898,13 @@ function onVendorFloatUp(){
   background: linear-gradient(90deg, transparent, rgba(0, 120, 212, 0.5), transparent);
 }
 
-.pipeline-item:hover {
+.map-root .pipeline-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 120, 212, 0.2);
   background: linear-gradient(135deg, rgba(0, 120, 212, 0.15), rgba(16, 110, 190, 0.15));
 }
 
-.pipeline-item h4 {
+.map-root .pipeline-item h4 {
   margin: 0 0 12px 0;
   color: #4cc2ff;
   font-size: 15px;
@@ -3858,18 +3914,18 @@ function onVendorFloatUp(){
   gap: 8px;
 }
 
-.pipeline-item h4::before {
+.map-root .pipeline-item h4::before {
   content: '🔧';
   font-size: 12px;
 }
 
-.properties {
+.map-root .properties {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.property {
+.map-root .property {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3879,14 +3935,14 @@ function onVendorFloatUp(){
   background: rgba(255, 255, 255, 0.03);
 }
 
-.property .label {
+.map-root .property .label {
   color: #b0b0b0;
   font-weight: 500;
   min-width: 90px;
   font-size: 12px;
 }
 
-.property .value {
+.map-root .property .value {
   color: #fff;
   text-align: right;
   flex: 1;
@@ -3897,40 +3953,13 @@ function onVendorFloatUp(){
   font-family: 'Consolas', monospace;
 }
 
-/* 管线图例面板样式 - Fluent 设计风格 */
-.legend-panel {
-  position: absolute;
-  bottom: 80px;
-  left: 20px;
-  background: rgba(44, 44, 44, 0.95);
-  color: white;
-  padding: 16px;
-  border-radius: 12px;
-  min-width: 280px;
-  max-height: 40vh;
-  overflow-y: auto;
-  z-index: 10; /* 统一降低层级，避免压过左侧信息栏 */
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.legend-panel .panel-header h3 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  color: #fefefe;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  padding-bottom: 6px;
-}
-
-.legend-content {
+.map-root .legend-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.legend-item label {
+.map-root .legend-item label {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3942,19 +3971,19 @@ function onVendorFloatUp(){
   position: relative;
 }
 
-.legend-item label:hover {
+.map-root .legend-item label:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(2px);
 }
 
-.legend-item input[type="checkbox"] {
+.map-root .legend-item input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #0078d4;
+  accent-color: var(--mv-accent);
   cursor: pointer;
 }
 
-.legend-item .swatch {
+.map-root .legend-item .swatch {
   width: 18px;
   height: 18px;
   border-radius: 4px;
@@ -3964,18 +3993,18 @@ function onVendorFloatUp(){
   transition: all 0.2s ease;
 }
 
-.legend-item label:hover .swatch {
+.map-root .legend-item label:hover .swatch {
   transform: scale(1.1);
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-.legend-item .name {
+.map-root .legend-item .name {
   color: #fff;
   flex: 1;
   font-weight: 500;
 }
 
-.legend-item .count {
+.map-root .legend-item .count {
   color: #a0a0a0;
   font-size: 12px;
   font-weight: 400;
@@ -3987,15 +4016,15 @@ function onVendorFloatUp(){
 }
 
 /* 内嵌到分析面板中的图例区块（不使用绝对定位） */
-.legend-section {
-  background: rgba(44, 44, 44, 0.95);
+.map-root .legend-section {
+  background: var(--mv-panel-bg);
   color: white;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--mv-panel-radius);
   margin-top: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--mv-panel-border);
 }
-.legend-section .panel-header h3 {
+.map-root .legend-section .panel-header h3 {
   margin: 0 0 10px 0;
   font-size: 15px;
   color: #fefefe;
@@ -4004,7 +4033,7 @@ function onVendorFloatUp(){
 }
 
 /* 分析模式覆盖层样式 */
-.analysis-overlay {
+.map-root .analysis-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -4015,10 +4044,10 @@ function onVendorFloatUp(){
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 80px;
+  padding-top: clamp(48px, 10vh, 80px);
 }
 
-.analysis-overlay .msg {
+.map-root .analysis-overlay .msg {
   background: rgba(0, 120, 212, 0.95);
   color: white;
   padding: 16px 24px;
@@ -4027,11 +4056,11 @@ function onVendorFloatUp(){
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 120, 212, 0.4);
   text-align: center;
-  max-width: 400px;
-  animation: analysisSlideDown 0.3s ease-out;
+  max-width: min(400px, calc(100vw - 24px));
+  animation: mapview-analysisSlideDown 0.3s ease-out;
 }
 
-.analysis-overlay .msg strong {
+.map-root .analysis-overlay .msg strong {
   display: block;
   font-size: 16px;
   font-weight: 600;
@@ -4039,22 +4068,72 @@ function onVendorFloatUp(){
   color: #fff;
 }
 
-.analysis-overlay .msg .sub {
+.map-root .analysis-overlay .msg .sub {
   font-size: 13px;
   opacity: 0.9;
   line-height: 1.4;
 }
 
-/* 推荐商家悬浮窗 */
-.vendor-float { position:absolute;z-index:120;min-width:220px;max-width:300px;background:rgba(15,32,54,0.93);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.4);backdrop-filter:blur(8px);font-size:12px;line-height:1.4; }
-.vendor-float .vh-name { font-weight:600;font-size:15px;margin-bottom:4px; }
-.vendor-float .vh-metrics { display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;color:#ffd88a; }
-.vendor-float .vh-tags { margin-top:6px;display:flex;flex-wrap:wrap;gap:4px; }
-.vendor-float .vh-tag { background:#244b7a;padding:2px 6px;border-radius:6px;font-size:11px; }
-.vendor-float .vh-close { position:absolute;right:6px;top:4px;cursor:pointer;font-size:14px;opacity:0.7; }
-.vendor-float .vh-close:hover { opacity:1; }
+.map-root .indent-2 {
+  margin-left: 2px;
+}
 
-@keyframes analysisSlideDown {
+/* 推荐商家悬浮窗 */
+.map-root .vendor-float { position:absolute;z-index:120;width:clamp(220px, 36vw, 300px);max-width:calc(100vw - 24px);background:rgba(15,32,54,0.93);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.4);backdrop-filter:blur(8px);font-size:12px;line-height:1.4; }
+.map-root .vendor-float .vh-name { font-weight:600;font-size:15px;margin-bottom:4px; }
+.map-root .vendor-float .vh-metrics { display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;color:#ffd88a; }
+.map-root .vendor-float .vh-tags { margin-top:6px;display:flex;flex-wrap:wrap;gap:4px; }
+.map-root .vendor-float .vh-tag { background:#244b7a;padding:2px 6px;border-radius:6px;font-size:11px; }
+.map-root .vendor-float .vh-close { position:absolute;right:6px;top:4px;cursor:pointer;font-size:14px;opacity:0.7; }
+.map-root .vendor-float .vh-close:hover { opacity:1; }
+
+.map-root .panel-fade-enter-active,
+.map-root .panel-fade-leave-active {
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.map-root .panel-fade-enter-from,
+.map-root .panel-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+@media (max-width: 768px) {
+  .map-root .layer-panel {
+    top: 12px;
+    right: 12px;
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+    padding: 12px;
+  }
+
+  .map-root .analysis-panel {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    min-width: 0;
+    width: auto;
+    max-height: 55vh;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-root {
+    font-size: 13px;
+  }
+
+  .map-root .layer-panel .row {
+    padding: 4px 6px;
+    gap: 8px;
+  }
+
+  .map-root .analysis-overlay .msg {
+    padding: 12px 16px;
+  }
+}
+
+@keyframes mapview-analysisSlideDown {
   from {
     transform: translateY(-20px);
     opacity: 0;

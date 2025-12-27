@@ -282,16 +282,20 @@ const toggleMute = () => {
 
 <style scoped>
 .screen {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
 }
 
 .body {
   flex: 1;
   min-height: 0;
-  padding: 20px;
+  padding: clamp(12px, 2.2vw, 20px);
   overflow-y: auto;
 }
 
@@ -306,15 +310,14 @@ const toggleMute = () => {
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
   font-weight: bold;
-  color: #fff;
   margin-bottom: 10px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .page-description {
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
   color: #b0b0b0;
   margin: 0;
 }
@@ -322,12 +325,10 @@ const toggleMute = () => {
 /* 视频网格布局 */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(12px, 2vw, 20px);
+  margin: 0 auto 40px;
   max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .video-card {

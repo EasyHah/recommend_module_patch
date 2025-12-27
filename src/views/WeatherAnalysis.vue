@@ -1,8 +1,13 @@
 <template>
   <div class="weather-page">
     <header class="page-header">
-      <h2>🌤️ 天气分析</h2>
-      <p class="subtitle">实时天气监控与物流影响分析</p>
+      <button class="back-btn" type="button" @click="goBack" title="返回上一页">
+        ← 返回
+      </button>
+      <div class="title-group">
+        <h2>🌤️ 天气分析</h2>
+        <p class="subtitle">实时天气监控与物流影响分析</p>
+      </div>
     </header>
 
     <div class="weather-grid">
@@ -369,7 +374,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import FluentCard from '@/components/FluentCard.vue'
 import WeatherTooltip from '@/components/WeatherTooltip.vue'
 import { onVoiceCommand } from '@/bridge/voiceBus'
@@ -389,6 +394,12 @@ declare global {
 }
 
 const route = useRoute()
+const router = useRouter()
+
+function goBack() {
+  if (window.history.length > 1) router.back()
+  else router.push('/')
+}
 
 // 数据状态
 const provinceWeather = ref<ProvinceWeatherData>({})
@@ -1585,20 +1596,50 @@ onMounted(() => {
 
 <style scoped>
 .weather-page {
-  padding: 20px;
+  padding: clamp(12px, 2.2vw, 20px);
   max-width: 1400px;
   margin: 0 auto;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .page-header {
   margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.title-group {
+  min-width: 0;
+}
+
+.back-btn {
+  flex: 0 0 auto;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  background: rgba(14, 165, 233, 0.08);
+  color: #0284c7;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+.back-btn:hover {
+  background: rgba(14, 165, 233, 0.14);
+  border-color: rgba(2, 132, 199, 0.35);
+}
+.back-btn:active {
+  transform: translateY(1px);
 }
 
 .page-header h2 {
   margin: 0 0 8px 0;
   /* 明亮主题：标题使用更亮的蓝色 */
   color: #0ea5e9; /* sky-500 */
-  font-size: 28px;
+  font-size: clamp(20px, 2.4vw, 30px);
   font-weight: 600;
 }
 
@@ -1606,7 +1647,7 @@ onMounted(() => {
   margin: 0;
   /* 明亮主题：副标题使用浅蓝色 */
   color: #38bdf8; /* sky-400 */
-  font-size: 16px;
+  font-size: clamp(14px, 1.4vw, 16px);
 }
 
 .weather-grid {
@@ -1669,7 +1710,7 @@ onMounted(() => {
 }
 
 .province-weather {
-  font-size: 12px;
+  font-size: 13px;
   /* 明亮主题：天气描述采用浅蓝 */
   color: #38bdf8; /* sky-400 */
 }
@@ -1753,7 +1794,7 @@ onMounted(() => {
   background: white;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1833,7 +1874,7 @@ onMounted(() => {
 /* 云图区域 */
 .warnings-cloud { margin-bottom: 12px; }
 .warnings-cloud .cloud-title { font-weight: 600; color: #0ea5e9; margin-bottom: 6px; }
-.warnings-cloud .cloud-source { color: #6b7280; font-size: 12px; margin-top: 6px; }
+.warnings-cloud .cloud-source { color: #6b7280; font-size: 13px; margin-top: 6px; }
 .cloud-map { width: 100%; height: 220px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); border: 1px solid #e5e7eb; }
 
 .warning-item {
@@ -1862,7 +1903,7 @@ onMounted(() => {
 }
 
 .warning-level {
-  font-size: 12px;
+  font-size: 13px;
   padding: 2px 8px;
   background: rgba(0,0,0,0.1);
   border-radius: 12px;
@@ -1957,7 +1998,7 @@ onMounted(() => {
   min-width: 60px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -1975,7 +2016,7 @@ onMounted(() => {
 }
 
 :global(.weather-marker .weather-desc) {
-  font-size: 10px;
+  font-size: 11px;
   /* 明亮主题：地图天气描述文字 */
   color: #38bdf8; /* sky-400 */
   margin-top: 2px;
@@ -1990,7 +2031,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -2017,7 +2058,7 @@ onMounted(() => {
 }
 
 :global(.province-marker .province-name) {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   margin-bottom: 2px;
 }
@@ -2050,7 +2091,7 @@ onMounted(() => {
 }
 
 :global(.route-weather-marker .temp) {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: bold;
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -2059,7 +2100,7 @@ onMounted(() => {
 }
 
 :global(.route-weather-marker .weather-icon) {
-  font-size: 8px;
+  font-size: 11px;
   line-height: 1;
 }
 
@@ -2070,7 +2111,7 @@ onMounted(() => {
   background: linear-gradient(135deg, #fee2e2, #fecaca);
   border: 1px solid #f87171;
   color: #dc2626;
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -2112,7 +2153,7 @@ onMounted(() => {
   color: white;
   padding: 2px 6px;
   border-radius: 12px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: bold;
   white-space: nowrap;
 }
@@ -2134,7 +2175,7 @@ onMounted(() => {
   color: #fff;
   border-radius: 14px;
   padding: 4px 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
@@ -2143,12 +2184,12 @@ onMounted(() => {
 
 :global(.camera-infowin) { max-width: 260px; }
 :global(.camera-infowin .title){ font-weight:700; margin-bottom:6px; color:#111; }
-:global(.camera-infowin .meta){ font-size:12px; color:#555; margin-bottom:8px; }
+:global(.camera-infowin .meta){ font-size:13px; color:#555; margin-bottom:8px; }
 :global(.camera-infowin .snapshot){ width:100%; max-height:160px; object-fit:cover; border-radius:6px; margin:6px 0; }
 :global(.camera-infowin .links){ display:flex; gap:10px; margin-top:6px; }
 :global(.camera-infowin .links a){ color:#2563eb; text-decoration:none; font-weight:600; }
 :global(.camera-infowin .links a:hover){ text-decoration:underline; }
-:global(.camera-infowin .tip){ margin-top:6px; color:#6b7280; font-size:11px; }
+:global(.camera-infowin .tip){ margin-top:6px; color:#6b7280; font-size:12px; }
 
 /* 路线规划地图样式 */
 .route-map-section {
@@ -2308,7 +2349,7 @@ onMounted(() => {
   border-radius: 8px;
   padding: 8px 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: bold;
   text-align: center;
   min-width: 100px;
@@ -2324,7 +2365,7 @@ onMounted(() => {
 
 .province-risk-marker .temperature {
   color: #666;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 2px;
 }
 
@@ -2442,5 +2483,5 @@ onMounted(() => {
 .sections{ margin-top: 8px; display:flex; flex-direction:column; gap:8px; }
 .section{ background: rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.06); border-radius: 8px; padding:8px 10px; }
 .section .t{ font-weight: 600; margin-bottom: 4px; }
-.section .d{ font-size: 12px; color: #333; }
+.section .d{ font-size: 13px; color: #333; }
 </style>

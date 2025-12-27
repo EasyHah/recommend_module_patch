@@ -240,7 +240,7 @@ onUnmounted(() => {
   color: #fff;
   margin: 0 auto 6px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .dot.total {
@@ -268,7 +268,7 @@ onUnmounted(() => {
 }
 
 .lab {
-  font-size: 12px;
+  font-size: 13px;
   opacity: .9;
 }
 
@@ -288,7 +288,7 @@ onUnmounted(() => {
 }
 
 .confidence-value {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: #4C8BF5;
 }
@@ -316,7 +316,7 @@ onUnmounted(() => {
 }
 
 .detection-time {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.7;
   min-width: 80px;
 }
@@ -330,7 +330,7 @@ onUnmounted(() => {
 .detection-type {
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -355,7 +355,7 @@ onUnmounted(() => {
 }
 
 .detection-confidence {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: bold;
   color: #4C8BF5;
 }

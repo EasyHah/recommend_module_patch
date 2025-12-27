@@ -8,6 +8,30 @@ type ChatMessage = {
   ts?: number
 }
 
+type VendorRow = {
+  id?: string
+  name?: string
+  centerName?: string
+  sequence?: string
+  logisticsName?: string
+  route?: string
+  phone?: string
+  serviceRadiusKm?: number
+  capabilities?: {
+    types?: string[]
+    maxWeightKg?: number
+    cold?: { min: number; max: number } | null
+    certifications?: string[]
+  }
+  metrics?: {
+    rating?: number
+    onTimeRate?: number
+    priceIndex?: number
+    capacityUtilization?: number
+  }
+  tags?: string[]
+}
+
 type DeepSeekConfig = {
   endpoint: string
   stream: boolean
@@ -53,6 +77,127 @@ export function useDeepSeekChat() {
 
   let controller: AbortController | null = null
 
+  const BASE_SYSTEM_PROMPT =
+    '你是园区厂家/供应商查询助手。请优先使用我提供的“厂家数据库”字段回答（如名称、线路、电话、能力、评分等），不要编造；若数据库无匹配，请明确说明并给出需要用户补充的关键信息（如公司全名/关键词/线路/中心）。'
+
+  let vendorDbLoaded = false
+  let vendorDbLoadError: string | null = null
+  let vendorDbPromise: Promise<void> | null = null
+  let vendorDb: VendorRow[] = []
+
+  async function ensureVendorDbLoaded() {
+    if (vendorDbLoaded || vendorDbLoadError) return
+    if (vendorDbPromise) return vendorDbPromise
+    vendorDbPromise = (async () => {
+      const sources = ['/data/vendors-with-warehouse.json', '/data/vendors.json']
+      for (const url of sources) {
+        try {
+          const resp = await fetch(url, { cache: 'force-cache' })
+          if (!resp.ok) continue
+          const json = await resp.json()
+          if (Array.isArray(json)) {
+            vendorDb = json
+            vendorDbLoaded = true
+            vendorDbLoadError = null
+            return
+          }
+        } catch (e: any) {
+          vendorDbLoadError = String(e?.message || e || '加载厂家数据库失败')
+        }
+      }
+      if (!vendorDbLoaded) {
+        vendorDbLoadError = vendorDbLoadError || '厂家数据库不存在或格式不正确'
+      }
+    })().finally(() => {
+      vendorDbPromise = null
+    })
+    return vendorDbPromise
+  }
+
+  function parseDemand(text: string) {
+    const t = text || ''
+    const demand: { type?: 'normal' | 'cold' | 'hazmat' | 'fragile'; minWeightKg?: number } = {}
+    if (/冷链|温控|冷藏/.test(t)) demand.type = 'cold'
+    else if (/危化|危险品/.test(t)) demand.type = 'hazmat'
+    else if (/易碎/.test(t)) demand.type = 'fragile'
+    else if (/普通/.test(t)) demand.type = 'normal'
+
+    const m = /载重\s*([\d.]+)\s*(吨|t|公斤|千克|kg)/i.exec(t)
+    if (m) {
+      const value = Number(m[1])
+      if (isFinite(value)) {
+        const unit = m[2].toLowerCase()
+        demand.minWeightKg = unit === '吨' || unit === 't' ? value * 1000 : value
+      }
+    }
+    return demand
+  }
+
+  function extractTokens(text: string) {
+    const raw = String(text || '')
+    const tokens = raw.match(/[\u4e00-\u9fa5]{2,}|[A-Za-z0-9]{2,}/g) || []
+    return Array.from(new Set(tokens)).slice(0, 12)
+  }
+
+  function scoreVendor(v: VendorRow, tokens: string[]) {
+    const hay =
+      `${v.name || ''} ${v.logisticsName || ''} ${v.route || ''} ${v.centerName || ''} ${(v.tags || []).join(' ')}`
+        .toLowerCase()
+    let score = 0
+    for (const tk of tokens) {
+      const needle = tk.toLowerCase()
+      if (needle && hay.includes(needle)) score += 2
+    }
+    return score
+  }
+
+  function getTopVendorsByQuery(query: string) {
+    if (!vendorDbLoaded) return []
+
+    const demand = parseDemand(query)
+    const tokens = extractTokens(query)
+    const wantsVendor = /厂家|厂商|供应商|物流|公司|电话|联系方式|推荐|商家|线路/.test(query) || tokens.length > 0
+
+    if (!wantsVendor) return []
+
+    let rows = vendorDb
+    if (demand.type) {
+      rows = rows.filter((v) => Array.isArray(v.capabilities?.types) && v.capabilities!.types!.includes(demand.type!))
+    }
+    if (typeof demand.minWeightKg === 'number') {
+      rows = rows.filter((v) => {
+        const max = v.capabilities?.maxWeightKg
+        return typeof max === 'number' && max >= demand.minWeightKg!
+      })
+    }
+
+    const scored = rows
+      .map((v) => ({ v, score: scoreVendor(v, tokens) }))
+      .filter((x) => x.score > 0 || demand.type || demand.minWeightKg)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map((x) => x.v)
+
+    return scored
+  }
+
+  async function buildSystemPrompt(userText: string) {
+    const parts: string[] = [BASE_SYSTEM_PROMPT]
+    await ensureVendorDbLoaded()
+    const top = getTopVendorsByQuery(userText)
+    if (top.length) {
+      const lines = top.map((v, idx) => {
+        const types = (v.capabilities?.types || []).join('|')
+        const maxW = v.capabilities?.maxWeightKg ? `${v.capabilities.maxWeightKg}kg` : ''
+        return `${idx + 1}. 名称:${v.name || ''} 物流:${v.logisticsName || ''} 中心:${v.centerName || ''} 线路:${v.route || ''} 电话:${v.phone || ''} 能力:${types} ${maxW} 标签:${(v.tags || []).slice(0, 6).join('|')}`
+      })
+      parts.push(`厂家数据库（按相关度Top ${top.length}）：\n${lines.join('\n')}`)
+    } else if (vendorDbLoadError) {
+      parts.push(`注意：厂家数据库加载失败：${vendorDbLoadError}`)
+    }
+    return parts.join('\n\n')
+  }
+
   async function initialize() {
     try {
       if (!configOk.value) throw new Error('缺少 DeepSeek endpoint 配置')
@@ -67,9 +212,10 @@ export function useDeepSeekChat() {
     }
   }
 
-  function buildPayload() {
+  function buildPayload(systemPrompt?: string) {
     const history = messages.value.slice(-cfg.maxHistory)
     const apiMessages: Array<{ role: Role; content: string }> = []
+    if (systemPrompt) apiMessages.push({ role: 'system', content: systemPrompt })
     for (const m of history) {
       apiMessages.push({ role: m.role, content: m.content })
     }
@@ -106,6 +252,7 @@ export function useDeepSeekChat() {
 
     controller = new AbortController()
     try {
+      const systemPrompt = await buildSystemPrompt(t)
       const resp = await fetch(cfg.endpoint, {
         method: 'POST',
         headers: {
@@ -114,7 +261,7 @@ export function useDeepSeekChat() {
         },
         body: JSON.stringify({
           stream: true,
-          messages: buildPayload()
+          messages: buildPayload(systemPrompt)
         }),
         signal: controller.signal
       })

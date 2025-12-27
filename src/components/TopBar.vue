@@ -66,28 +66,39 @@ const isActive = (path: string) => {
 <style scoped>
 .topbar{
   position: sticky; top: 0; z-index: 50;
-  height: 56px;
+  height: 64px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--panel-border, rgba(0,0,0,.08));
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow: var(--panel-shadow, 0 6px 24px rgba(0,0,0,.12));
   background: var(--panel-bg-strong, rgba(255,255,255,.72));
   backdrop-filter: saturate(1.1) blur(10px);
 }
 
-.left{ min-width: 220px; display: flex; gap: 8px; align-items: center; }
-.center{ display: flex; gap: 8px; align-items: center; }
-.right{ min-width: 220px; display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
+.left{ min-width: 260px; display: flex; gap: 10px; align-items: center; }
+.center{
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.center::-webkit-scrollbar{ display: none; }
+.right{ min-width: 260px; display: flex; gap: 10px; align-items: center; justify-content: flex-end; }
 
 .nav-btn{
-  height: 32px; padding: 0 12px;
+  height: 38px; padding: 0 14px;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 10px;
   border: 1px solid var(--panel-border, rgba(0,0,0,.08));
   background: var(--panel-bg, rgba(255,255,255,.6));
-  font-size: 13px;
+  font-size: clamp(14px, 1.2vw, 15px);
+  font-weight: 600;
   cursor: pointer; text-decoration: none; color: inherit;
+  white-space: nowrap;
 }
 .nav-btn:hover{ background: rgba(0,0,0,.04); }
 .nav-btn.active{
@@ -96,13 +107,34 @@ const isActive = (path: string) => {
   color: var(--brand, #2f7cf6);
 }
 
-.time{ font-variant-numeric: tabular-nums; font-size: 13px; opacity: .9; }
+.time{
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(13px, 1.1vw, 14px);
+  opacity: .9;
+}
 
 .persona{ display: flex; align-items: center; gap: 8px; }
 .avatar{
-  width: 24px; height: 24px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--panel-border, rgba(0,0,0,.08));
 }
-.name{ font-size: 14px; opacity: .95; font-weight: 700; }
+.name{
+  font-size: clamp(14px, 1.25vw, 16px);
+  opacity: .95;
+  font-weight: 800;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px){
+  .topbar{ height: 60px; padding: 10px 12px; border-radius: 14px; }
+  .left, .right{ min-width: 0; }
+  .left{ gap: 8px; }
+  .right{ gap: 8px; }
+  .nav-btn{ height: 36px; padding: 0 12px; }
+  .name{ max-width: 140px; }
+}
 </style>
