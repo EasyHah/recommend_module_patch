@@ -122,7 +122,12 @@
           <div v-for="(m, i) in lkeMessages" :key="i" class="lke-msg" :class="m.role">
             <span class="role">{{ m.role === 'user' ? '我' : 'AI' }}</span>
             <div class="bubble" :class="{ typing: streaming && i === lastAssistantIndex }">
-              <span class="content" :style="contentStyle(m)">{{ m.content }}</span>
+              <template v-if="m.role === 'assistant'">
+                <div class="content md" :style="contentStyle(m)" v-html="renderMarkdown(m.content)"></div>
+              </template>
+              <template v-else>
+                <span class="content" :style="contentStyle(m)">{{ m.content }}</span>
+              </template>
               <span v-if="streaming && i === lastAssistantIndex" class="cursor">▌</span>
             </div>
           </div>
@@ -159,7 +164,7 @@
 import { ref, watch, onMounted, computed, getCurrentInstance, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVoiceAssistant } from '@/composables/useVoiceAssistant'
-import { useLKEChat } from '@/composables/useLKEChat'
+import { useDeepSeekChat } from '@/composables/useDeepSeekChat'
 import { emitVoiceCommand } from '@/bridge/voiceBus'
 import { openRecommend } from '@/bridge/recommendUI'
 
@@ -194,7 +199,7 @@ const router = useRouter()
 // 计算状态可见性
 const statusVisible = computed(() => listening.value || isProcessing.value || !supported.value)
 
-// 引入 LKE Chat：用于替换原 Appflow 聊天承接
+// 引入 DeepSeek Chat：用于园区厂家/供应商推荐查询
 const {
   initialize: initLKE,
   isReady: lkeReady,
@@ -209,7 +214,7 @@ const {
   lastAssistantIndex,
   stop: stopGenerate,
   clearMessages
-} = useLKEChat()
+} = useDeepSeekChat()
 const wakeActive = ref(false)
 const WAKE_PROMPT = '小智小智'
 const WAKE_WORDS = [WAKE_PROMPT]
@@ -222,6 +227,134 @@ const containsWakeWord = (input: string) => {
 function contentStyle(m: { role: 'user'|'assistant' }) {
   // 统一修改字体颜色：用户深灰、AI 蓝色
   return m.role === 'assistant' ? { color: '#0B5CAD' } : { color: '#333' }
+}
+
+function escapeHtml(input: string) {
+  return (input ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function escapeAttr(input: string) {
+  return escapeHtml(input).replace(/`/g, '&#96;')
+}
+
+function safeUrl(input: string) {
+  const url = (input ?? '').trim()
+  if (!url) return '#'
+  if (url.startsWith('#') || url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) return url
+  try {
+    const u = new URL(url)
+    if (u.protocol === 'http:' || u.protocol === 'https:' || u.protocol === 'mailto:' || u.protocol === 'tel:') return url
+  } catch {
+    // ignore
+  }
+  return '#'
+}
+
+function renderInlineMarkdown(escapedText: string) {
+  const codeSpans: string[] = []
+  let text = escapedText
+
+  text = text.replace(/`([^`]+?)`/g, (_m, code) => {
+    const idx = codeSpans.push(code) - 1
+    return `{{{CODE:${idx}}}}`
+  })
+
+  text = text.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, (_m, label, url) => {
+    const href = safeUrl(String(url))
+    const labelEscaped = String(label)
+    return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer">${labelEscaped}</a>`
+  })
+
+  text = text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>')
+  text = text.replace(/\*([\s\S]+?)\*/g, '<em>$1</em>')
+
+  text = text.replace(/\{\{\{CODE:(\d+)\}\}\}/g, (_m, idx) => {
+    const code = codeSpans[Number(idx)] ?? ''
+    return `<code>${code}</code>`
+  })
+
+  return text
+}
+
+function renderMarkdown(input: string) {
+  const raw = (input ?? '').replace(/\r\n/g, '\n')
+  if (!raw) return ''
+
+  const parts = raw.split(/```/g)
+  let html = ''
+
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 1) {
+      const codeRaw = parts[i] ?? ''
+      const firstNewline = codeRaw.indexOf('\n')
+      const lang = firstNewline === -1 ? '' : codeRaw.slice(0, firstNewline).trim()
+      const code = firstNewline === -1 ? codeRaw : codeRaw.slice(firstNewline + 1)
+      html += `<pre class="md-pre"><code${lang ? ` class="language-${escapeAttr(lang)}"` : ''}>${escapeHtml(code)}</code></pre>`
+      continue
+    }
+
+    const escaped = escapeHtml(parts[i] ?? '')
+    const lines = escaped.split('\n')
+
+    let inUl = false
+    let inOl = false
+    let inQuote = false
+
+    const closeAll = () => {
+      if (inUl) { html += '</ul>'; inUl = false }
+      if (inOl) { html += '</ol>'; inOl = false }
+      if (inQuote) { html += '</blockquote>'; inQuote = false }
+    }
+
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed) {
+        closeAll()
+        continue
+      }
+
+      const heading = /^(\#{1,6})\s+(.+)$/.exec(trimmed)
+      if (heading) {
+        closeAll()
+        const level = heading[1].length
+        html += `<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`
+        continue
+      }
+
+      const quote = /^&gt;\s+(.+)$/.exec(trimmed)
+      if (quote) {
+        if (!inQuote) { closeAll(); html += '<blockquote>'; inQuote = true }
+        html += `<p>${renderInlineMarkdown(quote[1])}</p>`
+        continue
+      }
+
+      const ol = /^(\d+)\.\s+(.+)$/.exec(trimmed)
+      if (ol) {
+        if (!inOl) { closeAll(); html += '<ol>'; inOl = true }
+        html += `<li>${renderInlineMarkdown(ol[2])}</li>`
+        continue
+      }
+
+      const ul = /^[-*]\s+(.+)$/.exec(trimmed)
+      if (ul) {
+        if (!inUl) { closeAll(); html += '<ul>'; inUl = true }
+        html += `<li>${renderInlineMarkdown(ul[1])}</li>`
+        continue
+      }
+
+      closeAll()
+      html += `<p>${renderInlineMarkdown(trimmed)}</p>`
+    }
+
+    closeAll()
+  }
+
+  return html
 }
 
 const lkeError = computed(() => lkeErrorRef.value || null)
@@ -748,7 +881,26 @@ function onClearChat() {
 }
 .lke-msg .role { font-size: 12px; color: #888; min-width: 24px; text-align: right; }
 .lke-msg .bubble { background: #f6f8fa; border-radius: 8px; padding: 8px 10px; max-width: 260px; white-space: pre-wrap; word-break: break-word; }
-.lke-msg.assistant .bubble { background: #e8f4ff; }
+.lke-msg.assistant .bubble { background: #e8f4ff; white-space: normal; }
+
+/* AI Markdown 渲染（仅对 assistant 生效） */
+.lke-msg.assistant .content.md { line-height: 1.5; }
+.lke-msg.assistant .content.md p { margin: 0 0 6px; }
+.lke-msg.assistant .content.md p:last-child { margin-bottom: 0; }
+.lke-msg.assistant .content.md ul,
+.lke-msg.assistant .content.md ol { margin: 0 0 6px 18px; padding: 0; }
+.lke-msg.assistant .content.md li { margin: 2px 0; }
+.lke-msg.assistant .content.md blockquote { margin: 0 0 6px; padding-left: 10px; border-left: 3px solid rgba(11, 92, 173, 0.35); color: #334; }
+.lke-msg.assistant .content.md h1,
+.lke-msg.assistant .content.md h2,
+.lke-msg.assistant .content.md h3,
+.lke-msg.assistant .content.md h4,
+.lke-msg.assistant .content.md h5,
+.lke-msg.assistant .content.md h6 { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+.lke-msg.assistant .content.md a { color: #0B5CAD; text-decoration: underline; }
+.lke-msg.assistant .content.md code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 4px; }
+.lke-msg.assistant .content.md pre.md-pre { background: #0b1021; color: #e6edf3; padding: 8px 10px; border-radius: 8px; overflow: auto; margin: 0 0 6px; white-space: pre; }
+.lke-msg.assistant .content.md pre.md-pre code { background: transparent; padding: 0; color: inherit; }
 
 .lke-chat__footer {
   display: flex;

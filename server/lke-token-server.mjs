@@ -8,6 +8,7 @@ import dotenv from 'dotenv'
 import https from 'node:https'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
+import { TextDecoder } from 'node:util'
 
 // Load .env.local if present (do not commit secrets)
 const __filename = fileURLToPath(import.meta.url)
@@ -314,6 +315,332 @@ function handleLogistics(req, res, parsed) {
   return true
 }
 
+// ---------------- DeepSeek proxy (server-side) ----------------
+const DEEPSEEK_API_KEY =
+  process.env.DEEPSEEK_API_KEY ||
+  process.env.DEEPSEEK_KEY ||
+  ''
+const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'
+const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat'
+
+const deepseekUrl = new URL(DEEPSEEK_BASE_URL)
+
+function sendSSEHeaders(res) {
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8')
+  res.setHeader('Cache-Control', 'no-cache, no-transform')
+  res.setHeader('Connection', 'keep-alive')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+}
+
+function sseWrite(res, obj) {
+  try {
+    res.write(`data: ${JSON.stringify(obj)}\n\n`)
+  } catch {}
+}
+
+let cachedParkData = null
+let cachedParkDataMtime = 0
+
+function loadParkData() {
+  try {
+    const vendorsPath = path.join(__dirname, '..', 'public', 'data', 'vendors-with-warehouse.json')
+    const routeCitiesPath = path.join(__dirname, '..', 'public', 'data', 'vendor-route-cities.json')
+    const vendorPath = fs.existsSync(vendorsPath) ? vendorsPath : null
+    if (!vendorPath) return { vendors: [], routes: [] }
+
+    const st = fs.statSync(vendorPath)
+    const mtime = st.mtimeMs || 0
+    if (cachedParkData && cachedParkDataMtime === mtime) return cachedParkData
+
+    const vendors = JSON.parse(fs.readFileSync(vendorPath, 'utf8')) || []
+    let routes = []
+    try {
+      if (fs.existsSync(routeCitiesPath)) routes = JSON.parse(fs.readFileSync(routeCitiesPath, 'utf8')) || []
+    } catch {}
+
+    const routeMap = new Map()
+    for (const r of routes) {
+      const id = r.vendorId || r.id
+      if (!id) continue
+      routeMap.set(String(id), r)
+    }
+
+    const normalized = vendors.map((v) => {
+      const id = String(v.id || v.vendorId || v.vendor_id || '')
+      const name = String(v.logisticsName || v.name || v.company || '')
+      const centerName = String(v.centerName || v.warehouse?.centerName || v.warehouse?.groupName || '')
+      const route = String(v.route || '')
+      const phones = Array.isArray(v.phones) ? v.phones : (v.phone ? [String(v.phone)] : [])
+      const metrics = v.metrics || null
+      const capabilities = v.capabilities || null
+      const tags = Array.isArray(v.tags) ? v.tags : []
+      const routeCities = routeMap.get(id)?.cities || routeMap.get(id)?.routeCities || null
+      const searchText = [
+        id,
+        name,
+        centerName,
+        route,
+        ...(tags || []),
+        ...(phones || []),
+        ...(Array.isArray(routeCities) ? routeCities : [])
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+      return {
+        id,
+        name,
+        centerName,
+        route,
+        phones,
+        metrics,
+        capabilities,
+        tags,
+        routeCities: Array.isArray(routeCities) ? routeCities : undefined,
+        _search: searchText
+      }
+    })
+
+    // Also include logistics "hubs" (可视作园区厂家/网点/供应商台账)
+    const factories = []
+    try {
+      const model = logiBuildModel()
+      for (const c of model.centers || []) {
+        const centerId = String(c.id || c.title || '')
+        const centerTitle = String(c.title || c.id || '')
+        for (const h of c.hubs || []) {
+          const code = String(h.code || '')
+          const name = String(h.name || '')
+          const company = h.company != null ? String(h.company) : ''
+          const regions = Array.isArray(h.regions) ? h.regions : []
+          const phones = Array.isArray(h.phones) ? h.phones : []
+          const searchText = [centerId, centerTitle, code, name, company, ...regions, ...phones].filter(Boolean).join(' ').toLowerCase()
+          factories.push({
+            centerId,
+            centerTitle,
+            code,
+            name,
+            company: company || undefined,
+            regions,
+            phones,
+            lat: h.lat,
+            lon: h.lon,
+            height: h.height,
+            _search: searchText
+          })
+        }
+      }
+    } catch {}
+
+    cachedParkData = { vendors: normalized, factories }
+    cachedParkDataMtime = mtime
+    return cachedParkData
+  } catch {
+    return { vendors: [] }
+  }
+}
+
+function selectRelevantVendors(all, query, limit = 12) {
+  const q = String(query || '').trim().toLowerCase()
+  if (!q) return []
+  const terms = Array.from(new Set(q.split(/[\s,，;；]+/).filter(Boolean))).slice(0, 8)
+  const scored = []
+  for (const v of all) {
+    let score = 0
+    if (v._search.includes(q)) score += 6
+    for (const t of terms) {
+      if (!t) continue
+      if (v._search.includes(t)) score += 2
+      if (v.centerName && String(v.centerName).toLowerCase().includes(t)) score += 2
+      if (v.name && String(v.name).toLowerCase().includes(t)) score += 2
+    }
+    // slight preference for rated vendors
+    if (v.metrics?.rating) score += Math.min(2, Number(v.metrics.rating) / 5)
+    if (score > 0) scored.push({ v, score })
+  }
+  scored.sort((a, b) => b.score - a.score)
+  return scored.slice(0, limit).map(x => x.v)
+}
+
+function selectRelevantFactories(all, query, limit = 10) {
+  const q = String(query || '').trim().toLowerCase()
+  if (!q) return []
+  const terms = Array.from(new Set(q.split(/[\s,，;；]+/).filter(Boolean))).slice(0, 10)
+  const scored = []
+  for (const f of all) {
+    let score = 0
+    if (f._search.includes(q)) score += 6
+    for (const t of terms) {
+      if (!t) continue
+      if (f._search.includes(t)) score += 2
+      if (f.centerTitle && String(f.centerTitle).toLowerCase().includes(t)) score += 2
+      if (f.company && String(f.company).toLowerCase().includes(t)) score += 2
+      if (f.name && String(f.name).toLowerCase().includes(t)) score += 2
+      if (f.code && String(f.code).toLowerCase().includes(t)) score += 2
+    }
+    if (score > 0) scored.push({ f, score })
+  }
+  scored.sort((a, b) => b.score - a.score)
+  return scored.slice(0, limit).map(x => x.f)
+}
+
+function handleDeepSeek(req, res, parsed) {
+  if (parsed.pathname !== '/api/deepseek/chat') return false
+
+  if (req.method !== 'POST') {
+    return sendJson(res, 405, { code: 405, message: 'Method Not Allowed' })
+  }
+  if (!DEEPSEEK_API_KEY) {
+    return sendJson(res, 500, { code: 500, message: 'DEEPSEEK_API_KEY 未配置（请在 .env.local 中设置）' })
+  }
+
+  return readBody(req).then(async (body) => {
+    const userMessages = Array.isArray(body?.messages) ? body.messages : []
+    const stream = body?.stream !== false
+
+    const lastUser = [...userMessages].reverse().find(m => m?.role === 'user')?.content || ''
+    const park = loadParkData()
+    const picks = selectRelevantVendors(park.vendors || [], lastUser, 12)
+    const factoryPicks = selectRelevantFactories(park.factories || [], lastUser, 10)
+
+    const context = {
+      factories: factoryPicks.map(f => ({
+        centerTitle: f.centerTitle,
+        code: f.code,
+        name: f.name,
+        company: f.company,
+        regions: f.regions,
+        phones: f.phones
+      })),
+      vendors: picks.map(v => ({
+        id: v.id,
+        name: v.name,
+        centerName: v.centerName,
+        route: v.route,
+        routeCities: v.routeCities,
+        phones: v.phones,
+        tags: v.tags,
+        metrics: v.metrics,
+        capabilities: v.capabilities
+      }))
+    }
+
+    const systemPrompt =
+      '你是园区厂家/供应商推荐助手。' +
+      '你会基于我提供的“园区数据(JSON)”回答问题并给出推荐；如果数据不足以回答，请明确说明缺少哪些信息，并给出下一步需要用户补充的字段。' +
+      '回答用中文，优先给出 3-5 条可执行建议；涉及推荐时请列出：名称/厂商、所属园区/中心、服务范围/能力、评分/准时率(如有)、联系方式(如有)、推荐理由。'
+
+    const outboundMessages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'system', content: `园区数据(JSON, 仅供查询):\n${JSON.stringify(context)}` },
+      ...userMessages
+        .filter(m => m && (m.role === 'user' || m.role === 'assistant'))
+        .slice(-20)
+        .map(m => ({ role: m.role, content: String(m.content || '') }))
+    ]
+
+    const payload = JSON.stringify({
+      model: DEEPSEEK_MODEL,
+      messages: outboundMessages,
+      temperature: 0.2,
+      stream: !!stream
+    })
+
+    const options = {
+      protocol: deepseekUrl.protocol,
+      hostname: deepseekUrl.hostname,
+      port: deepseekUrl.port || (deepseekUrl.protocol === 'https:' ? 443 : 80),
+      method: 'POST',
+      path: '/v1/chat/completions',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Accept': 'text/event-stream',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    }
+
+    if (!stream) {
+      return new Promise((resolve) => {
+        const r = https.request(options, (up) => {
+          let buf = ''
+          up.on('data', (c) => (buf += c))
+          up.on('end', () => {
+            try {
+              const json = JSON.parse(buf || '{}')
+              const content = json?.choices?.[0]?.message?.content || ''
+              return resolve(sendJson(res, 200, { code: 0, content, raw: json }))
+            } catch (e) {
+              return resolve(sendJson(res, 500, { code: 500, message: 'DeepSeek 响应解析失败' }))
+            }
+          })
+        })
+        r.on('error', (e) => resolve(sendJson(res, 500, { code: 500, message: e.message || 'DeepSeek 请求失败' })))
+        r.write(payload)
+        r.end()
+      })
+    }
+
+    sendSSEHeaders(res)
+
+    const upstream = https.request(options, (up) => {
+      const decoder = new TextDecoder('utf-8')
+      let buffer = ''
+
+      up.on('data', (chunk) => {
+        buffer += decoder.decode(chunk, { stream: true })
+        let idx
+        while ((idx = buffer.indexOf('\n\n')) !== -1) {
+          const block = buffer.slice(0, idx)
+          buffer = buffer.slice(idx + 2)
+          const line = block.split('\n').find(l => l.startsWith('data:'))
+          if (!line) continue
+          const data = line.slice(5).trim()
+          if (!data) continue
+          if (data === '[DONE]') {
+            res.write('data: [DONE]\n\n')
+            res.end()
+            return
+          }
+          try {
+            const json = JSON.parse(data)
+            const delta = json?.choices?.[0]?.delta?.content
+            const usage = json?.usage
+            if (typeof delta === 'string' && delta.length) {
+              sseWrite(res, { type: 'delta', content: delta })
+            }
+            if (usage) {
+              sseWrite(res, { type: 'usage', usage })
+            }
+          } catch {
+            // ignore parse errors
+          }
+        }
+      })
+
+      up.on('end', () => {
+        try { res.write('data: [DONE]\n\n') } catch {}
+        try { res.end() } catch {}
+      })
+    })
+
+    upstream.on('error', (e) => {
+      sseWrite(res, { type: 'error', message: e.message || 'DeepSeek 请求失败' })
+      try { res.write('data: [DONE]\n\n') } catch {}
+      try { res.end() } catch {}
+    })
+
+    req.on('close', () => {
+      try { upstream.destroy() } catch {}
+    })
+
+    upstream.write(payload)
+    upstream.end()
+    return true
+  })
+}
+
 // ---------------- Existing token server routes ----------------
 const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url, true)
@@ -348,6 +675,12 @@ const server = http.createServer(async (req, res) => {
   if (parsed.pathname.startsWith('/api/logistics')) {
     const handled = handleLogistics(req,res,parsed)
     if (handled !== false) return // already responded
+  }
+
+  // DeepSeek API dispatch
+  if (parsed.pathname === '/api/deepseek/chat') {
+    const handled = handleDeepSeek(req, res, parsed)
+    if (handled !== false) return
   }
 
   if (parsed.pathname === '/getDemoToken') {

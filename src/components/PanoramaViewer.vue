@@ -7,17 +7,17 @@
       </div>
       <div class="panorama-container" ref="panoContainer">
         <!-- 加载状态 -->
-        <div class="loading-indicator" v-if="loading">
+        <div class="loading-indicator overlay" v-if="loading">
             <div class="spinner"></div>
             <p>正在加载全景图像...</p>
         </div>
         <!-- 错误提示 -->
-        <div class="error-message" v-else-if="error">
+        <div class="error-message overlay" v-if="error">
             <p>{{ error }}</p>
             <button @click="retryLoad">重试</button>
         </div>
         <!-- 外部 iframe 模式 -->
-        <div v-else-if="mode==='external'" class="external-panorama">
+        <div v-if="mode==='external'" class="external-panorama">
           <div class="external-info">
             <h4>外部全景链接</h4>
             <p>下方为嵌入预览，可点击按钮新窗口打开</p>
@@ -80,6 +80,7 @@ let isAlive = true
 
 // Marzipano viewer 实例
 let viewer = null
+let currentScene = null
 
 // 关闭弹窗
 function closeModal() {
@@ -91,6 +92,7 @@ function closeModal() {
       try { viewer.destroy() } catch { /* ignore */ }
       viewer = null
     }
+    currentScene = null
     mode.value = ''
     externalUrl.value = ''
     error.value = ''
@@ -103,7 +105,6 @@ function closeModal() {
 async function loadPanorama(panoUrl, info = null) {
   loadCounter++
   const token = loadCounter
-  if (!panoContainer.value || !isAlive) return
   loading.value = true
   error.value = ''
   currentPanoInfo.value = info
@@ -111,19 +112,34 @@ async function loadPanorama(panoUrl, info = null) {
   externalUrl.value = ''
 
   try {
+    if (!isAlive) return
     // 销毁旧 viewer
     if (viewer) { try { viewer.destroy() } catch {} viewer = null }
 
-    await nextTick()
+    // 兼容：刚打开弹窗时，容器可能还没挂载完成（v-if=visible）
+    for (let i = 0; i < 20; i++) {
+      if (token !== loadCounter || !isAlive) return
+      if (panoContainer.value) break
+      await nextTick()
+      await new Promise((r) => requestAnimationFrame(r))
+    }
     if (token !== loadCounter || !isAlive) return
+    if (!panoContainer.value) {
+      throw new Error('全景容器未就绪')
+    }
 
-    if (panoUrl.startsWith('http')) {
+    const url = String(panoUrl || '').trim()
+    if (!url) {
+      throw new Error('全景 URL 为空')
+    }
+
+    if (url.startsWith('http')) {
       // 外部链接模式
-      externalUrl.value = panoUrl
+      externalUrl.value = url
       mode.value = 'external'
     } else {
       // 本地全景或图片
-      await createMarzipanoViewer(panoUrl, token)
+      await createMarzipanoViewer(url, token)
     }
   } catch (err) {
     if (token === loadCounter) {
@@ -137,33 +153,66 @@ async function loadPanorama(panoUrl, info = null) {
 
 // 已弃用的直接 DOM 注入被移除，改为模板分支渲染 external 模式
 
+function ensureTrailingSlash(url) {
+  return url.endsWith('/') ? url : `${url}/`
+}
+
+function resolvePanoramaSource(panoUrl) {
+  const cleaned = String(panoUrl || '').trim()
+  const noHash = cleaned.split('#')[0]
+  const noQuery = noHash.split('?')[0]
+  const isImage = /\.(png|jpe?g|webp)$/i.test(noQuery)
+  if (isImage) {
+    return { kind: 'image', imageUrl: cleaned }
+  }
+
+  const dir = ensureTrailingSlash(cleaned)
+  const appFilesMarker = '/app-files/'
+  const idx = dir.indexOf(appFilesMarker)
+  if (idx !== -1) {
+    return { kind: 'marzi', appFilesBase: dir.slice(0, idx + appFilesMarker.length) }
+  }
+
+  // 兼容：传入 project-title 目录（不含 app-files）
+  if (dir.includes('/project-title/')) {
+    return { kind: 'marzi', appFilesBase: ensureTrailingSlash(dir) + 'app-files/' }
+  }
+
+  // 兜底：当作目录传入 app-files（与 Marzipano Tool 的“上传 app-files 内容”一致）
+  return { kind: 'marzi', appFilesBase: dir }
+}
+
 // 创建 Marzipano 查看器
-async function createMarzipanoViewer(imagePath, token) {
+async function createMarzipanoViewer(panoUrl, token) {
   try {
-    // 动态加载 Marzipano 库
-    await loadMarzipanoScript()
+    const src = resolvePanoramaSource(panoUrl)
+
+    // 动态加载 Marzipano 库（优先从当前全景的 vendor 目录加载）
+    await loadMarzipanoScript(src.kind === 'marzi' ? src.appFilesBase : '')
     
     if (token !== loadCounter || !isAlive) return
+
+    // 先切到对应模式，确保模板渲染出 `.marzipano-wrapper`
+    mode.value = src.kind === 'marzi' ? 'marzi' : 'image'
+    await nextTick()
+    if (token !== loadCounter || !isAlive) return
+
     const container = panoContainer.value
     if (!container) return
     // 找到模板里为 Marzipano 预留的 wrapper
     const wrapper = container.querySelector('.marzipano-wrapper')
-    if (!wrapper) return
+    if (!wrapper) throw new Error('Marzipano 容器未就绪')
     // 清空 wrapper
     while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild)
     
     // 创建 Marzipano viewer
     viewer = new window.Marzipano.Viewer(wrapper)
     
-    // 检查是否是本地全景资源路径
-    if (imagePath.includes('project-title')) {
-      // 使用现有的全景数据
-      await loadLocalPanorama()
+    if (src.kind === 'marzi') {
+      await loadLocalPanorama(src.appFilesBase)
     } else {
-      // 尝试作为单张全景图片加载
-      await loadImagePanorama(imagePath)
+      await loadImagePanorama(src.imageUrl)
     }
-    mode.value = imagePath.includes('project-title') ? 'marzi' : 'image'
   } catch (error) {
     console.error('Marzipano 初始化失败:', error)
     throw new Error('全景查看器初始化失败')
@@ -171,57 +220,89 @@ async function createMarzipanoViewer(imagePath, token) {
 }
 
 // 加载 Marzipano 脚本
-function loadMarzipanoScript() {
+let marzipanoScriptPromise = null
+function loadScriptOnce(src) {
   return new Promise((resolve, reject) => {
-    if (window.Marzipano) {
-      resolve()
-      return
-    }
-    
     const script = document.createElement('script')
-    script.src = '/Assets/data/project-title/app-files/vendor/marzipano.js'
-    script.onload = resolve
-    script.onerror = reject
+    script.src = src
+    script.onload = () => resolve()
+    script.onerror = (e) => reject(e)
     document.head.appendChild(script)
   })
 }
+function loadMarzipanoScript(appFilesBase = '') {
+  if (window.Marzipano) return Promise.resolve()
+  if (marzipanoScriptPromise) return marzipanoScriptPromise
+
+  const base = appFilesBase ? ensureTrailingSlash(appFilesBase) : ''
+  const candidates = [
+    base ? `${base}vendor/marzipano.js` : null,
+    '/Assets/data/project-title/app-files/vendor/marzipano.js'
+  ].filter(Boolean)
+
+  marzipanoScriptPromise = (async () => {
+    let lastErr = null
+    for (const src of candidates) {
+      try {
+        await loadScriptOnce(src)
+        if (window.Marzipano) return
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr || new Error('无法加载 Marzipano 脚本')
+  })()
+
+  return marzipanoScriptPromise
+}
 
 // 加载本地全景数据
-async function loadLocalPanorama() {
+function extractAppDataFromDataJs(dataScript) {
+  const match = String(dataScript || '').match(/var\s+APP_DATA\s*=\s*(\{[\s\S]*?\});?\s*$/)
+  if (!match) return null
   try {
+    // data.js 内容为 JS 对象字面量（Marzipano Tool 输出），用 Function 安全地取值
+    // eslint-disable-next-line no-new-func
+    return new Function(`return (${match[1]})`)()
+  } catch {
+    return null
+  }
+}
+
+async function loadLocalPanorama(appFilesBase) {
+  try {
+    const base = ensureTrailingSlash(appFilesBase || '')
     // 动态加载全景数据
-    const response = await fetch('/Assets/data/project-title/app-files/data.js')
+    const response = await fetch(`${base}data.js`)
     const dataScript = await response.text()
     
-    // 执行数据脚本
-    eval(dataScript)
-    
-    if (window.APP_DATA && window.APP_DATA.scenes && window.APP_DATA.scenes.length > 0) {
-      const scene = window.APP_DATA.scenes[0] // 使用第一个场景
+    const appData = extractAppDataFromDataJs(dataScript)
+
+    if (appData && appData.scenes && appData.scenes.length > 0) {
+      const scene = appData.scenes[0] // 使用第一个场景
       
       // 创建几何体和纹理
       const geometry = new window.Marzipano.CubeGeometry(scene.levels)
       const source = window.Marzipano.ImageUrlSource.fromString(
-        `/Assets/data/project-title/app-files/tiles/${scene.id}/{z}/{f}/{y}/{x}.jpg`
+        `${base}tiles/${scene.id}/{z}/{f}/{y}/{x}.jpg`
       )
-      const texture = new window.Marzipano.Texture(source)
       
+      const limiter = window.Marzipano.RectilinearView.limit.traditional(
+        scene.faceSize,
+        100 * Math.PI / 180
+      )
+      const view = new window.Marzipano.RectilinearView(scene.initialViewParameters, limiter)
+
       // 创建场景
-      const marzipanoScene = viewer.createScene({
-        source: source,
-        geometry: geometry,
-        view: window.Marzipano.RectilinearView.limit.traditional(
-          scene.faceSize, 
-          100 * Math.PI / 180
-        ),
+      currentScene = viewer.createScene({
+        source,
+        geometry,
+        view,
         pinFirstLevel: true
       })
-      
-      // 设置初始视角
-      marzipanoScene.view().setParameters(scene.initialViewParameters)
-      
+
       // 切换到这个场景
-      marzipanoScene.switchTo()
+      currentScene.switchTo()
       
       console.log('本地全景加载成功')
     } else {
@@ -238,15 +319,18 @@ async function loadImagePanorama(imagePath) {
   try {
     const source = window.Marzipano.ImageUrlSource.fromString(imagePath)
     const geometry = new window.Marzipano.EquirectGeometry([{ width: 4096 }])
-    
-    const scene = viewer.createScene({
-      source: source,
-      geometry: geometry,
-      view: window.Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI / 180),
+
+    const limiter = window.Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI / 180)
+    const view = new window.Marzipano.RectilinearView({}, limiter)
+
+    currentScene = viewer.createScene({
+      source,
+      geometry,
+      view,
       pinFirstLevel: true
     })
-    
-    scene.switchTo()
+
+    currentScene.switchTo()
     console.log('全景图片加载成功')
   } catch (error) {
     console.error('加载全景图片失败:', error)
@@ -263,10 +347,11 @@ function retryLoad() {
 
 // 重置视角
 function resetView() {
-  if (viewer && viewer.scene) {
-    viewer.scene.view().setYaw(0)
-    viewer.scene.view().setPitch(0)
-    viewer.scene.view().setFov(Math.PI / 4)
+  if (currentScene && typeof currentScene.view === 'function') {
+    const view = currentScene.view()
+    view.setYaw(0)
+    view.setPitch(0)
+    view.setFov(Math.PI / 4)
   }
 }
 
@@ -374,6 +459,23 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.marzipano-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  background: rgba(26, 26, 26, 0.35);
+  backdrop-filter: blur(2px);
 }
 
 .loading-indicator {

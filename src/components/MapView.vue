@@ -2340,7 +2340,7 @@ onMounted(async () => {
 
   // 5) 全景红点（支持自定义图标 + 距离裁剪 + 聚合）
 
-const redPoints = [
+const redPointSeeds = [
     { lon: 118.22840000032071, lat: 35.10694586947898, url: '/Assets/data/project-title/', type: 'marzipano' },
     { lon: 118.22810000032071, lat: 35.10656486947898, url: 'http://172.20.10.2:3002', type: 'external' },
     { lon: 118.227706, lat: 35.10656486947898, url: 'http://172.20.10.2:3096', type: 'external' },
@@ -2469,6 +2469,41 @@ const redPoints = [
     { lon: 118.22935000032071, lat: 35.10249526147898, url: 'http://192.168.2.9:3094 ' },
     { lon: 118.22935000032071, lat: 35.10277526147898, url: 'http://192.168.2.9:3095 ' }
   ]
+
+  // 将点位映射到本地 Marzipano 全景资源（public/Assets/data/picture/picture/pic*/project-title/app-files）
+  // 说明：浏览器端无法直接遍历 public 目录，因此这里按 pic1..pic127 约定映射；如需更精确映射可改为读取 JSON 清单。
+  const PANO_LOCAL_ROOT = '/Assets/data/picture/picture'
+  let panoRoot = PANO_LOCAL_ROOT
+  let panoIds = Array.from({ length: 127 }, (_, i) => `pic${i + 1}`)
+  try {
+    const res = await fetch('/Assets/data/picture/pano-manifest.json', { cache: 'no-cache' })
+    if (res.ok) {
+      const manifest = await res.json()
+      if (manifest && typeof manifest.root === 'string') panoRoot = manifest.root
+      if (manifest && Array.isArray(manifest.ids) && manifest.ids.length) {
+        panoIds = manifest.ids.map((v) => String(v)).filter(Boolean)
+      } else if (manifest && Number.isFinite(manifest.start) && Number.isFinite(manifest.end)) {
+        const start = Number(manifest.start)
+        const end = Number(manifest.end)
+        const pattern = typeof manifest.pattern === 'string' ? manifest.pattern : 'pic{n}'
+        if (end >= start && end - start < 2000) {
+          const ids = []
+          for (let n = start; n <= end; n++) ids.push(pattern.replace('{n}', String(n)))
+          panoIds = ids
+        }
+      }
+    }
+  } catch {}
+
+  // 用 index.html 作为入口：既能被 PanoramaViewer 解析（提取 app-files 基址），也方便你直接在浏览器访问查看
+  const toLocalPanoUrl = (id) => `${panoRoot}/${id}/project-title/app-files/index.html`
+  const redPoints = redPointSeeds.slice(0, panoIds.length).map((pt, idx) => ({
+    lon: pt.lon,
+    lat: pt.lat,
+    id: panoIds[idx],
+    type: 'marzipano',
+    url: toLocalPanoUrl(panoIds[idx])
+  }))
 
   // 获取图标配置
   function getPanoIcon(type = 'external') {
@@ -3471,7 +3506,7 @@ function onVendorFloatUp(){
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  return { ui, panelCollapse, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover, isLoading, loadingText }
+  return { ui, panelCollapse, panoramaModal, panoramaViewer, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover, isLoading, loadingText }
 }
 })
 </script>
