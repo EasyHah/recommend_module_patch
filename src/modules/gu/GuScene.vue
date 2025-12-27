@@ -175,6 +175,10 @@ const legendList = computed(() => visibleLayerList.value.filter(l => (localVisib
 let clickHandler: Cesium.ScreenSpaceEventHandler | null = null
 let lastHighlight: { kind: 'entity'; target: any } | null = null
 const attrCard = ref<{ source: string; props: Record<string, any> } | null>(null)
+let isDestroying = false
+let restoreWidgetErrorPanel: null | (() => void) = null
+let removeCanvasWheelListener: null | (() => void) = null
+let removeWindowWheelCaptureListener: null | (() => void) = null
 
 onMounted(async () => {
   if (!cesiumRef.value) return
@@ -190,8 +194,10 @@ onMounted(async () => {
     navigationHelpButton: false,
     selectionIndicator: false,
     infoBox: false,
+    showRenderLoopErrors: false,
     terrainProvider: new Cesium.EllipsoidTerrainProvider()
   })
+  try { viewer.value.scene.rethrowRenderErrors = false } catch {}
 
   // 更稳的底图（避免 Bing/ION 网络问题）
   try {
@@ -204,6 +210,53 @@ onMounted(async () => {
 
   viewer.value.scene.globe.showGroundAtmosphere = false
   viewer.value.scene.fog.enabled = false
+
+  // 阻止 Ctrl/Meta+滚轮触发浏览器缩放（可能导致 WebGL 不稳定/上下文丢失）
+  try {
+    const canvas: HTMLCanvasElement | undefined = (viewer.value as any)?.canvas
+    if (canvas) {
+      const onWheel = (e: WheelEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+          try { e.preventDefault() } catch {}
+        }
+      }
+      canvas.addEventListener('wheel', onWheel, { passive: false })
+      removeCanvasWheelListener = () => canvas.removeEventListener('wheel', onWheel)
+    }
+  } catch {}
+  // pinch-to-zoom 可能触发在子元素上，用 window capture 兜底拦截
+  try {
+    const root: HTMLElement | null = ((viewer.value as any)?.container as HTMLElement) || cesiumRef.value
+    const onWindowWheelCapture = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return
+      if (!root) return
+      const target = e.target as any
+      if (target && root.contains(target)) {
+        try { e.preventDefault() } catch {}
+      }
+    }
+    window.addEventListener('wheel', onWindowWheelCapture, { passive: false, capture: true })
+    removeWindowWheelCaptureListener = () => window.removeEventListener('wheel', onWindowWheelCapture, true)
+  } catch {}
+
+  // 兜底：渲染循环错误会导致 Cesium 停止渲染，这里在 errorPanel 入口记录并提示刷新恢复
+  try {
+    const widget = (viewer.value as any)?.cesiumWidget
+    if (widget && typeof widget.showErrorPanel === 'function') {
+      const original = widget.showErrorPanel.bind(widget)
+      widget.showErrorPanel = (title: string, message: any, error: any) => {
+        try {
+          console.error('[GuScene CesiumWidget RenderLoop Error]', title, error)
+          const msg = String(error?.message ?? error ?? '')
+          if (msg.includes('This object was destroyed') || msg.includes('destroy() was called')) {
+            try { window.location.reload() } catch {}
+          }
+        } catch {}
+        return original(title, message, error)
+      }
+      restoreWidgetErrorPanel = () => { widget.showErrorPanel = original }
+    }
+  } catch {}
 
   // 进入场景自动固定并展开左右抽屉（与首页体验一致）
   ui.drawer.leftPinned = ui.drawer.rightPinned = true
@@ -222,8 +275,25 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  isDestroying = true
   if (clickHandler) { clickHandler.destroy(); clickHandler = null }
-  if (viewer.value) { viewer.value.destroy(); /* @ts-ignore */ viewer.value = null }
+  if (viewer.value) {
+    if (removeCanvasWheelListener) {
+      try { removeCanvasWheelListener() } catch {}
+      removeCanvasWheelListener = null
+    }
+    if (removeWindowWheelCaptureListener) {
+      try { removeWindowWheelCaptureListener() } catch {}
+      removeWindowWheelCaptureListener = null
+    }
+    if (restoreWidgetErrorPanel) {
+      try { restoreWidgetErrorPanel() } catch {}
+      restoreWidgetErrorPanel = null
+    }
+    try { viewer.value.useDefaultRenderLoop = false } catch {}
+    try { viewer.value.destroy() } catch {}
+    /* @ts-ignore */ viewer.value = null
+  }
 })
 
 async function setMode(m: Mode) {
@@ -253,14 +323,21 @@ async function setMode(m: Mode) {
 
 // -------- 图层加载 --------
 async function refreshLayers() {
+  if (isDestroying || !viewer.value || viewer.value.isDestroyed?.()) return
   clearAllLayers()
-  for (const l of visibleLayerList.value) await addLayer(l)
+  for (const l of visibleLayerList.value) {
+    if (isDestroying || !viewer.value || viewer.value.isDestroyed?.()) return
+    await addLayer(l)
+  }
   buildFilterOptions()
 }
 function clearAllLayers() {
+  if (isDestroying || !viewer.value || viewer.value.isDestroyed?.()) return
   Object.keys(currentLayers).forEach(id => {
     const ds = currentLayers[id]
-    if (ds && viewer.value) viewer.value.dataSources.remove(ds, true)
+    if (ds && viewer.value && !viewer.value.isDestroyed?.()) {
+      try { viewer.value.dataSources.remove(ds, true) } catch {}
+    }
     delete currentLayers[id]
   })
 }
@@ -273,7 +350,8 @@ async function createGeoJSON(layer: LayerDef) {
   const ds = await Cesium.GeoJsonDataSource.load(l.url, {
     clampToGround: (mode.value !== 'underground')
   })
-  await viewer.value!.dataSources.add(ds)
+  if (isDestroying || !viewer.value || viewer.value.isDestroyed?.()) return
+  await viewer.value.dataSources.add(ds)
   ds.show = (localVisible[layer.id] ?? layer.visible)
 
   ds.entities.values.forEach((ent: any) => {

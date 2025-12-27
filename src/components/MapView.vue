@@ -20,6 +20,15 @@
           <label class="row"><input type="checkbox" v-model="ui.fireExtinguishers"> 灭火器</label>
           <label class="row"><input type="checkbox" v-model="ui.pano"> 全景红点</label>
 
+          <div class="row small">
+            <span style="min-width:48px;">底图</span>
+            <select v-model="ui.baseMap" style="flex:1; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); color:#fff; padding:0 8px;">
+              <option value="ion">Cesium Ion(推荐)</option>
+              <option value="amap">高德影像</option>
+              <option value="osm">OpenStreetMap</option>
+            </select>
+          </div>
+
           <div class="row sep"></div>
 
           <!-- 管线图层控制 -->
@@ -27,8 +36,11 @@
             <input type="checkbox" v-model="ui.pipelines"> 地下管线
           </label>
           <template v-if="ui.pipelines">
-            <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
-            <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
+            <label class="row small"><input type="checkbox" v-model="ui.terrainXray"> 地形透视</label>
+            <template v-if="ui.terrainXray">
+              <div class="row small">地形透明度：{{ ui.terrainAlpha }}</div>
+              <input class="slider" type="range" min="0" max="1" step="0.05" v-model.number="ui.terrainAlpha" />
+            </template>
           </template>
 
           <div class="row sep"></div>
@@ -206,6 +218,12 @@
     </div>
     <div class="vh-close" @click="vendorHover.visible=false" title="关闭">×</div>
   </div>
+
+  <!-- 页面加载遮罩 -->
+  <div v-if="isLoading" class="loading-mask">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">{{ loadingText }}</div>
+  </div>
   </div>
 </template>
 
@@ -224,6 +242,22 @@ export default defineComponent({
   components: { PanoramaViewer },
   setup() {
     let poke = null
+    let isDestroying = false
+    let removeRenderErrorListener = null
+    let removeBaseImageryErrorListener = null
+    let pipelineBlinkInterval = null
+    const pendingTimeouts = new Set()
+    let restoreWidgetErrorPanel = null
+    let removeCanvasWheelListener = null
+    let removeWebglContextLostListener = null
+    let removeWebglContextRestoredListener = null
+    let removeWindowWheelCaptureListener = null
+    let lastWheel = null
+    let renderErrorBurstCount = 0
+    let renderErrorBurstTs = 0
+    let appliedCesiumSafeMode = false
+    const isLoading = ref(true)
+    const loadingText = ref('资源加载中...')
 const FACTORY_MODEL_CONFIG = {
   baseId: 'factory-base',
   roofId: 'factory-roof',
@@ -250,13 +284,37 @@ const PANO_ICON_CONFIG = {
 
 // 全局 Viewer 引用与安全重绘辅助（requestRender）
 const viewerRef = ref(null)
+let onResize = null
+let onWindowError = null
+let onUnhandledRejection = null
+const CESIUM_RECOVERY_KEY = '__cesium_auto_recover_ts'
+const shouldRecoverFromCesiumError = (err) => {
+  const msg = String(err?.message ?? err ?? '')
+  // 只匹配非常明确的 destroyed 崩溃特征，避免误伤其它渲染/网络报错
+  return msg.includes('This object was destroyed') ||
+    msg.includes('destroy() was called') ||
+    msg.includes('VertexArray.throwOnDestroyed')
+}
+const tryRecoverCesium = (origin, err) => {
+  if (isDestroying) return
+  try {
+    const now = Date.now()
+    const last = Number(sessionStorage.getItem(CESIUM_RECOVERY_KEY) || 0)
+    // 防止进入无限刷新循环：15 秒内只允许触发一次
+    if (now - last < 15000) return
+    sessionStorage.setItem(CESIUM_RECOVERY_KEY, String(now))
+  } catch {}
+  console.warn('[CesiumRecover]', origin, err)
+  try { window.location.reload() } catch {}
+}
 /**
  * 触发一次场景重绘；若后续需要支持对某个仓库 w 的中心飞行，可再提供参数。
  * 目前仅在 requestRenderMode 下，用于保证状态更新后场景刷新。
  */
 const requestRender = () => {
+  if (isDestroying) return
   const v = viewerRef.value
-  if (!v) return
+  if (!v || v.isDestroyed?.()) return
   // 仅执行一次 requestRender，不做 camera.flyTo（避免误用未定义 w 导致报错）
   if (v.scene && typeof v.scene.requestRender === 'function') {
     v.scene.requestRender()
@@ -275,7 +333,9 @@ const ui = reactive({
   pano: true,
   demoParabola: false,
   pipelines: true,
-  terrainAlpha: 0.35,  // 地形透明度
+  baseMap: 'ion', // amap | ion | osm
+  terrainXray: false, // 地形透视（仅用于地下管线查看）
+  terrainAlpha: 0.85,  // 地形透明度（默认更接近正常底图观感，需要看地下管线可调低）
   cluster: true,
   clusterRange: 45, // 像素范围
   sse: 12,          // 屏幕误差（越大越省）
@@ -668,17 +728,33 @@ function focusPipeline(index) {
     viewer.zoomTo(item.entity)
     if (item.entity.polylineVolume) {
       let count = 0
+      if (pipelineBlinkInterval) {
+        try { clearInterval(pipelineBlinkInterval) } catch {}
+        pipelineBlinkInterval = null
+      }
       const blink = setInterval(() => {
         count++
-        const on = count % 2 === 1
-        item.entity.polylineVolume.material = on ? Cesium.Color.ORANGE.withAlpha(1.0) : Cesium.Color.YELLOW.withAlpha(0.9)
-        requestRender()
+        try {
+          const v = viewerRef.value
+          if (isDestroying || !v || v.isDestroyed?.()) { clearInterval(blink); pipelineBlinkInterval = null; return }
+          const on = count % 2 === 1
+          item.entity.polylineVolume.material = on ? Cesium.Color.ORANGE.withAlpha(1.0) : Cesium.Color.YELLOW.withAlpha(0.9)
+          requestRender()
+        } catch {
+          clearInterval(blink)
+          pipelineBlinkInterval = null
+          return
+        }
         if (count >= 6) {
           clearInterval(blink)
-          item.entity.polylineVolume.material = Cesium.Color.YELLOW.withAlpha(0.9)
-          requestRender()
+          pipelineBlinkInterval = null
+          try {
+            item.entity.polylineVolume.material = Cesium.Color.YELLOW.withAlpha(0.9)
+            requestRender()
+          } catch {}
         }
       }, 300)
+      pipelineBlinkInterval = blink
     }
   } catch {}
 }
@@ -1019,7 +1095,6 @@ function initFloorDrawer(viewer, floors, distance = 35.0) {
     const enuTransform = Cesium.Transforms.eastNorthUpToFixedFrame(center)
     return { floor, initialMatrix, center, enuTransform }
   })
-
   function translateNorth(info) {
     const { initialMatrix, center, enuTransform } = info
     const translationENU = new Cesium.Cartesian3(0, distance, 0)
@@ -1233,8 +1308,20 @@ onMounted(async () => {
     terrainProvider = new Cesium.EllipsoidTerrainProvider()
   }
 
+  if (isDestroying) return
+  const createAmapImageryProvider = () =>
+    new Cesium.UrlTemplateImageryProvider({
+      url: 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',
+      subdomains: ['1', '2', '3', '4']
+    })
+  const createOsmImageryProvider = () =>
+    new Cesium.UrlTemplateImageryProvider({
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      subdomains: ['a', 'b', 'c']
+    })
   let imageryProvider = null
-  if (CESIUM_ION_TOKEN) {
+  const preferBaseMap = String(ui.baseMap || 'amap')
+  if (preferBaseMap === 'ion' && CESIUM_ION_TOKEN) {
     if (Number.isFinite(CESIUM_ION_IMAGERY_ASSET_ID) && CESIUM_ION_IMAGERY_ASSET_ID > 0) {
       try {
         imageryProvider = await Cesium.IonImageryProvider.fromAssetId(CESIUM_ION_IMAGERY_ASSET_ID)
@@ -1252,13 +1339,18 @@ onMounted(async () => {
   }
 
   if (!imageryProvider) {
-    imageryProvider = new Cesium.OpenStreetMapImageryProvider({
-      url: 'https://tile.openstreetmap.org/'
-    })
-    console.warn('[MapView] 已使用 OpenStreetMap 影像作为兜底，注意遵守 OSM 使用条款。')
+    // 国内网络默认走 AMap；如主动选择 OSM 则使用 OSM
+    if (preferBaseMap === 'osm') {
+      imageryProvider = createOsmImageryProvider()
+      console.warn('[MapView] basemap=osm')
+    } else {
+      imageryProvider = createAmapImageryProvider()
+      console.info('[MapView] basemap=amap')
+    }
   }
 
   // 1) Viewer：按需渲染 + 冻结时钟 + 降后处理
+  if (isDestroying) return
   const viewer = new Cesium.Viewer('cesiumContainer', {
     terrainProvider,
     imageryProvider,
@@ -1271,10 +1363,152 @@ onMounted(async () => {
     homeButton: false,
     navigationHelpButton: false,
     sceneModePicker: false,
+    showRenderLoopErrors: false,
     requestRenderMode: true,
     maximumRenderTimeChange: Number.POSITIVE_INFINITY,
     useBrowserRecommendedResolution: true
   })
+  try { viewer.scene.rethrowRenderErrors = false } catch {}
+  try { viewer.scene.orderIndependentTranslucency = false } catch {}
+  try { viewer.scene.pickTranslucentDepth = false } catch {}
+
+  const applyCesiumSafeMode = () => {
+    if (appliedCesiumSafeMode) return
+    appliedCesiumSafeMode = true
+    try { viewer.scene.orderIndependentTranslucency = false } catch {}
+    try { viewer.scene.pickTranslucentDepth = false } catch {}
+    try { viewer.resolutionScale = Math.min(viewer.resolutionScale || 1, 0.65) } catch {}
+    try {
+      const osgb = dataSourceManager?.getDataSource?.('osgb')
+      if (osgb && typeof osgb.maximumScreenSpaceError === 'number') {
+        osgb.maximumScreenSpaceError = Math.max(osgb.maximumScreenSpaceError, 20)
+      }
+    } catch {}
+    console.warn('[CesiumSafeMode] applied (OIT off, translucent depth off, lower resolutionScale).')
+  }
+
+  const restartDefaultRenderLoop = () => {
+    try { viewer.cesiumWidget.useDefaultRenderLoop = true } catch {}
+    try { viewer.useDefaultRenderLoop = true } catch {}
+    try { viewer.scene.requestRender() } catch {}
+  }
+
+  const scheduleRestartDefaultRenderLoop = () => {
+    Promise.resolve().then(() => {
+      if (isDestroying || viewer.isDestroyed()) return
+      restartDefaultRenderLoop()
+    })
+  }
+  
+  // 监听渲染错误并自动恢复：缩放/拖拽高频渲染时，若出现 destroyed 类错误，做一次性刷新兜底。
+  removeRenderErrorListener = viewer.scene.renderError.addEventListener((scene, error) => {
+    console.error('[Cesium Render Error]', error)
+    if (shouldRecoverFromCesiumError(error)) {
+      if (isDestroying || viewer.isDestroyed()) return
+      applyCesiumSafeMode()
+      try {
+        const now = Date.now()
+        if (now - renderErrorBurstTs > 2000) renderErrorBurstCount = 0
+        renderErrorBurstTs = now
+        renderErrorBurstCount += 1
+      } catch {}
+      scheduleRestartDefaultRenderLoop()
+      if (renderErrorBurstCount >= 3) {
+        tryRecoverCesium('scene.renderError(burst)', error)
+      }
+    }
+  })
+  // CesiumWidget 渲染循环也会捕获错误并停止渲染：这里拦截 errorPanel 入口，确保 destroyed 类错误能触发恢复逻辑
+  try {
+    const widget = viewer.cesiumWidget
+    if (widget && typeof widget.showErrorPanel === 'function') {
+      const original = widget.showErrorPanel.bind(widget)
+      widget.showErrorPanel = (title, message, error) => {
+        try {
+          console.error('[CesiumWidget RenderLoop Error]', title, error, {
+            lastWheel,
+            devicePixelRatio: window.devicePixelRatio,
+            canvas: {
+              clientWidth: viewer?.canvas?.clientWidth,
+              clientHeight: viewer?.canvas?.clientHeight,
+              width: viewer?.canvas?.width,
+              height: viewer?.canvas?.height
+            }
+          })
+          if (shouldRecoverFromCesiumError(error)) {
+            if (!isDestroying && !viewer.isDestroyed()) {
+              applyCesiumSafeMode()
+              try {
+                const now = Date.now()
+                if (now - renderErrorBurstTs > 2000) renderErrorBurstCount = 0
+                renderErrorBurstTs = now
+                renderErrorBurstCount += 1
+              } catch {}
+              scheduleRestartDefaultRenderLoop()
+              if (renderErrorBurstCount >= 3) {
+                tryRecoverCesium('CesiumWidget.showErrorPanel(burst)', error)
+              }
+            }
+            return
+          }
+        } catch {}
+        return original(title, message, error)
+      }
+      restoreWidgetErrorPanel = () => { widget.showErrorPanel = original }
+    }
+  } catch {}
+
+  // 记录滚轮信息，并阻止 Ctrl+滚轮触发浏览器缩放导致的 WebGL 不稳定
+  try {
+    const canvas = viewer.canvas
+    const onWheel = (e) => {
+      lastWheel = { t: Date.now(), deltaY: e.deltaY, ctrlKey: !!e.ctrlKey, metaKey: !!e.metaKey }
+      if (e.ctrlKey || e.metaKey) {
+        try { e.preventDefault() } catch {}
+      }
+    }
+    canvas.addEventListener('wheel', onWheel, { passive: false })
+    removeCanvasWheelListener = () => canvas.removeEventListener('wheel', onWheel)
+  } catch {}
+
+  // 触控板 pinch-to-zoom 在 Chrome 往往会以 `ctrlKey=true` 的 wheel 事件触发在子元素上（不一定是 canvas），这里用 capture 兜底拦截浏览器缩放
+  try {
+    const root = viewer.container || document.getElementById('cesiumContainer')
+    const onWindowWheelCapture = (e) => {
+      if (!e.ctrlKey && !e.metaKey) return
+      if (!root) return
+      const target = e.target
+      if (target && root.contains(target)) {
+        lastWheel = { t: Date.now(), deltaY: e.deltaY, ctrlKey: !!e.ctrlKey, metaKey: !!e.metaKey, captured: true }
+        try { e.preventDefault() } catch {}
+      }
+    }
+    window.addEventListener('wheel', onWindowWheelCapture, { passive: false, capture: true })
+    removeWindowWheelCaptureListener = () => window.removeEventListener('wheel', onWindowWheelCapture, true)
+  } catch {}
+
+  // 监听 WebGL 上下文丢失/恢复，便于定位并做兜底恢复
+  try {
+    const canvas = viewer.canvas
+    const onLost = (e) => {
+      try { e.preventDefault?.() } catch {}
+      console.error('[webglcontextlost]', e)
+      if (shouldRecoverFromCesiumError(e)) {
+        tryRecoverCesium('webglcontextlost', e)
+      } else {
+        tryRecoverCesium('webglcontextlost', new Error('webglcontextlost'))
+      }
+    }
+    const onRestored = (e) => {
+      console.warn('[webglcontextrestored]', e)
+      try { viewer.scene?.requestRender?.() } catch {}
+    }
+    canvas.addEventListener('webglcontextlost', onLost, false)
+    canvas.addEventListener('webglcontextrestored', onRestored, false)
+    removeWebglContextLostListener = () => canvas.removeEventListener('webglcontextlost', onLost, false)
+    removeWebglContextRestoredListener = () => canvas.removeEventListener('webglcontextrestored', onRestored, false)
+  } catch {}
+
   viewer.scene.postProcessStages.fxaa.enabled = false
   viewer.shadows = false
   viewer.targetFrameRate = 30
@@ -1287,15 +1521,194 @@ onMounted(async () => {
   viewer.scene.moon.show = false
   viewer.resolutionScale = 0.75 // 视效与负载的折中
 
+  // camera.changed 在缩放时会非常高频：这里做“每帧最多一次”的节流，避免渲染风暴。
+  let pokeRafId = null
   poke = () => {
-    if (viewer && !viewer.isDestroyed()) {
-      viewer.scene.requestRender()
+    if (isDestroying) return
+    if (!viewer || viewer.isDestroyed()) return
+    if (pokeRafId != null) return
+    pokeRafId = window.requestAnimationFrame(() => {
+      pokeRafId = null
+      if (isDestroying) return
+      if (viewer && !viewer.isDestroyed()) {
+        viewer.scene.requestRender()
+      }
+    })
+  }
+
+  // requestRenderMode 下 Cesium 会在交互时自行触发渲染，这里不再额外绑定 camera.changed（降低缩放压力）。
+
+  // resize 事件在浏览器缩放/设备像素比变化时可能高频触发：用 RAF 合并，避免重建 WebGL 资源过于频繁
+  let resizeRafId = null
+  onResize = () => {
+    if (isDestroying) return
+    if (resizeRafId != null) return
+    resizeRafId = window.requestAnimationFrame(() => {
+      resizeRafId = null
+      if (isDestroying) return
+      const v = viewerRef.value
+      if (!v || v.isDestroyed()) return
+      try { v.resize() } catch {}
+      poke()
+    })
+  }
+  window.addEventListener('resize', onResize)
+
+  onWindowError = (e) => {
+    const err = e?.error || e?.message
+    if (shouldRecoverFromCesiumError(err)) {
+      tryRecoverCesium('window.error', err)
     }
   }
-  viewer.camera.changed.addEventListener(poke)
-  window.addEventListener('resize', poke)
+  onUnhandledRejection = (e) => {
+    const reason = e?.reason
+    if (shouldRecoverFromCesiumError(reason)) {
+      tryRecoverCesium('unhandledrejection', reason)
+    }
+  }
+  window.addEventListener('error', onWindowError)
+  window.addEventListener('unhandledrejection', onUnhandledRejection)
   // 存下全局引用用于其他顶层方法
   viewerRef.value = viewer
+
+  // 强制确保 globe + 底图层存在（避免某些环境下底图不显示）
+  try {
+    viewer.scene.globe.show = true
+    viewer.imageryLayers.removeAll(true)
+    viewer.imageryLayers.addImageryProvider(imageryProvider)
+  } catch {}
+
+  // 底图兜底：监控瓦片错误，OSM 在部分网络环境下会超时，默认直接切到 AMap 以保证有底图
+  let baseMapLabel = String(ui.baseMap || 'amap')
+  const attachBaseImageryErrorListener = (provider, label) => {
+    if (!provider?.errorEvent?.addEventListener) return
+    if (removeBaseImageryErrorListener) {
+      try { removeBaseImageryErrorListener() } catch {}
+      removeBaseImageryErrorListener = null
+    }
+    baseMapLabel = label || baseMapLabel
+    let errCount = 0
+    let windowStart = Date.now()
+    removeBaseImageryErrorListener = provider.errorEvent.addEventListener((err) => {
+      try {
+        const now = Date.now()
+        if (now - windowStart > 8000) {
+          windowStart = now
+          errCount = 0
+        }
+        errCount += 1
+        // OSM 一旦失败基本不可用：快速切换；其它源给一点容错
+        const threshold = baseMapLabel === 'osm' ? 1 : 4
+        if (errCount < threshold) return
+        if (isDestroying || viewer.isDestroyed()) return
+        try { err.retry = false } catch {}
+        if (baseMapLabel !== 'amap') {
+          console.warn(`[MapView] 底图(${baseMapLabel})瓦片连续失败，切换 AMap 兜底。`, err)
+          ui.baseMap = 'amap'
+        }
+      } catch {}
+    })
+  }
+  try {
+    const layer0 = viewer.imageryLayers?.get?.(0)
+    if (layer0?.imageryProvider) attachBaseImageryErrorListener(layer0.imageryProvider, baseMapLabel)
+  } catch {}
+
+  const applyBaseMap = async (mode) => {
+    const desired = String(mode || 'amap')
+    if (isDestroying || viewer.isDestroyed()) return
+    if (desired === baseMapLabel) return
+
+    let provider = null
+    if (desired === 'ion') {
+      if (!CESIUM_ION_TOKEN) {
+        console.warn('[MapView] basemap=ion requires VITE_CESIUM_ION_TOKEN, fallback to amap')
+        ui.baseMap = 'amap'
+        provider = createAmapImageryProvider()
+      } else {
+        try {
+          if (Number.isFinite(CESIUM_ION_IMAGERY_ASSET_ID) && CESIUM_ION_IMAGERY_ASSET_ID > 0) {
+            provider = await Cesium.IonImageryProvider.fromAssetId(CESIUM_ION_IMAGERY_ASSET_ID)
+          } else {
+            provider = await Cesium.IonImageryProvider.fromAssetId(3)
+          }
+        } catch (e) {
+          console.warn('[MapView] basemap=ion failed, fallback to amap', e)
+          ui.baseMap = 'amap'
+          provider = createAmapImageryProvider()
+        }
+      }
+    } else if (desired === 'osm') {
+      provider = createOsmImageryProvider()
+    } else {
+      provider = createAmapImageryProvider()
+    }
+
+    try {
+      viewer.imageryLayers.removeAll(true)
+      viewer.imageryLayers.addImageryProvider(provider)
+      baseMapLabel = String(ui.baseMap || desired)
+      baseMapFallbackStage = baseMapLabel === 'amap' ? 1 : (baseMapLabel === 'osm' ? 2 : 0)
+      attachBaseImageryErrorListener(provider, baseMapLabel)
+      poke?.()
+    } catch (e) {
+      console.warn('[MapView] applyBaseMap failed', e)
+    }
+  }
+  watch(() => ui.baseMap, (m) => { applyBaseMap(m) })
+
+  // 初始镜头：先展示地球，再在数据加载后飞到园区
+  const waitNextFrame = () =>
+    new Promise((resolve) => {
+      try {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve())
+        else resolve()
+      } catch {
+        resolve()
+      }
+    })
+  const nextFrame = () => waitNextFrame()
+  const setGlobeView = (headingRad = 0) => {
+    try {
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(105, 32, 28000000),
+        orientation: { heading: headingRad, pitch: Cesium.Math.toRadians(-90), roll: 0 }
+      })
+    } catch {}
+  }
+  const sleep = (ms) =>
+    new Promise((resolve) => {
+      const t = setTimeout(() => {
+        pendingTimeouts.delete(t)
+        resolve()
+      }, ms)
+      pendingTimeouts.add(t)
+    })
+  const spinIntro = async (ms = 1600) => {
+    try {
+      const start = (typeof performance !== 'undefined' ? performance.now() : Date.now())
+      const delta = Cesium.Math.toRadians(28)
+      while (true) {
+        if (isDestroying || viewer.isDestroyed()) return
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now())
+        const t = Math.min((now - start) / ms, 1)
+        const eased = (Cesium.EasingFunction?.SINE_IN_OUT?.(t)) ?? t
+        setGlobeView(delta * eased)
+        poke?.()
+        if (t >= 1) break
+        await nextFrame()
+      }
+    } catch {}
+  }
+  try {
+    loadingText.value = '展示地球...'
+    setGlobeView(0)
+    poke?.()
+    await spinIntro(1600)
+    await sleep(450)
+    await nextFrame()
+    loadingText.value = '加载模型与图层...'
+  } catch {}
 
   // 2) 创建数据源管理器并加载所有数据
   dataSourceManager = new DataSourceManager(viewer)
@@ -1457,8 +1870,9 @@ onMounted(async () => {
   const panoInitialHide = () => {
     // 延迟到主 redPoints 创建完成后再处理（微任务）
     Promise.resolve().then(()=>{
+      if (isDestroying || viewer.isDestroyed()) return
       if(!ui.pano){
-        viewer.entities.values.forEach(ent=>{ if(ent.__pano) ent.show = false })
+        try { viewer.entities.values.forEach(ent=>{ if(ent.__pano) ent.show = false }) } catch {}
       }
     })
   }
@@ -1466,10 +1880,10 @@ onMounted(async () => {
   
   // 管线地形透明度设置
   viewer.scene.screenSpaceCameraController.enableCollisionDetection = false
-  viewer.scene.globe.translucency.enabled = true
-  viewer.scene.globe.translucency.frontFaceAlpha = ui.terrainAlpha
-  viewer.scene.globe.translucency.backFaceAlpha = 0.05
-  viewer.scene.pickTranslucentDepth = true
+  viewer.scene.globe.translucency.enabled = !!(ui.pipelines && ui.terrainXray)
+  viewer.scene.globe.translucency.frontFaceAlpha = (ui.pipelines && ui.terrainXray) ? ui.terrainAlpha : 1
+  viewer.scene.globe.translucency.backFaceAlpha = (ui.pipelines && ui.terrainXray) ? 0.05 : 1
+  viewer.scene.pickTranslucentDepth = false
   
   // 批量加载所有预定义数据源
   console.log('开始加载数据源...')
@@ -1484,8 +1898,62 @@ onMounted(async () => {
   // 获取主要建筑数据用于缩放
   const osgb = dataSourceManager.getDataSource('osgb')
   if (osgb) {
-    viewer.zoomTo(osgb)
+    try {
+      loadingText.value = '定位园区...'
+      await sleep(900)
+
+      // 电影感两段式飞行：先俯视接近园区，再绕一点角度倾斜推进，最后轻微“停靠”
+      const flyToBSPromise = (boundingSphere, options) =>
+        new Promise((resolve) => {
+          try {
+            viewer.camera.flyToBoundingSphere(boundingSphere, {
+              ...options,
+              complete: () => resolve(true),
+              cancel: () => resolve(false)
+            })
+          } catch (e) {
+            console.warn('[MapView] camera.flyToBoundingSphere failed', e)
+            resolve(false)
+          }
+        })
+
+      try { await osgb.readyPromise } catch {}
+      const bs = osgb.boundingSphere
+      const r = Math.max(1, bs?.radius || 1)
+      const rangeFar = Math.max(26000, r * 42)
+      const rangeNear = Math.max(1500, r * 7.5)
+      const rangeDock = 400
+      const heading0 = Cesium.Math.toRadians(35)
+      const heading1 = heading0 + Cesium.Math.toRadians(42)
+
+  
+      await flyToBSPromise(bs, {
+        offset: new Cesium.HeadingPitchRange(heading0, Cesium.Math.toRadians(-90), rangeFar),
+        duration: 6.8,
+        easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT
+      })
+
+      await sleep(350)
+      await flyToBSPromise(bs, {
+        offset: new Cesium.HeadingPitchRange(heading1, Cesium.Math.toRadians(-35), rangeNear),
+        duration: 5.8,
+        easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT
+      })
+
+      await sleep(220)
+      loadingText.value = '进入园区...'
+      await flyToBSPromise(bs, {
+        offset: new Cesium.HeadingPitchRange(heading1, Cesium.Math.toRadians(-28), rangeDock),
+        duration: 2.8,
+        easingFunction: Cesium.EasingFunction.SINE_IN_OUT
+      })
+    } catch (e) {
+      console.warn('[MapView] 初始飞行失败，fallback zoomTo', e)
+      try { viewer.zoomTo(osgb) } catch {}
+    }
   }
+  // 初始飞行结束即可进入交互，其余资源后台继续加载
+  if (!isDestroying) isLoading.value = false
 
   // 仅使用 factory-base 做平移动画（删去其它逻辑与 roof 依赖）
   const factoryBaseModel = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId) || null
@@ -2035,7 +2503,7 @@ const redPoints = [
   panoDS.clustering.enabled = ui.cluster
   panoDS.clustering.pixelRange = ui.clusterRange
   panoDS.clustering.minimumClusterSize = 6
-  panoDS.clustering.clusterEvent.addEventListener(poke)
+  // clustering 会在相机缩放/移动时自动触发更新；这里不额外 requestRender，避免缩放期间产生额外渲染压力
   poke()
 
   // ================= 天气图层初始化 =================
@@ -2491,35 +2959,25 @@ const redPoints = [
         if (entity.label) entity.label.fillColor = Cesium.Color.WHITE.withAlpha(opacity)
       })
     }
+
+    // 地形透视：仅在开启地下管线 + 地形透视时启用
+    try {
+      const effectiveAlpha = (ui.pipelines && ui.terrainXray) ? ui.terrainAlpha : 1
+      viewer.scene.globe.translucency.enabled = !!(ui.pipelines && ui.terrainXray)
+      viewer.scene.globe.translucency.frontFaceAlpha = effectiveAlpha
+      viewer.scene.globe.translucency.backFaceAlpha = (ui.pipelines && ui.terrainXray) ? 0.05 : 1
+    } catch {}
     
     poke()
   }
   applyToggles()
 
-  watch(() => [ui.osgb, ui.factory, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines], applyToggles)
+  watch(() => [ui.osgb, ui.factory, ui.geo, ui.floors, ui.facilities, ui.fireExtinguishers, ui.pano, ui.pipelines, ui.terrainXray], applyToggles)
 
   // 地形透明度监听
   watch(() => ui.terrainAlpha, (alpha) => {
-    viewer.scene.globe.translucency.frontFaceAlpha = alpha
-    
-    // 同步调整建筑透明度
-    if (dataSourceManager) {
-      const osgb = dataSourceManager.getDataSource('osgb')
-      if (osgb instanceof Cesium.Cesium3DTileset) {
-        osgb.style = new Cesium.Cesium3DTileStyle({
-          color: `rgba(255,255,255, ${alpha})`
-        })
-      }
-      
-      const factoryBase = dataSourceManager.getDataSource(FACTORY_MODEL_CONFIG.baseId)
-      if (factoryBase instanceof Cesium.Cesium3DTileset) {
-        factoryBase.style = new Cesium.Cesium3DTileStyle({
-          color: `rgba(255,255,255, ${alpha})`
-        })
-      }
-
-
-    }
+    const effectiveAlpha = (ui.pipelines && ui.terrainXray) ? alpha : 1
+    viewer.scene.globe.translucency.frontFaceAlpha = effectiveAlpha
     
     poke()
   })
@@ -2623,10 +3081,21 @@ const redPoints = [
     }
   }, 30 * 60 * 1000)
   window.addEventListener('keydown', onKeydown)
+  
+  // 资源加载完成
+  isLoading.value = false
 })
 
 // 统一清理（必须在 setup 同步阶段注册，避免生命周期警告）
 onUnmounted(() => {
+  isDestroying = true
+  if (pipelineBlinkInterval) {
+    try { clearInterval(pipelineBlinkInterval) } catch {}
+    pipelineBlinkInterval = null
+  }
+  pendingTimeouts.forEach((t) => { try { clearTimeout(t) } catch {} })
+  pendingTimeouts.clear()
+  if (redecorateTimer) { try { clearTimeout(redecorateTimer) } catch {} redecorateTimer = null }
   if (weatherUpdateInterval) {
     clearInterval(weatherUpdateInterval)
     weatherUpdateInterval = null
@@ -2634,6 +3103,44 @@ onUnmounted(() => {
   cancelFactoryRoofAnimation()
   factoryRoofState = null
   factoryRoofTileset = null
+  
+  // 移除全局监听器
+  window.removeEventListener('keydown', onKeydown)
+  if (onResize) window.removeEventListener('resize', onResize)
+  if (onWindowError) window.removeEventListener('error', onWindowError)
+  if (onUnhandledRejection) window.removeEventListener('unhandledrejection', onUnhandledRejection)
+  window.removeEventListener('mousemove', onVendorFloatMove)
+  window.removeEventListener('mouseup', onVendorFloatUp)
+  if (removeRenderErrorListener) {
+    try { removeRenderErrorListener() } catch {}
+    removeRenderErrorListener = null
+  }
+  if (removeBaseImageryErrorListener) {
+    try { removeBaseImageryErrorListener() } catch {}
+    removeBaseImageryErrorListener = null
+  }
+  if (restoreWidgetErrorPanel) {
+    try { restoreWidgetErrorPanel() } catch {}
+    restoreWidgetErrorPanel = null
+  }
+  if (removeCanvasWheelListener) {
+    try { removeCanvasWheelListener() } catch {}
+    removeCanvasWheelListener = null
+  }
+  if (removeWindowWheelCaptureListener) {
+    try { removeWindowWheelCaptureListener() } catch {}
+    removeWindowWheelCaptureListener = null
+  }
+  if (removeWebglContextLostListener) {
+    try { removeWebglContextLostListener() } catch {}
+    removeWebglContextLostListener = null
+  }
+  if (removeWebglContextRestoredListener) {
+    try { removeWebglContextRestoredListener() } catch {}
+    removeWebglContextRestoredListener = null
+  }
+  
+  // 清理分析工具
   if (analysisHandler) {
     try { analysisHandler.destroy() } catch {}
     analysisHandler = null
@@ -2642,23 +3149,47 @@ onUnmounted(() => {
     try { floorHandler.destroy() } catch {}
     floorHandler = null
   }
-  if (dataSourceManager) {
-    try { dataSourceManager.destroy() } catch {}
-    dataSourceManager = null
-  }
-  // 清理园区曲线数据源
-  try { clearVendorCurves() } catch {}
-  window.removeEventListener('keydown', onKeydown)
-  if (poke) window.removeEventListener('resize', poke)
-  window.removeEventListener('mousemove', onVendorFloatMove)
-  window.removeEventListener('mouseup', onVendorFloatUp)
-  if (viewerRef.value && !viewerRef.value.isDestroyed()) {
+  
+  // 关键：先清理所有 Cesium 资源，再销毁 viewer
+  const viewer = viewerRef.value
+  if (viewer && !viewer.isDestroyed()) {
+    viewer.useDefaultRenderLoop = false
     try {
-      viewerRef.value.destroy()
+      // 移除所有 DataSources
+      if (facilitiesDS) {
+        viewer.dataSources.remove(facilitiesDS)
+        facilitiesDS = null
+      }
+      if (fireExtinguishersDS) {
+        viewer.dataSources.remove(fireExtinguishersDS)
+        fireExtinguishersDS = null
+      }
+      
+      // 清理园区曲线数据源
+      try { clearVendorCurves() } catch {}
+      
+      // 移除 Primitives
+      if (floor1) {
+        viewer.scene.primitives.remove(floor1)
+        floor1 = null
+      }
+      if (floor2) {
+        viewer.scene.primitives.remove(floor2)
+        floor2 = null
+      }
+      
+      // 最后清理数据源管理器（会清理它管理的所有资源）
+      if (dataSourceManager) {
+        try { dataSourceManager.destroy() } catch {}
+        dataSourceManager = null
+      }
+      
+      // 最后销毁 viewer
+      viewer.destroy()
+      viewerRef.value = null
     } catch (e) {
-      console.error('Viewer destroy failed:', e)
+      console.error('Cleanup failed:', e)
     }
-    viewerRef.value = null
   }
 })
 
@@ -2673,6 +3204,7 @@ function flyToWarehouse(w, opts={}) {
      finalPitchDeg: 自定义最终 pitch（默认 topDown:-88，否则 -35）
      debug: 输出调试信息
   */
+  if (isDestroying) return Promise.resolve(false)
   const viewer = viewerRef.value
   if (!viewer || !w) { console.warn('[flyToWarehouse] 缺少 viewer 或 w'); return Promise.resolve(false) }
   const cam = viewer.camera
@@ -2712,7 +3244,7 @@ function flyToWarehouse(w, opts={}) {
 
   const doFly = (destinationHeight, pitchDeg, duration)=> new Promise(res=>{
     let done = false
-    const finish = (ok)=>{ if(done) return; done=true; res(ok); viewer.scene.requestRender?.() }
+    const finish = (ok)=>{ if(done) return; done=true; res(ok); if(!isDestroying) viewer.scene.requestRender?.() }
     try {
       cam.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(lon, lat, destinationHeight),
@@ -2759,7 +3291,11 @@ function flyToWarehouse(w, opts={}) {
       if (w.entity?.polygon) {
         const orig = w.entity.polygon.material
         w.entity.polygon.material = Cesium.Color.ORANGE.withAlpha(0.85)
-        setTimeout(()=>{ if(token===__currentFlightToken) w.entity.polygon.material = orig }, 900)
+        const t = setTimeout(() => {
+          pendingTimeouts.delete(t)
+          if(token===__currentFlightToken) w.entity.polygon.material = orig
+        }, 900)
+        pendingTimeouts.add(t)
       }
     } catch {}
     viewer.scene.requestRender?.()
@@ -2776,6 +3312,7 @@ function selectWarehouse(w, fly = false) {
   scrollSelectedRowLater()
 }
 function highlightWarehouseEntity(ent) {
+  if (isDestroying) return
   if (!ent || !ent.polygon) return
   // 还原上一个
   if (lastWarehouseHighlight && lastWarehouseHighlight !== ent) {
@@ -2859,6 +3396,7 @@ function onVendorFloatUp(){
     })
   }
   async function redecorateWarehouses() {
+    if (isDestroying) return
     if (!dataSourceManager) return
     const viewer = viewerRef.value
     if (!viewer) return
@@ -2870,6 +3408,7 @@ function onVendorFloatUp(){
         fidGroupSize: warehousesMeta.fidGroupSize,
         forceReload: true
       })
+      if (isDestroying || viewer.isDestroyed?.()) return
   warehousesMeta.list = meta
   warehousesMeta.missFids = meta.filter(m => m.rowCount === 0).map(m => m.fid)
       enrichWarehouseDescriptions()
@@ -2896,6 +3435,7 @@ function onVendorFloatUp(){
           })
         }
       })
+      if (isDestroying || viewer.isDestroyed?.()) return
       await viewer.dataSources.add(warehouseDebugDS)
       warehouseDebugDS.show = warehousesMeta.showLabels
       // 恢复选中
@@ -2931,7 +3471,7 @@ function onVendorFloatUp(){
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  return { ui, panelCollapse, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover }
+  return { ui, panelCollapse, panoramaModal, pipelineInfo, pipelineGroupEntries, warehousesMeta, currentWarehouseDetail, currentCenterVendors, vendorsByCenter, aggregatedCenterMetrics, flyToWarehouse, selectWarehouse, sectionMode, excavationMode, onPanoramaClosed, startSectionAnalysis, endSectionAnalysis, startExcavationAnalysis, completeExcavation, undoExcavationPoint, clearAllAnalysis, togglePipelineGroup, exportWarehouseMetaCSV, exportWarehouseMissCSV, dataSourcesInfo, vendorHover, isLoading, loadingText }
 }
 })
 </script>
@@ -2941,6 +3481,37 @@ function onVendorFloatUp(){
 #app { margin: 0; padding: 0; }
 .map-root { position: relative; width: 100%; height: 100%; overflow: hidden; }
 #cesiumContainer { width: 100%; height: 100%; }
+
+/* 加载遮罩 */
+.loading-mask {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  backdrop-filter: blur(2px);
+}
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+.loading-text {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* Fluent 设计风格图层面板（右上角） */
 .layer-panel {
