@@ -8,3 +8,7 @@
 \n# Local environment files (do not commit secrets)
 .env*
 /deploy_out
+
+# Large deployment artifacts (do not commit)
+dist.zip
+/public/Assets/data/picture.zip
