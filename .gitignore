@@ -7,3 +7,4 @@
 /public/FireEvacuation/*.mp4
 \n# Local environment files (do not commit secrets)
 .env*
+/deploy_out

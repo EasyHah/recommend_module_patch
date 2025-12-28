@@ -16,6 +16,7 @@ const __dirname = path.dirname(__filename)
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') })
 
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3000
+const HOST = process.env.SERVER_HOST || '127.0.0.1'
 // 优先读取通用名称，其次兼容曾使用过的 VITE_* / TENCENT_* 前缀（不再推荐把云密钥以 VITE_ 暴露）
 const SECRET_ID = process.env.SECRET_ID || process.env.TENCENT_SECRET_ID || process.env.VITE_TENCENT_SECRET_ID || ''
 const SECRET_KEY = process.env.SECRET_KEY || process.env.TENCENT_SECRET_KEY || process.env.VITE_TENCENT_SECRET_KEY || ''
@@ -760,6 +761,6 @@ const server = http.createServer(async (req, res) => {
   return notFound(res)
 })
 
-server.listen(PORT, () => {
-  console.log(`[LKE Token Server] listening on http://localhost:${PORT}`)
+server.listen(PORT, HOST, () => {
+  console.log(`[LKE Token Server] listening on http://${HOST}:${PORT}`)
 })

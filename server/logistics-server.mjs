@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.LOGISTICS_PORT ? Number(process.env.LOGISTICS_PORT) : 3001;
+const HOST = process.env.LOGISTICS_HOST || '127.0.0.1';
 
 // File paths
 const baseDataPath = path.join(__dirname, '..', 'src', 'data', 'logistics.json');
@@ -209,6 +210,6 @@ const server = http.createServer(async (req,res) => {
   return notFound(res);
 });
 
-server.listen(PORT, () => {
-  console.log(`[Logistics Server] listening on http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`[Logistics Server] listening on http://${HOST}:${PORT}`);
 });
